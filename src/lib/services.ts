@@ -120,11 +120,13 @@ export async function submitCloudLantern(input: CloudLanternInput): Promise<ApiR
   }
 }
 
-// 这个函数提交入派申请，入参是申请表单，返回值是申请记录。
+// 这个函数提交名册登记，入参是登记表单，返回值是名帖记录。
 export async function submitJoinApplication(input: JoinApplicationInput): Promise<ApiResult<JoinApplication>> {
   // 这个对象是写入数据库的数据，敏感微信号只进入后台表。
   const payload = {
     nickname: input.nickname.trim(),
+    jianghu_name: input.jianghu_name.trim() || null,
+    real_name: input.real_name.trim(),
     wechat_id: input.wechat_id.trim(),
     age_range: input.age_range.trim() || null,
     gender: input.gender,
@@ -156,14 +158,14 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
   }
 
   try {
-    // 这里写入入派申请表，游客只能新增，不能读取别人的申请。
+    // 这里写入名册登记表，游客只能新增，不能读取别人的名帖。
     const { data, error } = await supabase.from('join_applications').insert(payload).select('*').single()
 
     if (error) {
       throw error
     }
 
-    return okResult(data as JoinApplication, '入派帖已送至山门，执事查看后会择时联系。')
+    return okResult(data as JoinApplication, '名册登记已送至山门，执事查看后会择时联系。')
   } catch (error) {
     return failResult(
       {
@@ -175,7 +177,7 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
         reviewed_at: null,
         created_at: new Date().toISOString()
       } as JoinApplication,
-      getErrorMessage(error, '提交入派申请失败')
+      getErrorMessage(error, '提交名册登记失败')
     )
   }
 }
@@ -253,14 +255,14 @@ export async function fetchPublishedEvents(): Promise<ApiResult<WenyunEvent[]>> 
   }
 }
 
-// 这个函数读取后台入派申请，入参为空，返回值是全部申请列表。
+// 这个函数读取后台名帖登记，入参为空，返回值是全部名帖列表。
 export async function fetchAdminApplications(): Promise<ApiResult<JoinApplication[]>> {
   if (!supabase) {
     return okResult(mockApplications, '当前为后台演示数据。')
   }
 
   try {
-    // 这里读取全部申请，实际权限由 RLS 限制为管理员可读。
+    // 这里读取全部名帖，实际权限由 RLS 限制为管理员可读。
     const { data, error } = await supabase
       .from('join_applications')
       .select('*')
@@ -272,11 +274,11 @@ export async function fetchAdminApplications(): Promise<ApiResult<JoinApplicatio
 
     return okResult((data ?? []) as JoinApplication[])
   } catch (error) {
-    return failResult([], getErrorMessage(error, '读取入派申请失败，请确认当前账号是管理员'))
+    return failResult([], getErrorMessage(error, '读取名帖登记失败，请确认当前账号是管理员'))
   }
 }
 
-// 这个函数更新入派申请状态，入参是申请编号、状态和备注，返回值是更新后的申请。
+// 这个函数更新名帖状态，入参是名帖编号、状态和备注，返回值是更新后的名帖。
 export async function updateApplicationStatus(
   id: string,
   status: JoinApplicationStatus,
@@ -289,7 +291,7 @@ export async function updateApplicationStatus(
   }
 
   try {
-    // 这里更新审核状态，并记录审核时间和备注。
+    // 这里更新名帖状态，并记录审核时间和备注。
     const { data, error } = await supabase
       .from('join_applications')
       .update({
@@ -305,9 +307,9 @@ export async function updateApplicationStatus(
       throw error
     }
 
-    return okResult(data as JoinApplication, '入派申请状态已更新。')
+    return okResult(data as JoinApplication, '名帖状态已更新。')
   } catch (error) {
-    return failResult(null, getErrorMessage(error, '更新入派申请失败'))
+    return failResult(null, getErrorMessage(error, '更新名帖状态失败'))
   }
 }
 
@@ -319,6 +321,8 @@ export async function updateApplicationDetails(
   // 这个对象保存将写入数据库的字段，空字符串会转成空值。
   const payload = {
     nickname: input.nickname.trim(),
+    jianghu_name: input.jianghu_name.trim() || null,
+    real_name: input.real_name.trim() || null,
     wechat_id: input.wechat_id.trim(),
     age_range: input.age_range.trim() || null,
     gender: input.gender,

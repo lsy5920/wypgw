@@ -1,5 +1,5 @@
-import { ClipboardPenLine, Send, UsersRound } from 'lucide-react'
-import { FormEvent, useEffect, useState } from 'react'
+import { ClipboardPenLine, Search, Send, UsersRound } from 'lucide-react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
 import { ScrollPanel } from '../components/ScrollPanel'
@@ -13,9 +13,11 @@ import { validateJoinApplication } from '../lib/validators'
 // 这个常量保存名册登记表单初始值，返回值用于重置表单。
 const initialForm: JoinApplicationInput = {
   nickname: '',
+  jianghu_name: '',
+  real_name: '',
   wechat_id: '',
   age_range: '',
-  gender: '不公开',
+  gender: '男',
   city: '',
   reason: '',
   accept_rules: false,
@@ -53,6 +55,12 @@ export function JoinPage() {
   const [roster, setRoster] = useState<RosterEntry[]>([])
   // 这个状态保存表单数据。
   const [form, setForm] = useState<JoinApplicationInput>(initialForm)
+  // 这个状态保存前台名册搜索词。
+  const [searchTerm, setSearchTerm] = useState('')
+  // 这个状态保存前台辈分字筛选。
+  const [generationFilter, setGenerationFilter] = useState('')
+  // 这个状态保存前台性别筛选。
+  const [genderFilter, setGenderFilter] = useState('')
   // 这个状态表示表单是否正在提交。
   const [submitting, setSubmitting] = useState(false)
   // 这个状态保存页面提示。
@@ -75,6 +83,29 @@ export function JoinPage() {
   useEffect(() => {
     void loadRoster()
   }, [])
+
+  // 这个变量保存名册中已有的辈分字，返回值用于筛选下拉框。
+  const generationOptions = useMemo(() => {
+    return Array.from(new Set(roster.map((item) => item.generation_name).filter(Boolean))).sort()
+  }, [roster])
+
+  // 这个变量保存筛选后的名册条目，返回值用于桌面表格和手机卡片展示。
+  const filteredRoster = useMemo(() => {
+    // 这里先清理搜索词，避免前后空格影响搜索结果。
+    const keyword = searchTerm.trim()
+
+    return roster.filter((item) => {
+      // 这里支持按道名或江湖名搜索。
+      const matchesKeyword =
+        !keyword || item.dao_name.includes(keyword) || (item.jianghu_name ?? '').includes(keyword)
+      // 这里按辈分字筛选。
+      const matchesGeneration = !generationFilter || item.generation_name === generationFilter
+      // 这里按性别筛选。
+      const matchesGender = !genderFilter || item.gender === genderFilter
+
+      return matchesKeyword && matchesGeneration && matchesGender
+    })
+  }, [generationFilter, genderFilter, roster, searchTerm])
 
   // 这个函数更新文字字段，入参是字段名和值，返回值为空。
   function updateField(field: keyof JoinApplicationInput, value: string | boolean) {
@@ -120,7 +151,7 @@ export function JoinPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
       <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号">
-        名册展示已入册同门的道名、编号、性别、出生月份、所在城市与身份。微信号和申请理由只在后台供掌门、执事查看。
+        名册展示已入册同门的道名、江湖名、编号、性别、出生月份、所在城市与身份。真实姓名、微信号和申请理由只在后台供掌门、执事查看。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -136,20 +167,68 @@ export function JoinPage() {
               <h2 className="ink-title mt-2 text-3xl font-bold text-[#143044]">问云同门</h2>
             </div>
             <span className="rounded-full border border-[#c9a45c]/40 bg-white/70 px-4 py-2 text-sm text-[#7a6a48]">
-              共 {roster.length} 人
+              显示 {filteredRoster.length} / {roster.length} 人
             </span>
+          </div>
+
+          <div className="mb-5 grid gap-3 rounded-2xl border border-[#c9a45c]/25 bg-white/60 p-4 lg:grid-cols-[1.2fr_0.7fr_0.7fr]">
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold">搜索名册</span>
+              <span className="relative">
+                <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#6f8f8b]" />
+                <input
+                  className="w-full rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="输入道名或江湖名"
+                  value={searchTerm}
+                />
+              </span>
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold">辈分字</span>
+              <select
+                className="rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                onChange={(event) => setGenerationFilter(event.target.value)}
+                value={generationFilter}
+              >
+                <option value="">全部辈分</option>
+                {generationOptions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold">性别</span>
+              <select
+                className="rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                onChange={(event) => setGenderFilter(event.target.value)}
+                value={genderFilter}
+              >
+                <option value="">全部性别</option>
+                {genderOptions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           {roster.length === 0 ? (
             <EmptyState title="名册暂空" message="待执事审核通过后，同门会列入问云名册。" />
+          ) : filteredRoster.length === 0 ? (
+            <EmptyState title="暂无匹配同门" message="可以换一个道名、江湖名或筛选条件再试。" />
           ) : (
             <>
               <div className="hidden overflow-x-auto rounded-2xl border border-[#c9a45c]/25 bg-white/60 md:block">
-                <table className="w-full min-w-[980px] text-left text-sm">
+                <table className="w-full min-w-[1060px] text-left text-sm">
                   <thead className="bg-[#edf3ef] text-[#263238]">
                     <tr>
                       <th className="px-4 py-3">编号</th>
                       <th className="px-4 py-3">道名</th>
+                      <th className="px-4 py-3">江湖名</th>
                       <th className="px-4 py-3">性别</th>
                       <th className="px-4 py-3">出生月份</th>
                       <th className="px-4 py-3">城市</th>
@@ -161,10 +240,11 @@ export function JoinPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {roster.map((item) => (
+                    {filteredRoster.map((item) => (
                       <tr className="border-t border-[#c9a45c]/15" key={item.id}>
                         <td className="px-4 py-3 font-semibold text-[#9e3d32]">{item.member_code}</td>
                         <td className="px-4 py-3 font-semibold">{item.dao_name}</td>
+                        <td className="px-4 py-3">{item.jianghu_name ?? '未填写'}</td>
                         <td className="px-4 py-3">{item.gender}</td>
                         <td className="px-4 py-3">{formatBirthMonth(item.birth_month)}</td>
                         <td className="px-4 py-3">{item.city ?? '未填写'}</td>
@@ -180,12 +260,13 @@ export function JoinPage() {
               </div>
 
               <div className="grid gap-3 md:hidden">
-                {roster.map((item) => (
+                {filteredRoster.map((item) => (
                   <div className="rounded-2xl border border-[#c9a45c]/25 bg-white/65 p-4" key={item.id}>
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-xs text-[#9e3d32]">{item.member_code}</p>
                         <h3 className="ink-title mt-1 text-2xl font-bold">{item.dao_name}</h3>
+                        <p className="mt-1 text-sm text-[#7a6a48]">江湖名：{item.jianghu_name ?? '未填写'}</p>
                       </div>
                       <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-xs text-[#6f8f8b]">{item.member_role}</span>
                     </div>
@@ -213,7 +294,7 @@ export function JoinPage() {
             </p>
             <h2 className="ink-title mt-2 text-3xl font-bold text-[#143044]">递上问云名帖</h2>
             <p className="mt-3 text-sm leading-7 text-[#526461]">
-              道名需以“云”字开头，长度 2 到 3 个字。编号默认按“问云-辈分字-001”顺延生成。
+              道名需以“云”字开头，长度 2 到 3 个字。江湖名会进入公开名册，真实姓名只供后台核对。
             </p>
           </div>
 
@@ -227,6 +308,28 @@ export function JoinPage() {
                 value={form.nickname}
               />
             </label>
+
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold">江湖名</span>
+                <input
+                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  onChange={(event) => updateField('jianghu_name', event.target.value)}
+                  placeholder="例如：山月客、归舟"
+                  value={form.jianghu_name}
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold">真实姓名 *</span>
+                <input
+                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  onChange={(event) => updateField('real_name', event.target.value)}
+                  placeholder="仅后台可见，不公开展示"
+                  value={form.real_name}
+                />
+              </label>
+            </div>
 
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
               <label className="grid gap-2">

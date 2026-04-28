@@ -34,8 +34,8 @@ export const joinSteps = [
   '列入问云名册'
 ]
 
-// 这个数组保存名册性别选项，返回值用于前台登记和后台编辑。
-export const genderOptions = ['男', '女', '不公开'] as const
+// 这个数组保存名册性别选项，返回值用于前台登记、前台筛选和后台编辑。
+export const genderOptions = ['男', '女'] as const
 
 // 这个数组保存门派身份选项，返回值用于后台名册编辑。
 export const memberRoleOptions = ['掌门', '执事', '护灯人', '同门'] as const
@@ -51,10 +51,12 @@ export const sectRoles = [
 // 这个数组保存后台状态按钮，返回值用于申请审核页面。
 export const applicationStatusLabels = {
   pending: '待审核',
-  approved: '已通过',
+  approved: '已审核',
   rejected: '未通过',
   contacted: '已联系',
-  joined: '已入群'
+  joined: '已入群',
+  draft: '暂存',
+  retired: '已退派'
 }
 
 // 这个数组保存云灯审核状态文案，返回值用于后台留言审核页面。

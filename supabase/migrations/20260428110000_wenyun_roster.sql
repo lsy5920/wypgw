@@ -3,7 +3,7 @@
 
 -- 这里给入派申请表增加名册字段，旧数据不会丢失。
 alter table public.join_applications
-add column if not exists gender text not null default '不公开' check (gender in ('男', '女', '不公开')),
+add column if not exists gender text not null default '男' check (gender in ('男', '女')),
 add column if not exists member_role text not null default '同门' check (member_role in ('掌门', '执事', '护灯人', '同门')),
 add column if not exists generation_name text not null default '云',
 add column if not exists member_code text;
@@ -50,8 +50,8 @@ begin
   -- 这里清理道名，避免前后空格进入名册。
   new.nickname = trim(new.nickname);
 
-  -- 这里补齐性别，未选择时默认不公开。
-  new.gender = coalesce(nullif(trim(new.gender), ''), '不公开');
+  -- 这里补齐性别，未选择时默认男。
+  new.gender = coalesce(nullif(trim(new.gender), ''), '男');
 
   -- 这里补齐身份，前台登记默认同门，后台可改为掌门、执事或护灯人。
   new.member_role = coalesce(nullif(trim(new.member_role), ''), '同门');

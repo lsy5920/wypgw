@@ -46,7 +46,7 @@ export function createNextMemberCode(existingCodes: Array<string | null | undefi
   return `${prefix}${String(maxNumber + 1).padStart(3, '0')}`
 }
 
-// 这个函数校验入派申请，入参是表单数据，返回值是中文错误列表。
+// 这个函数校验名册登记，入参是表单数据，返回值是中文错误列表。
 export function validateJoinApplication(input: JoinApplicationInput): string[] {
   // 这个数组收集所有错误，方便一次性告诉用户哪里需要修改。
   const errors: string[] = []
@@ -61,9 +61,14 @@ export function validateJoinApplication(input: JoinApplicationInput): string[] {
     errors.push('请填写微信号，方便执事联系。')
   }
 
+  // 这里检查真实姓名，真实姓名只进入后台，用于管理员核对名帖。
+  if (!cleanText(input.real_name)) {
+    errors.push('请填写真实姓名，真实姓名不会在前台公开。')
+  }
+
   // 这里检查性别选择，避免名册字段为空。
   if (!input.gender) {
-    errors.push('请选择性别，若不想公开可选“不公开”。')
+    errors.push('请选择性别。')
   }
 
   // 这里检查申请理由，避免申请内容过短难以审核。

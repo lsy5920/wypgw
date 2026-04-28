@@ -6,13 +6,15 @@ import { createNextMemberCode, createSlug, isValidDaoName, validateCloudLantern,
 
 // 这里测试基础校验逻辑，确保关键表单不会接受明显无效的数据。
 describe('问云派表单校验', () => {
-  // 这个用例验证空入派申请会返回错误。
-  it('会拦截不完整的入派申请', () => {
+  // 这个用例验证空名册登记会返回错误。
+  it('会拦截不完整的名册登记', () => {
     const errors = validateJoinApplication({
       nickname: '',
+      jianghu_name: '',
+      real_name: '',
       wechat_id: '',
       age_range: '',
-      gender: '不公开',
+      gender: '男',
       city: '',
       reason: '太短',
       accept_rules: false,
@@ -23,10 +25,12 @@ describe('问云派表单校验', () => {
     expect(errors.length).toBeGreaterThan(0)
   })
 
-  // 这个用例验证合格入派申请不会返回错误。
-  it('会接受内容完整的入派申请', () => {
+  // 这个用例验证合格名册登记不会返回错误。
+  it('会接受内容完整的名册登记', () => {
     const errors = validateJoinApplication({
       nickname: '云初',
+      jianghu_name: '清风客',
+      real_name: '林青',
       wechat_id: 'wenyun_test',
       age_range: '1998-03',
       gender: '女',

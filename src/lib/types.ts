@@ -1,8 +1,8 @@
-// 这个类型表示入派申请在后台审核时可能出现的状态。
-export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'contacted' | 'joined'
+// 这个类型表示名帖在后台审核时可能出现的状态。
+export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'contacted' | 'joined' | 'draft' | 'retired'
 
 // 这个类型表示名册公开展示的性别选项。
-export type MemberGender = '男' | '女' | '不公开'
+export type MemberGender = '男' | '女'
 
 // 这个类型表示问云名册中的门派身份。
 export type WenyunMemberRole = '掌门' | '执事' | '护灯人' | '同门'
@@ -38,17 +38,21 @@ export interface Profile {
   updated_at: string
 }
 
-// 这个接口描述入派申请表单与后台列表的数据结构。
+// 这个接口描述名册登记表单与后台列表的数据结构。
 export interface JoinApplication {
   // 申请唯一编号，由数据库生成。
   id: string
   // 申请人在名册中想使用的道名。
   nickname: string
+  // 江湖名用于前台名册展示和搜索，可为空。
+  jianghu_name: string | null
+  // 真实姓名用于后台核对身份，不在前台公开展示。
+  real_name: string | null
   // 微信号属于敏感联系方式，只在后台展示。
   wechat_id: string
   // 出生月份用于基本了解，不强制填写。
   age_range: string | null
-  // 性别用于名册公开展示，可选择不公开。
+  // 性别用于名册公开展示。
   gender: MemberGender | null
   // 所在城市用于后续线下活动参考。
   city: string | null
@@ -78,10 +82,14 @@ export interface JoinApplication {
   created_at: string
 }
 
-// 这个接口描述入派申请提交时需要传入的字段。
+// 这个接口描述名册登记提交时需要传入的字段。
 export interface JoinApplicationInput {
   // 申请道名，不能为空。
   nickname: string
+  // 江湖名，可为空，前台名册会公开展示。
+  jianghu_name: string
+  // 真实姓名，不能为空，只供后台管理员查看。
+  real_name: string
   // 微信号，不能为空。
   wechat_id: string
   // 出生月份，可为空。
@@ -102,10 +110,12 @@ export interface JoinApplicationInput {
 
 // 这个接口描述公开名册条目，入参来自 Supabase 公开视图，返回给前台展示。
 export interface RosterEntry {
-  // 公开条目唯一编号，对应入派申请编号。
+  // 公开条目唯一编号，对应名册登记编号。
   id: string
   // 道名，用于名册展示。
   dao_name: string
+  // 江湖名，用于名册展示和搜索。
+  jianghu_name: string | null
   // 名册编号，例如“问云-云-001”。
   member_code: string
   // 性别，用于名册展示。
@@ -130,6 +140,10 @@ export interface RosterEntry {
 export interface JoinApplicationUpdateInput {
   // 道名，后台可修正错别字。
   nickname: string
+  // 江湖名，后台可修正展示名。
+  jianghu_name: string
+  // 真实姓名，后台可修正核对信息。
+  real_name: string
   // 微信号，后台可修正联系信息。
   wechat_id: string
   // 出生月份，格式通常为 YYYY-MM。
