@@ -6,6 +6,7 @@ import type {
   Profile,
   RosterEntry,
   SiteSetting,
+  SmtpSetting,
   UserNotification,
   WenyunEvent
 } from '../lib/types'
@@ -333,3 +334,15 @@ export const mockSettings: SiteSetting[] = [
     updated_at: demoNow
   }
 ]
+
+// 这个对象保存演示 SMTP 设置，未连接 Supabase 时用于后台设置页兜底。
+export const mockSmtpSetting: SmtpSetting = {
+  id: 'default',
+  enabled: false,
+  host: 'smtp.qq.com',
+  port: 465,
+  secure: true,
+  username: '',
+  from_email: '',
+  updated_at: demoNow
+}

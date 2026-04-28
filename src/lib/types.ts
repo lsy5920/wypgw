@@ -375,6 +375,44 @@ export interface SiteSetting {
   updated_at: string
 }
 
+// 这个接口描述后台可查看的 SMTP 设置，不返回授权码明文。
+export interface SmtpSetting {
+  // 设置编号，固定使用 default。
+  id: string
+  // 是否启用后台 SMTP 配置。
+  enabled: boolean
+  // SMTP 主机，例如 smtp.qq.com。
+  host: string
+  // SMTP 端口，常用 465。
+  port: number
+  // 是否使用 SSL 加密连接。
+  secure: boolean
+  // SMTP 登录账号，通常是邮箱地址。
+  username: string
+  // 发件人地址或名称。
+  from_email: string
+  // 更新时间。
+  updated_at: string
+}
+
+// 这个接口描述管理员保存 SMTP 设置时提交的表单。
+export interface SmtpSettingInput {
+  // 是否启用后台 SMTP 配置。
+  enabled: boolean
+  // SMTP 主机。
+  host: string
+  // SMTP 端口。
+  port: string
+  // 是否使用 SSL 加密连接。
+  secure: boolean
+  // SMTP 登录账号。
+  username: string
+  // SMTP 授权码，留空表示保留旧值。
+  password: string
+  // 发件人地址或名称。
+  from_email: string
+}
+
 // 这个接口描述所有接口函数统一返回的结果。
 export interface ApiResult<T> {
   // 是否执行成功。

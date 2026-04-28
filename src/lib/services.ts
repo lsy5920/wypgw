@@ -9,7 +9,8 @@ import {
   mockProfile,
   mockRegistrations,
   mockRosterEntries,
-  mockSettings
+  mockSettings,
+  mockSmtpSetting
 } from '../data/mockData'
 import type {
   Announcement,
@@ -26,6 +27,8 @@ import type {
   ProfileUpdateInput,
   RosterEntry,
   SiteSetting,
+  SmtpSetting,
+  SmtpSettingInput,
   UserNotification,
   UserNotificationKind,
   YardEventItem,
@@ -1250,5 +1253,94 @@ export async function saveContactSetting(input: {
     return okResult(data as SiteSetting, '站点联系设置已保存。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '保存站点设置失败'))
+  }
+}
+
+// 这个函数读取后台 SMTP 设置，入参为空，返回值不包含授权码明文。
+export async function fetchSmtpSetting(): Promise<ApiResult<SmtpSetting | null>> {
+  if (!supabase) {
+    return okResult(mockSmtpSetting, '当前为演示 SMTP 设置。')
+  }
+
+  try {
+    // 这里只读取非授权码字段，避免把敏感授权码带回前端表单。
+    const { data, error } = await supabase
+      .from('smtp_settings')
+      .select('id,enabled,host,port,secure,username,from_email,updated_at')
+      .eq('id', 'default')
+      .maybeSingle()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data as SmtpSetting | null) ?? null, data ? 'SMTP 设置已读取。' : '尚未配置 SMTP 服务。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '读取 SMTP 设置失败'))
+  }
+}
+
+// 这个函数保存后台 SMTP 设置，入参是 SMTP 表单，返回值是不含授权码明文的设置。
+export async function saveSmtpSetting(input: SmtpSettingInput): Promise<ApiResult<SmtpSetting | null>> {
+  const port = Number(input.port)
+
+  // 这里做基础校验，避免空主机、空账号或非法端口写入数据库。
+  if (!input.host.trim() || !input.username.trim() || !input.from_email.trim() || Number.isNaN(port) || port <= 0) {
+    return failResult(null, '请填写 SMTP 主机、端口、账号和发件人。')
+  }
+
+  if (!supabase) {
+    return okResult(
+      {
+        ...mockSmtpSetting,
+        enabled: input.enabled,
+        host: input.host.trim(),
+        port,
+        secure: input.secure,
+        username: input.username.trim(),
+        from_email: input.from_email.trim(),
+        updated_at: new Date().toISOString()
+      },
+      '演示模式下已模拟保存 SMTP 设置。'
+    )
+  }
+
+  try {
+    const basePayload = {
+      id: 'default',
+      enabled: input.enabled,
+      host: input.host.trim(),
+      port,
+      secure: input.secure,
+      username: input.username.trim(),
+      from_email: input.from_email.trim()
+    }
+
+    // 这里首次配置必须填写授权码；后续留空时只更新非授权码字段。
+    const query = input.password.trim()
+      ? supabase
+          .from('smtp_settings')
+          .upsert({
+            ...basePayload,
+            password: input.password.trim()
+          })
+          .select('id,enabled,host,port,secure,username,from_email,updated_at')
+          .single()
+      : supabase
+          .from('smtp_settings')
+          .update(basePayload)
+          .eq('id', 'default')
+          .select('id,enabled,host,port,secure,username,from_email,updated_at')
+          .single()
+
+    const { data, error } = await query
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as SmtpSetting, 'SMTP 服务设置已保存。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '保存 SMTP 设置失败。首次配置必须填写授权码'))
   }
 }

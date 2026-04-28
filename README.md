@@ -95,15 +95,22 @@ supabase/migrations/20260428133000_wenyun_yard_and_notifications.sql
 ```
 
 11. 复制全部 SQL 内容到 Supabase SQL 编辑器并执行，新增登录用户归属、站内提醒、活动报名状态提醒和问云小院 RLS 权限。
-12. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
-13. 在项目根目录新建 `.env.local` 文件：
+12. 再打开 SMTP 设置升级文件：
+
+```text
+supabase/migrations/20260428144500_admin_smtp_settings.sql
+```
+
+13. 复制全部 SQL 内容到 Supabase SQL 编辑器并执行，新增管理员专用 SMTP 设置表。
+14. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
+15. 在项目根目录新建 `.env.local` 文件：
 
 ```env
 VITE_SUPABASE_URL=你的 Supabase 项目地址
 VITE_SUPABASE_ANON_KEY=你的 Supabase 公开匿名密钥
 ```
 
-14. 重新启动本地服务：
+16. 重新启动本地服务：
 
 ```powershell
 npm run dev
@@ -176,7 +183,7 @@ supabase login
 supabase link --project-ref 你的项目引用
 ```
 
-4. 设置 SMTP 密钥。下面示例使用 QQ 邮箱 SMTP，请把占位内容换成你自己的邮箱和授权码，不要写进代码仓库：
+4. 首次部署函数时可以设置 SMTP 密钥作为兜底配置。下面示例使用 QQ 邮箱 SMTP，请把占位内容换成你自己的邮箱和授权码，不要写进代码仓库：
 
 ```powershell
 supabase secrets set SMTP_HOST=smtp.qq.com
@@ -202,6 +209,14 @@ supabase functions deploy send-user-notice
 ```
 
 注意：邮件发送失败不会影响审核或报名，失败原因会写入问云小院的消息提醒里。
+
+也可以不使用 Supabase Secrets，在管理后台设置 SMTP 服务：
+
+1. 登录掌门或执事账号。
+2. 打开 `/admin/settings`。
+3. 在“SMTP 邮件服务”里填写 SMTP 主机、端口、账号、授权码、发件人。
+4. 勾选“启用后台 SMTP 配置”。
+5. 保存后，`send-user-notice` 会优先使用后台 SMTP 设置；后台未启用时才使用 Supabase Secrets。
 
 ### 六、初始化管理员
 
@@ -327,7 +342,7 @@ https://你的用户名.github.io/仓库名/#/canon
 3. 云灯审核：通过或拒绝留言。
 4. 公告管理：创建草稿或发布公告。
 5. 活动管理：创建线上或线下雅集，查看活动报名并调整报名状态。
-6. 站点设置：修改联系山门说明文字。
+6. 站点设置：修改联系山门说明文字，维护 SMTP 邮件服务设置。
 
 ## 项目目录结构
 
@@ -356,7 +371,8 @@ wypgw/
 │     ├─ 20260428090000_init_wenyunpai.sql          # 初始化基础表、权限和演示数据
 │     ├─ 20260428110000_wenyun_roster.sql           # 升级问云名册、编号和公开视图
 │     ├─ 20260428125300_roster_names_and_review.sql # 升级江湖名、真实姓名和名帖审核状态
-│     └─ 20260428133000_wenyun_yard_and_notifications.sql # 升级问云小院、用户归属和消息提醒
+│     ├─ 20260428133000_wenyun_yard_and_notifications.sql # 升级问云小院、用户归属和消息提醒
+│     └─ 20260428144500_admin_smtp_settings.sql     # 升级管理员 SMTP 邮件服务设置
 ├─ supabase/functions/
 │  └─ send-user-notice/             # 发送小院状态提醒邮件的 Edge Function
 ├─ 网站开发资料/
@@ -446,17 +462,20 @@ where email = '你的邮箱@example.com'
 可能原因：
 
 1. 没有部署 `send-user-notice` Edge Function。
-2. 没有配置 SMTP 密钥。
-3. SMTP 授权码错误。
-4. 邮箱服务商限制登录或发信。
+2. 没有执行 `20260428144500_admin_smtp_settings.sql`。
+3. 后台 SMTP 设置未启用，且没有配置 Supabase SMTP 密钥。
+4. SMTP 授权码错误。
+5. 邮箱服务商限制登录或发信。
 
 解决方法：
 
 1. 执行 `supabase functions deploy send-user-notice`。
-2. 在 Supabase Secrets 中配置 `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASS`、`SMTP_FROM`。
-3. QQ 邮箱通常使用 `SMTP_HOST=smtp.qq.com` 和 `SMTP_PORT=465`。
-4. 不要把 SMTP 授权码写进前端代码、README 或 Git 仓库。
-5. 到问云小院消息提醒里查看 `邮件状态` 和失败原因。
+2. 执行 `supabase/migrations/20260428144500_admin_smtp_settings.sql`。
+3. 登录 `/admin/settings`，在“SMTP 邮件服务”里填写配置并启用。
+4. 如果不想用后台配置，也可以在 Supabase Secrets 中配置 `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASS`、`SMTP_FROM`。
+5. QQ 邮箱通常使用 `SMTP_HOST=smtp.qq.com` 和 `SMTP_PORT=465`。
+6. 不要把 SMTP 授权码写进前端代码、README 或 Git 仓库。
+7. 到问云小院消息提醒里查看 `邮件状态` 和失败原因。
 
 ### 名册登记提交失败
 
@@ -539,3 +558,4 @@ npm run preview
 2026-04-28 13:00 【优化】优化问云名册登记与审核流程，新增江湖名和真实姓名字段，移除性别“不公开”选项，前台支持按道名或江湖名搜索并按辈分字、性别筛选，后台名帖审核支持搜索筛选、小卡片展开编辑、暂存和已退派状态，并补充 Supabase 升级脚本与文档说明。
 2026-04-28 13:08 【修复】修复 Supabase 名册升级脚本重建公开名册视图时报 member_code 改名失败的问题，改为先删除旧视图再创建新视图，并补充 README 排查说明。
 2026-04-28 14:27 【新增】新增问云小院登录系统与用户后台，支持邮箱密码直接注册登录、普通用户进入小院、管理员进入后台；新增我的资料、我的名帖、我的云灯、我的雅集、消息提醒页面，名帖、云灯、活动报名改为登录后归属当前账号，并新增 Supabase 小院迁移脚本、SMTP 邮件提醒 Edge Function 和 README 配置教程。
+2026-04-28 14:55 【新增】管理员后台站点设置新增 SMTP 邮件服务配置，可维护主机、端口、账号、发件人、授权码和启用状态；新增管理员专用 SMTP 设置表与 RLS 权限，邮件 Edge Function 优先读取后台配置，未启用时回退 Supabase Secrets，并同步更新 README 配置和排查说明。

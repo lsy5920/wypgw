@@ -10,6 +10,22 @@ interface NoticeRequest {
   notificationId?: string
 }
 
+// 这个接口描述函数实际使用的 SMTP 配置。
+interface SmtpConfig {
+  // SMTP 主机。
+  host: string
+  // SMTP 端口。
+  port: number
+  // 是否使用 SSL。
+  secure: boolean
+  // SMTP 账号。
+  username: string
+  // SMTP 授权码。
+  password: string
+  // 发件人。
+  fromEmail: string
+}
+
 // 这个函数把对象转成 JSON 响应，入参是内容和状态码，返回值是 HTTP 响应。
 function jsonResponse(body: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -30,6 +46,52 @@ function requireEnv(name: string): string {
   }
 
   return value
+}
+
+// 这个函数读取可选环境变量，入参是变量名，返回值是变量内容或空值。
+function optionalEnv(name: string): string {
+  return Deno.env.get(name) ?? ''
+}
+
+// 这个函数读取 SMTP 配置，优先使用后台设置，后台未启用时回退到 Supabase Secrets。
+async function loadSmtpConfig(client: ReturnType<typeof createClient>): Promise<SmtpConfig> {
+  // 这里先读取管理员后台保存的 SMTP 设置。
+  const { data } = await client
+    .from('smtp_settings')
+    .select('enabled,host,port,secure,username,password,from_email')
+    .eq('id', 'default')
+    .maybeSingle()
+
+  // 这里后台设置启用且字段完整时优先使用数据库配置。
+  if (data?.enabled && data.host && data.port && data.username && data.password && data.from_email) {
+    return {
+      host: data.host,
+      port: Number(data.port),
+      secure: Boolean(data.secure),
+      username: data.username,
+      password: data.password,
+      fromEmail: data.from_email
+    }
+  }
+
+  const host = optionalEnv('SMTP_HOST')
+  const username = optionalEnv('SMTP_USER')
+  const password = optionalEnv('SMTP_PASS')
+  const fromEmail = optionalEnv('SMTP_FROM') || username
+
+  // 这里在后台和 Secrets 都未配置完整时给出明确报错。
+  if (!host || !username || !password || !fromEmail) {
+    throw new Error('SMTP 服务尚未配置，请到管理员后台设置 SMTP，或配置 Supabase Secrets。')
+  }
+
+  return {
+    host,
+    port: Number(optionalEnv('SMTP_PORT') || '465'),
+    secure: (optionalEnv('SMTP_SECURE') || 'true') !== 'false',
+    username,
+    password,
+    fromEmail
+  }
 }
 
 // 这个函数安全更新提醒邮件状态，入参是客户端、提醒编号和更新字段，返回值为空。
@@ -63,14 +125,10 @@ Deno.serve(async (request) => {
 
     const supabaseUrl = requireEnv('SUPABASE_URL')
     const serviceRoleKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY')
-    const smtpHost = requireEnv('SMTP_HOST')
-    const smtpPort = Number(Deno.env.get('SMTP_PORT') ?? '465')
-    const smtpUser = requireEnv('SMTP_USER')
-    const smtpPass = requireEnv('SMTP_PASS')
-    const smtpFrom = Deno.env.get('SMTP_FROM') ?? smtpUser
-
     // 这里用服务端密钥创建客户端，函数只在服务端运行，不会暴露给浏览器。
     const client = createClient(supabaseUrl, serviceRoleKey)
+    // 这里优先读取后台 SMTP 设置，后台未启用时再使用 Supabase Secrets。
+    const smtpConfig = await loadSmtpConfig(client)
 
     // 这里读取站内提醒和用户资料，用于拼出邮件标题与正文。
     const { data: notice, error: noticeError } = await client
@@ -92,18 +150,18 @@ Deno.serve(async (request) => {
 
     // 这里创建 SMTP 发送器，默认使用 465 加密端口。
     const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465,
+      host: smtpConfig.host,
+      port: smtpConfig.port,
+      secure: smtpConfig.secure,
       auth: {
-        user: smtpUser,
-        pass: smtpPass
+        user: smtpConfig.username,
+        pass: smtpConfig.password
       }
     })
 
     // 这里发送纯文本邮件，保证各种邮箱客户端都能正常阅读。
     await transporter.sendMail({
-      from: smtpFrom,
+      from: smtpConfig.fromEmail,
       to: userData.user.email,
       subject: `问云小院提醒：${notice.title}`,
       text: `${notice.content}\n\n愿你在问云小院有一盏灯可归。`
