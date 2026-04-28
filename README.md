@@ -91,8 +91,9 @@ npm run dev
 
 1. 打开 `/login` 页面。
 2. 使用邮箱和密码注册一个账号。
-3. 如果 Supabase 要求邮箱验证，请先完成邮箱验证。
-4. 回到 Supabase SQL 编辑器，把下面语句里的邮箱改成你的管理员邮箱：
+3. 如果 Supabase 要求邮箱验证，请先打开注册邮箱，点击 Supabase 发来的确认链接。
+4. 如果页面提示“邮箱还没有确认”，可以在登录页点击“重发确认邮件”。
+5. 回到 Supabase SQL 编辑器，把下面语句里的邮箱改成你的管理员邮箱：
 
 ```sql
 update public.profiles
@@ -100,8 +101,22 @@ set role = 'founder'
 where id = (select id from auth.users where email = '你的邮箱@example.com');
 ```
 
-5. 回到官网 `/login` 登录。
-6. 登录成功后进入 `/admin` 后台。
+6. 回到官网 `/login` 登录。
+7. 登录成功后进入 `/admin` 后台。
+
+如果你只是测试后台，不想处理邮箱确认，可以二选一：
+
+1. 在 Supabase 控制台的 Authentication 邮箱登录设置中关闭邮箱确认。
+2. 在 Supabase SQL 编辑器中临时确认指定邮箱：
+
+```sql
+update auth.users
+set email_confirmed_at = now()
+where email = '你的邮箱@example.com'
+  and email_confirmed_at is null;
+```
+
+注意：正式公开使用时，建议保留邮箱确认，避免别人用不存在或不属于自己的邮箱注册。
 
 角色说明：
 
@@ -250,6 +265,25 @@ wypgw/
 
 解决方法：在 Supabase SQL 编辑器执行管理员初始化语句，把对应邮箱改为 `founder`。
 
+### 登录提示邮箱还没有确认
+
+原因：Supabase 开启了邮箱确认。即使已经把 `profiles.role` 改成 `founder` 或 `admin`，只要 `auth.users.email_confirmed_at` 还是空，Supabase 仍然会拒绝登录。
+
+解决方法：
+
+1. 打开注册邮箱，找到 Supabase 确认邮件并点击确认链接。
+2. 如果没有收到邮件，在 `/login` 页面填写邮箱后点击“重发确认邮件”。
+3. 如果只是本地或内部测试，可以在 Supabase SQL 编辑器执行：
+
+```sql
+update auth.users
+set email_confirmed_at = now()
+where email = '你的邮箱@example.com'
+  and email_confirmed_at is null;
+```
+
+4. 确认邮箱后，再检查 `public.profiles` 表里该用户的 `role` 是否为 `founder` 或 `admin`。
+
 ### 入派申请提交失败
 
 可能原因：
@@ -303,3 +337,4 @@ npm run preview
 2026-04-28 02:22 【优化】将前台顶部导航调整为悬浮圆角导航栏，补充页面顶部间距与手机端悬浮菜单效果，避免导航与页面内容连在一起。
 2026-04-28 08:21 【修复】修复 GitHub Pages 部署后因子路径路由被识别为未知页面而显示 404 的问题，将前端路由切换为静态托管更稳定的哈希路由，并补充部署访问说明。
 2026-04-28 08:44 【修复】修复 GitHub Pages 部署后 Supabase 配置未被前端识别的问题，新增线上运行时配置文件生成流程，兼容仓库密钥与仓库变量，并补充线上未配置排查教程。
+2026-04-28 09:34 【修复】修复管理员登录遇到 Supabase 邮箱未确认时只显示英文错误的问题，新增中文原因说明、确认邮件重发入口、邮箱确认回跳地址和相关自动测试，并补充 README 中的邮箱确认排查步骤。
