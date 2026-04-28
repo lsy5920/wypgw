@@ -143,7 +143,7 @@ export function HomePage() {
 
       <section className="bg-[#263238] py-16 text-[#f6f4ef]">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <SectionTitle center eyebrow="门派精神" title="清、暖、真、和，静、善、自由、有界">
+          <SectionTitle center eyebrow="门派精神" title="清、暖、真、和，静、善、自由、有界" tone="dark">
             <span className="text-[#d8d7ca]">每一句话，都在共同塑造这个家。</span>
           </SectionTitle>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

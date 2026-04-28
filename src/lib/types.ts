@@ -61,6 +61,32 @@ export interface ProfileUpdateInput {
   is_public: boolean
 }
 
+// 这个接口描述当前登录账号的安全信息，入参来自 Supabase Auth，返回值用于小院资料页展示。
+export interface AccountSecurityInfo {
+  // 当前登录邮箱，旧编号账号会显示内部邮箱。
+  email: string
+  // 是否仍是旧编号内部邮箱。
+  is_legacy_email: boolean
+  // 等待确认的新邮箱，没有等待确认时为空。
+  pending_email: string | null
+  // 邮箱确认时间，没有确认时为空。
+  email_confirmed_at: string | null
+}
+
+// 这个接口描述修改密码表单，入参来自小院资料页，返回值用于服务函数校验。
+export interface PasswordUpdateInput {
+  // 新密码，至少 6 位。
+  new_password: string
+  // 确认新密码，用来防止用户输错。
+  confirm_password: string
+}
+
+// 这个接口描述绑定邮箱表单，入参来自小院资料页，返回值用于 Supabase Auth 更新邮箱。
+export interface EmailBindInput {
+  // 用户想绑定或更换的真实邮箱。
+  email: string
+}
+
 // 这个接口描述名册登记表单与后台列表的数据结构。
 export interface JoinApplication {
   // 申请唯一编号，由数据库生成。

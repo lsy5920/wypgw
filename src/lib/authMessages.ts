@@ -23,6 +23,11 @@ export function translateSupabaseAuthError(error: unknown): string {
     return '邮箱或密码不正确，请检查后再试。'
   }
 
+  // 这里处理登录状态丢失，常见于页面停留太久或浏览器清理了本地会话。
+  if (normalizedMessage.includes('auth session missing') || normalizedMessage.includes('session missing')) {
+    return '登录状态已失效，请重新进入问云小院登录后再操作。'
+  }
+
   // 这里处理旧编号账号导入后 Auth 令牌字段为空导致的 Supabase 认证库错误。
   if (normalizedMessage.includes('database error querying schema')) {
     return 'Supabase 认证库读取失败。如果你正在登录 001 这类旧编号账号，请先在 Supabase SQL 编辑器执行 supabase/fix_legacy_roster_auth_accounts.sql，再重新登录。'
@@ -31,6 +36,16 @@ export function translateSupabaseAuthError(error: unknown): string {
   // 这里处理邮箱重复注册，提示用户切回登录。
   if (normalizedMessage.includes('user already registered') || normalizedMessage.includes('already registered')) {
     return '这个邮箱已经注册过，请切换到登录。'
+  }
+
+  // 这里处理邮箱变更过于频繁的限制，避免用户不断点击提交。
+  if (normalizedMessage.includes('rate limit') || normalizedMessage.includes('security purposes')) {
+    return '请求太频繁，请稍等一会儿再试。'
+  }
+
+  // 这里处理邮箱变更被安全确认设置拦住的场景。
+  if (normalizedMessage.includes('email change') || normalizedMessage.includes('confirm')) {
+    return '邮箱绑定需要确认。如果旧编号邮箱无法确认，请到 Supabase 后台关闭安全邮箱变更和邮箱确认后再试。'
   }
 
   // 这里处理密码过短或不合规，提示用户改成更稳妥的密码。

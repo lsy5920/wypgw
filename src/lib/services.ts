@@ -1,4 +1,5 @@
 import { supabase, supabaseReady } from './supabaseClient'
+import { getAuthRedirectUrl, translateSupabaseAuthError } from './authMessages'
 import { createNextMemberCode, createSlug } from './validators'
 import {
   mockAnnouncements,
@@ -13,16 +14,19 @@ import {
   mockSmtpSetting
 } from '../data/mockData'
 import type {
+  AccountSecurityInfo,
   Announcement,
   ApiResult,
   CloudLantern,
   CloudLanternInput,
+  EmailBindInput,
   EventRegistration,
   JoinApplication,
   JoinApplicationInput,
   JoinApplicationStatus,
   JoinApplicationUpdateInput,
   LanternStatus,
+  PasswordUpdateInput,
   Profile,
   ProfileUpdateInput,
   RosterEntry,
@@ -123,6 +127,24 @@ function getErrorMessage(error: unknown, fallback: string): string {
   }
 
   return fallback
+}
+
+// 这个函数判断邮箱是否为旧编号内部邮箱，入参是邮箱，返回值表示是否仍需绑定真实邮箱。
+function isLegacyInternalEmail(email: string): boolean {
+  return email.trim().toLowerCase().endsWith('@wenyun.local')
+}
+
+// 这个函数把 Supabase 用户整理成账号安全信息，入参是用户对象，返回值是页面可展示的数据。
+function createAccountSecurityInfo(user: Awaited<ReturnType<typeof requireCurrentUser>>): AccountSecurityInfo {
+  // 这里取当前邮箱，极少数异常账号没有邮箱时给空字符串兜底。
+  const email = user.email ?? ''
+
+  return {
+    email,
+    is_legacy_email: isLegacyInternalEmail(email),
+    pending_email: user.new_email ?? null,
+    email_confirmed_at: user.email_confirmed_at ?? null
+  }
 }
 
 // 这个函数把审核状态转成中文，入参是状态值，返回值是提醒正文中使用的中文。
@@ -966,6 +988,170 @@ export async function updateMyProfile(input: ProfileUpdateInput): Promise<ApiRes
     return okResult(data as Profile, '小院资料已保存。')
   } catch (error) {
     return failResult(mockProfile, getErrorMessage(error, '保存小院资料失败'))
+  }
+}
+
+// 这个函数读取当前账号安全信息，入参为空，返回值包含登录邮箱和待确认邮箱。
+export async function fetchMyAccountSecurity(): Promise<ApiResult<AccountSecurityInfo>> {
+  // 这里在演示模式下返回固定账号，避免未配置 Supabase 时页面空白。
+  if (!supabase) {
+    return okResult(
+      {
+        email: 'demo@wenyun.local',
+        is_legacy_email: true,
+        pending_email: null,
+        email_confirmed_at: null
+      },
+      '当前为演示账号安全信息。'
+    )
+  }
+
+  try {
+    // 这里要求用户已登录，只有本人才能读取自己的认证邮箱。
+    const user = await requireCurrentUser()
+
+    return okResult(createAccountSecurityInfo(user), '账号安全信息已读取。')
+  } catch (error) {
+    // 这里捕获会话过期等认证异常，避免小院资料页白屏。
+    return failResult(
+      {
+        email: '',
+        is_legacy_email: false,
+        pending_email: null,
+        email_confirmed_at: null
+      },
+      translateSupabaseAuthError(error)
+    )
+  }
+}
+
+// 这个函数修改当前登录账号密码，入参是新密码和确认密码，返回值表示是否成功。
+export async function updateMyPassword(input: PasswordUpdateInput): Promise<ApiResult<null>> {
+  // 这里检查两次密码是否一致，先在前端挡住手误。
+  if (input.new_password !== input.confirm_password) {
+    return failResult(null, '两次输入的新密码不一致，请重新填写。')
+  }
+
+  // 这里要求新密码至少 6 位，符合 Supabase 邮箱密码账号的基础要求。
+  if (input.new_password.length < 6) {
+    return failResult(null, '新密码至少需要 6 位。')
+  }
+
+  // 这里在演示模式下只模拟成功，不写入真实认证系统。
+  if (!supabase) {
+    return okResult(null, '演示模式下已模拟修改密码。')
+  }
+
+  try {
+    // 这里先确认当前会话存在，避免过期会话直接调用更新接口。
+    await requireCurrentUser()
+
+    // 这里调用 Supabase Auth 更新密码，成功后用户下次登录需要使用新密码。
+    const { error } = await supabase.auth.updateUser({
+      password: input.new_password
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(null, '密码已修改成功，下次登录请使用新密码。')
+  } catch (error) {
+    // 这里把 Supabase 认证错误转成中文，方便用户按提示处理。
+    return failResult(null, translateSupabaseAuthError(error))
+  }
+}
+
+// 这个函数绑定或更换当前账号邮箱，入参是真实邮箱，返回值是更新后的账号安全信息。
+export async function bindMyEmail(input: EmailBindInput): Promise<ApiResult<AccountSecurityInfo>> {
+  // 这里清理邮箱前后空格，避免复制时多带空白。
+  const email = input.email.trim().toLowerCase()
+
+  // 这里做基础邮箱格式校验，避免明显错误提交给 Supabase。
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return failResult(
+      {
+        email: '',
+        is_legacy_email: false,
+        pending_email: null,
+        email_confirmed_at: null
+      },
+      '请填写正确的邮箱地址。'
+    )
+  }
+
+  // 这里不允许把真实绑定邮箱设置成旧编号内部邮箱。
+  if (isLegacyInternalEmail(email)) {
+    return failResult(
+      {
+        email: '',
+        is_legacy_email: true,
+        pending_email: null,
+        email_confirmed_at: null
+      },
+      '请绑定真实邮箱，不要填写旧编号内部邮箱。'
+    )
+  }
+
+  // 这里在演示模式下只模拟成功，方便无 Supabase 时预览界面。
+  if (!supabase) {
+    return okResult(
+      {
+        email,
+        is_legacy_email: false,
+        pending_email: null,
+        email_confirmed_at: new Date().toISOString()
+      },
+      '演示模式下已模拟绑定邮箱。'
+    )
+  }
+
+  try {
+    // 这里读取当前账号，确保只能更新自己的登录邮箱。
+    const user = await requireCurrentUser()
+
+    if ((user.email ?? '').toLowerCase() === email) {
+      return okResult(createAccountSecurityInfo(user), '这个邮箱已经是当前登录邮箱。')
+    }
+
+    // 这里调用 Supabase Auth 更新邮箱；如果后台仍开着确认或安全邮箱变更，会进入待确认状态。
+    const { data, error } = await supabase.auth.updateUser(
+      { email },
+      {
+        emailRedirectTo: getAuthRedirectUrl()
+      }
+    )
+
+    if (error) {
+      throw error
+    }
+
+    // 这里整理更新后的账号信息，兼容立即生效和待邮箱确认两种 Supabase 配置。
+    const nextUser = data.user ?? user
+    const nextInfo = createAccountSecurityInfo(nextUser)
+    const isApplied = (nextInfo.email ?? '').toLowerCase() === email
+    const message = isApplied
+      ? '邮箱已绑定成功，下次可用该邮箱登录问云小院。'
+      : '绑定邮箱请求已提交。如果没有立即生效，请检查新邮箱确认邮件；若旧编号邮箱无法确认，请在 Supabase 后台关闭安全邮箱变更。'
+
+    return okResult(
+      {
+        ...nextInfo,
+        pending_email: isApplied ? nextInfo.pending_email : email
+      },
+      message
+    )
+  } catch (error) {
+    // 这里把邮箱重复、会话过期、确认设置拦截等问题转成中文提示。
+    return failResult(
+      {
+        email: '',
+        is_legacy_email: false,
+        pending_email: null,
+        email_confirmed_at: null
+      },
+      translateSupabaseAuthError(error)
+    )
   }
 }
 
