@@ -36,6 +36,11 @@ function normalizeLoginAccount(account: string): string {
   // 这里把 1、01、001 都统一成 001，方便旧名册账号登录。
   const normalizedNumber = numberPart.replace(/\D/g, '').padStart(3, '0')
 
+  // 这里把 001 编号绑定到超级管理员邮箱，登录时仍然需要输入该邮箱账号当前密码。
+  if (normalizedNumber === '001') {
+    return '3199912548@qq.com'
+  }
+
   return `${normalizedNumber}@wenyun.local`
 }
 
@@ -254,7 +259,7 @@ export function LoginPage() {
         </form>
 
         <div className="mt-6 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
-          新用户按“邮箱 + 密码”直接注册登录；旧名册同门可用 001 这类短编号登录，密码优先使用出生年份，没有年份时使用短编号本身。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。管理员初始化方式：注册后到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。
+          新用户按“邮箱 + 密码”直接注册登录；旧名册同门可用 001 这类短编号登录，密码优先使用出生年份，没有年份时使用短编号本身。001 已绑定超级管理员邮箱，需使用该邮箱账号当前密码。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。
         </div>
       </ScrollPanel>
     </main>

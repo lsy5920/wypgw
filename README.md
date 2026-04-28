@@ -116,7 +116,7 @@ supabase/migrations/20260428173000_import_yunqi_legacy_roster.sql
 ```
 
 17. 复制全部 SQL 内容到 Supabase SQL 编辑器并执行，导入 29 条旧名册记录，并创建编号登录账号。导入不会包含“热度、推荐等级、更新时间、公开链接标识”。
-18. 旧名册同门登录规则：账号为三位短编号，例如 `001`；密码优先使用出生年份，例如 `2003`；如果没有年份，密码就是编号本身，例如 `022`。
+18. 旧名册同门登录规则：账号为三位短编号，例如 `001`；密码优先使用出生年份，例如 `2003`；如果没有年份，密码就是编号本身，例如 `022`。其中 `001` 已绑定到 `3199912548@qq.com` 超级管理员账号，使用 `001` 登录时请输入该邮箱账号当前密码。
 19. 如果你之前已经执行过旧名册导入脚本，并且编号登录时报 `Database error querying schema`，请再执行一次修复脚本：
 
 ```text
@@ -129,8 +129,26 @@ supabase/fix_legacy_roster_auth_accounts.sql
 supabase/remove_roster_cover_bond_and_rename_codes.sql
 ```
 
-21. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
-22. 在项目根目录新建 `.env.local` 文件：
+21. 如果需要修复旧编号账号绑定真实邮箱失败的问题，请执行邮箱直绑函数脚本：
+
+```text
+supabase/migrations/20260428230500_bind_legacy_account_email.sql
+```
+
+22. 如果需要启用执事管理，并把 `3199912548@qq.com` 设为超级管理员，请执行执事管理脚本：
+
+```text
+supabase/migrations/20260428231500_steward_management.sql
+```
+
+23. 如果需要把 `3199912548@qq.com` 绑定到 001 编号，请执行一次性绑定脚本：
+
+```text
+supabase/bind_admin_3199912548_to_001.sql
+```
+
+24. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
+25. 在项目根目录新建 `.env.local` 文件：
 
 ```env
 VITE_SUPABASE_URL=你的 Supabase 项目地址
@@ -373,7 +391,8 @@ https://你的用户名.github.io/仓库名/#/canon
 3. 云灯审核：通过或拒绝留言。
 4. 公告管理：创建草稿或发布公告。
 5. 活动管理：创建线上或线下雅集，查看活动报名并调整报名状态。
-6. 站点设置：修改联系山门说明文字，维护 SMTP 邮件服务设置。
+6. 执事管理：超级管理员可搜索成员，并将成员设置为执事或撤回普通成员；被设为执事后可以登录管理后台。
+7. 站点设置：修改联系山门说明文字，维护 SMTP 邮件服务设置。
 
 ## 项目目录结构
 
@@ -398,6 +417,7 @@ wypgw/
 │  └─ main.tsx                     # React 挂载入口
 ├─ supabase/
 │  ├─ admin_confirm_founder.sql     # 收不到确认邮件时手动确认邮箱并提权
+│  ├─ bind_admin_3199912548_to_001.sql # 将管理员邮箱绑定到 001 编号
 │  ├─ clear_roster_lantern_test_data.sql # 清空旧测试名册、云灯和相关提醒
 │  ├─ fix_legacy_roster_auth_accounts.sql # 修复旧编号账号认证字段
 │  ├─ remove_roster_cover_bond_and_rename_codes.sql # 移除名册废弃字段并统一问云编号
@@ -407,7 +427,9 @@ wypgw/
 │     ├─ 20260428125300_roster_names_and_review.sql # 升级江湖名、真实姓名和名帖审核状态
 │     ├─ 20260428133000_wenyun_yard_and_notifications.sql # 升级问云小院、用户归属和消息提醒
 │     ├─ 20260428144500_admin_smtp_settings.sql     # 升级管理员 SMTP 邮件服务设置
-│     └─ 20260428173000_import_yunqi_legacy_roster.sql # 导入旧名册并创建编号账号
+│     ├─ 20260428173000_import_yunqi_legacy_roster.sql # 导入旧名册并创建编号账号
+│     ├─ 20260428230500_bind_legacy_account_email.sql # 修复旧编号账号绑定真实邮箱
+│     └─ 20260428231500_steward_management.sql # 新增超级管理员和执事管理函数
 ├─ supabase/functions/
 │  └─ send-user-notice/             # 发送小院状态提醒邮件的 Edge Function
 ├─ 网站开发资料/
@@ -479,7 +501,7 @@ where email = '你的邮箱@example.com'
 
 ### 绑定邮箱后没有立即生效
 
-可能原因：Supabase 仍然开启了邮箱确认或安全邮箱变更，系统需要确认新邮箱，甚至会要求确认旧邮箱。旧编号账号的旧邮箱是内部邮箱，用户无法收到旧邮箱确认邮件。
+可能原因：Supabase 仍然开启了邮箱确认或安全邮箱变更，系统需要确认新邮箱，甚至会要求确认旧邮箱。旧编号账号的旧邮箱是内部邮箱，用户无法收到旧邮箱确认邮件。也可能是没有执行邮箱直绑函数脚本。
 
 解决方法：
 
@@ -487,7 +509,29 @@ where email = '你的邮箱@example.com'
 2. 进入 `Authentication` → `Sign In / Providers`。
 3. 关闭邮箱确认。
 4. 关闭安全邮箱变更。
-5. 回到 `/yard/profile` 重新绑定真实邮箱。
+5. 执行 `supabase/migrations/20260428230500_bind_legacy_account_email.sql`。
+6. 回到 `/yard/profile` 重新绑定真实邮箱。
+
+### 3199912548@qq.com 需要绑定 001 编号
+
+原因：`3199912548@qq.com` 已经是独立管理员账号，不能再直接把 001 内部账号改成这个邮箱，否则会出现“邮箱已注册”的冲突。
+
+解决方法：
+
+1. 先确认旧名册已导入，数据库里存在 `问云-云-001`。
+2. 执行 `supabase/migrations/20260428231500_steward_management.sql`，把 `3199912548@qq.com` 设为超级管理员。
+3. 执行 `supabase/bind_admin_3199912548_to_001.sql`，把 001 名册归属转移到这个管理员账号。
+4. 重新登录 `3199912548@qq.com`，进入问云小院和管理后台。
+
+### 执事管理页面提示权限不足
+
+可能原因：当前账号不是 `founder` 超级管理员，或者没有执行执事管理 SQL。
+
+解决方法：
+
+1. 执行 `supabase/migrations/20260428231500_steward_management.sql`。
+2. 确认 `public.profiles` 中 `3199912548@qq.com` 对应账号的 `role` 是 `founder`。
+3. 使用 `3199912548@qq.com` 重新登录后台。
 
 ### 问云小院进不去
 
@@ -631,3 +675,4 @@ npm run preview
 2026-04-28 21:01 【优化】移除名册前台、后台和小院里的封面与羁绊状态字段，不再公开展示登录短号；旧名册导入编号统一改为问云前缀，并新增 remove_roster_cover_bond_and_rename_codes.sql 用于修复线上已有数据。
 2026-04-28 22:36 【修复】修复首页深色“门派精神”区块标题对比度不足、文字看不清的问题，区块标题组件新增深色背景显示模式，保证手机和桌面端都能清楚阅读。
 2026-04-28 22:46 【新增】问云小院“我的资料”新增账号安全功能，支持用户绑定或更换真实邮箱、修改登录密码；补充 Supabase 关闭安全邮箱变更说明和绑定邮箱排查教程。
+2026-04-28 23:10 【新增】删除前台手机端底部悬浮导航，修复旧编号账号绑定真实邮箱被 Supabase 内部邮箱拦截的问题；新增超级管理员和执事管理功能，支持将成员设为执事并进入管理后台，同时提供 3199912548@qq.com 绑定 001 编号的 SQL 脚本。

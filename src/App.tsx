@@ -18,6 +18,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
 import { AdminEventsPage } from './pages/admin/AdminEventsPage'
 import { AdminLanternsPage } from './pages/admin/AdminLanternsPage'
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage'
+import { AdminStewardsPage } from './pages/admin/AdminStewardsPage'
 import { YardApplicationsPage } from './pages/yard/YardApplicationsPage'
 import { YardDashboardPage } from './pages/yard/YardDashboardPage'
 import { YardEventsPage } from './pages/yard/YardEventsPage'
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="lanterns" element={<AdminLanternsPage />} />
           <Route path="announcements" element={<AdminAnnouncementsPage />} />
           <Route path="events" element={<AdminEventsPage />} />
+          <Route path="stewards" element={<AdminStewardsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
         </Route>
 

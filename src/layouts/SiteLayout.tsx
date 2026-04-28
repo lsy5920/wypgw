@@ -1,6 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MobileBottomNav } from '../components/MobileBottomNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { SiteHeader } from '../components/SiteHeader'
 
@@ -23,7 +22,6 @@ export function SiteLayout() {
         <Outlet />
       </motion.main>
       <SiteFooter />
-      <MobileBottomNav />
     </div>
   )
 }

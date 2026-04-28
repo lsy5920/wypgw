@@ -1,5 +1,5 @@
 import { supabase, supabaseReady } from './supabaseClient'
-import { getAuthRedirectUrl, translateSupabaseAuthError } from './authMessages'
+import { translateSupabaseAuthError } from './authMessages'
 import { createNextMemberCode, createSlug } from './validators'
 import {
   mockAnnouncements,
@@ -15,6 +15,7 @@ import {
 } from '../data/mockData'
 import type {
   AccountSecurityInfo,
+  AdminRoleUser,
   Announcement,
   ApiResult,
   CloudLantern,
@@ -29,6 +30,7 @@ import type {
   PasswordUpdateInput,
   Profile,
   ProfileUpdateInput,
+  StewardManageableRole,
   RosterEntry,
   SiteSetting,
   SmtpSetting,
@@ -144,6 +146,32 @@ function createAccountSecurityInfo(user: Awaited<ReturnType<typeof requireCurren
     is_legacy_email: isLegacyInternalEmail(email),
     pending_email: user.new_email ?? null,
     email_confirmed_at: user.email_confirmed_at ?? null
+  }
+}
+
+// 这个类型描述绑定邮箱数据库函数的返回值，入参来自 Supabase RPC，返回值用于前端判断成功或失败。
+interface BindEmailRpcResponse {
+  // 是否绑定成功。
+  ok?: boolean
+  // 绑定后的真实邮箱。
+  email?: string
+  // 是否仍为旧编号内部邮箱。
+  is_legacy_email?: boolean
+  // 待确认邮箱，当前直绑方案通常为空。
+  pending_email?: string | null
+  // 邮箱确认时间。
+  email_confirmed_at?: string | null
+  // 中文提示。
+  message?: string
+}
+
+// 这个函数生成账号安全信息兜底对象，入参是邮箱和旧账号标记，返回值用于失败时保持页面稳定。
+function createAccountSecurityFallback(email = '', isLegacyEmail = false): AccountSecurityInfo {
+  return {
+    email,
+    is_legacy_email: isLegacyEmail,
+    pending_email: null,
+    email_confirmed_at: null
   }
 }
 
@@ -1114,44 +1142,119 @@ export async function bindMyEmail(input: EmailBindInput): Promise<ApiResult<Acco
       return okResult(createAccountSecurityInfo(user), '这个邮箱已经是当前登录邮箱。')
     }
 
-    // 这里调用 Supabase Auth 更新邮箱；如果后台仍开着确认或安全邮箱变更，会进入待确认状态。
-    const { data, error } = await supabase.auth.updateUser(
-      { email },
-      {
-        emailRedirectTo: getAuthRedirectUrl()
-      }
-    )
+    // 这里调用数据库安全函数直绑邮箱，避免旧编号内部邮箱无法收确认邮件导致失败。
+    const { data, error } = await supabase.rpc('bind_current_user_email', {
+      new_email: email
+    })
 
     if (error) {
       throw error
     }
 
-    // 这里整理更新后的账号信息，兼容立即生效和待邮箱确认两种 Supabase 配置。
-    const nextUser = data.user ?? user
-    const nextInfo = createAccountSecurityInfo(nextUser)
-    const isApplied = (nextInfo.email ?? '').toLowerCase() === email
-    const message = isApplied
-      ? '邮箱已绑定成功，下次可用该邮箱登录问云小院。'
-      : '绑定邮箱请求已提交。如果没有立即生效，请检查新邮箱确认邮件；若旧编号邮箱无法确认，请在 Supabase 后台关闭安全邮箱变更。'
+    // 这里解析数据库函数返回值，失败时直接展示函数给出的中文原因。
+    const rpcResult = data as BindEmailRpcResponse | null
 
-    return okResult(
-      {
-        ...nextInfo,
-        pending_email: isApplied ? nextInfo.pending_email : email
-      },
-      message
-    )
+    if (!rpcResult?.ok) {
+      return failResult(createAccountSecurityInfo(user), rpcResult?.message ?? '绑定邮箱失败，请确认已执行最新 Supabase SQL 脚本。')
+    }
+
+    // 这里刷新认证用户，尽量让页面马上显示新邮箱。
+    const {
+      data: { user: refreshedUser }
+    } = await supabase.auth.getUser()
+
+    const nextInfo = refreshedUser
+      ? createAccountSecurityInfo(refreshedUser)
+      : {
+          email: rpcResult.email ?? email,
+          is_legacy_email: rpcResult.is_legacy_email ?? false,
+          pending_email: rpcResult.pending_email ?? null,
+          email_confirmed_at: rpcResult.email_confirmed_at ?? new Date().toISOString()
+        }
+
+    return okResult(nextInfo, rpcResult.message ?? '邮箱已绑定成功，下次可用真实邮箱登录问云小院。')
   } catch (error) {
     // 这里把邮箱重复、会话过期、确认设置拦截等问题转成中文提示。
     return failResult(
-      {
-        email: '',
-        is_legacy_email: false,
-        pending_email: null,
-        email_confirmed_at: null
-      },
+      createAccountSecurityFallback(),
       translateSupabaseAuthError(error)
     )
+  }
+}
+
+// 这个函数读取执事管理用户列表，入参为空，返回值是超级管理员可管理的用户行。
+export async function fetchAdminRoleUsers(): Promise<ApiResult<AdminRoleUser[]>> {
+  // 这里在演示模式下返回一个示例用户，方便无 Supabase 时预览后台页面。
+  if (!supabase) {
+    return okResult(
+      [
+        {
+          user_id: mockProfile.id,
+          email: 'demo@example.com',
+          nickname: mockProfile.nickname,
+          role: 'member',
+          city: mockProfile.city,
+          is_public: mockProfile.is_public,
+          created_at: mockProfile.created_at,
+          member_code: '问云-云-001',
+          dao_name: mockProfile.nickname
+        }
+      ],
+      '当前为演示执事名单。'
+    )
+  }
+
+  try {
+    // 这里通过数据库安全函数读取账号邮箱和资料，普通表查询不能直接读取 auth.users。
+    const { data, error } = await supabase.rpc('list_wenyun_role_users')
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as AdminRoleUser[], '执事管理名单已读取。')
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取执事管理名单失败，请确认当前账号是超级管理员，并已执行最新 Supabase SQL 脚本'))
+  }
+}
+
+// 这个函数设置用户后台身份，入参是用户编号和目标身份，返回值是更新后的用户行。
+export async function updateAdminUserRole(userId: string, role: StewardManageableRole): Promise<ApiResult<AdminRoleUser | null>> {
+  // 这里在演示模式下模拟成功，方便本地无 Supabase 时查看交互。
+  if (!supabase) {
+    return okResult(
+      {
+        user_id: userId,
+        email: 'demo@example.com',
+        nickname: mockProfile.nickname,
+        role,
+        city: mockProfile.city,
+        is_public: mockProfile.is_public,
+        created_at: mockProfile.created_at,
+        member_code: '问云-云-001',
+        dao_name: mockProfile.nickname
+      },
+      role === 'admin' ? '演示模式下已模拟设为执事。' : '演示模式下已模拟撤回普通成员。'
+    )
+  }
+
+  try {
+    // 这里通过数据库安全函数更新角色，函数会限制只有超级管理员能操作。
+    const { data, error } = await supabase.rpc('set_wenyun_user_role', {
+      target_user_id: userId,
+      target_role: role
+    })
+
+    if (error) {
+      throw error
+    }
+
+    // 这里兼容 Supabase 对 returns table 函数返回数组的行为，取第一行作为更新结果。
+    const rows = (data ?? []) as AdminRoleUser[]
+
+    return okResult(rows[0] ?? null, role === 'admin' ? '已设为执事，可以登录管理后台。' : '已撤回为普通成员。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '设置执事身份失败'))
   }
 }
 

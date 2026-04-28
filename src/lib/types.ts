@@ -47,6 +47,31 @@ export interface Profile {
   updated_at: string
 }
 
+// 这个类型表示执事管理页面可以授予或撤回的后台身份。
+export type StewardManageableRole = 'member' | 'admin'
+
+// 这个接口描述执事管理页面展示的用户行，入参来自 Supabase 安全函数，返回值用于后台列表。
+export interface AdminRoleUser {
+  // 用户唯一编号，对应 Supabase Auth 用户编号。
+  user_id: string
+  // 用户登录邮箱，用于超级管理员搜索和识别账号。
+  email: string
+  // 小院昵称，用于后台展示。
+  nickname: string
+  // 当前后台角色。
+  role: ProfileRole
+  // 所在城市，可为空。
+  city: string | null
+  // 是否公开资料。
+  is_public: boolean
+  // 资料创建时间。
+  created_at: string
+  // 名册编号，可为空。
+  member_code: string | null
+  // 道名，可为空。
+  dao_name: string | null
+}
+
 // 这个接口描述用户在问云小院里可以自己编辑的资料字段。
 export interface ProfileUpdateInput {
   // 用户公开昵称，用于小院和公开资料展示。

@@ -1,4 +1,4 @@
-import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound } from 'lucide-react'
+import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound, UsersRound } from 'lucide-react'
 import { Link, NavLink, Outlet, Navigate } from 'react-router-dom'
 import { StatusNotice } from '../components/StatusNotice'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
@@ -11,6 +11,7 @@ const adminNavItems = [
   { label: '云灯审核', path: '/admin/lanterns', icon: Lamp },
   { label: '公告管理', path: '/admin/announcements', icon: Megaphone },
   { label: '活动管理', path: '/admin/events', icon: FileText },
+  { label: '执事管理', path: '/admin/stewards', icon: UsersRound },
   { label: '站点设置', path: '/admin/settings', icon: Settings }
 ]
 
