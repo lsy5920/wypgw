@@ -1,0 +1,120 @@
+import { ArrowUp } from 'lucide-react'
+import { ScrollPanel } from '../components/ScrollPanel'
+import { SectionTitle } from '../components/SectionTitle'
+import { canonText } from '../data/siteContent'
+
+// 这个接口描述金典章节，入参来自原始文本，返回值用于页面目录和正文。
+interface CanonSection {
+  // 章节标题。
+  title: string
+  // 章节内容行。
+  lines: string[]
+}
+
+// 这个函数把原始金典文本拆成章节，入参是完整文本，返回值是章节数组。
+export function parseCanonSections(text: string): CanonSection[] {
+  // 这个数组用于保存拆分后的章节。
+  const sections: CanonSection[] = []
+  // 这个变量保存当前正在收集的章节。
+  let current: CanonSection | null = null
+
+  // 这里逐行读取文本，遇到二级标题或一级总纲时新开章节。
+  text.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim()
+    const isSectionTitle = /^##\s+/.test(trimmed) || trimmed === '# 问云派总纲'
+
+    if (isSectionTitle) {
+      if (current) {
+        sections.push(current)
+      }
+      current = { title: trimmed.replace(/^#+\s*/, '').replace(/\*\*/g, ''), lines: [] }
+      return
+    }
+
+    if (!current && trimmed) {
+      current = { title: '开篇', lines: [] }
+    }
+
+    if (current) {
+      current.lines.push(line)
+    }
+  })
+
+  // 这里把最后一个章节放入结果，避免尾部内容丢失。
+  if (current) {
+    sections.push(current)
+  }
+
+  return sections
+}
+
+// 这个函数把 Markdown 装饰清理成可读文字，入参是原始行，返回值是页面展示文字。
+function cleanMarkdownLine(line: string): string {
+  return line.replace(/\*\*/g, '').replace(/^[-#]+\s*/, '').trim()
+}
+
+// 这个函数渲染立派金典页，入参为空，返回值是完整金典阅读页面。
+export function CanonPage() {
+  // 这个常量保存拆分后的章节，页面刷新时从资料文件实时生成。
+  const sections = parseCanonSections(canonText)
+
+  return (
+    <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+      <SectionTitle center eyebrow="立派金典" title="问云派立派金典">
+        问云而来，栖心于此；乱世暂歇，同归一处。
+      </SectionTitle>
+
+      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+        {/* 这里展示金典目录，方便长文快速跳转。 */}
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <ScrollPanel>
+            <p className="mb-4 font-semibold text-[#9e3d32]">金典目录</p>
+            <nav className="grid max-h-[70vh] gap-2 overflow-y-auto pr-1 text-sm">
+              {sections.map((section, index) => (
+                <a
+                  className="rounded-lg px-3 py-2 text-[#526461] hover:bg-[#edf3ef]"
+                  href={`#canon-${index}`}
+                  key={`${section.title}-${index}`}
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          </ScrollPanel>
+        </aside>
+
+        {/* 这里展示金典正文。 */}
+        <div className="grid gap-6">
+          {sections.map((section, index) => (
+            <ScrollPanel className="scroll-mt-28" key={`${section.title}-${index}`}>
+              <article id={`canon-${index}`}>
+                <h2 className="ink-title mb-6 text-3xl font-bold text-[#143044]">{section.title}</h2>
+                <div className="space-y-3 text-base leading-9 text-[#40524f]">
+                  {section.lines.map((line, lineIndex) => {
+                    // 这里清理每一行，空行保留为段落间距。
+                    const cleanLine = cleanMarkdownLine(line)
+
+                    if (!cleanLine || cleanLine === '---') {
+                      return <div className="h-2" key={`${lineIndex}-${line}`} />
+                    }
+
+                    return <p key={`${lineIndex}-${line}`}>{cleanLine}</p>
+                  })}
+                </div>
+              </article>
+            </ScrollPanel>
+          ))}
+        </div>
+      </div>
+
+      {/* 这里提供返回顶部按钮，方便长文阅读。 */}
+      <a
+        className="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#9e3d32] text-white shadow-xl md:bottom-6"
+        href="#top"
+        aria-label="返回顶部"
+      >
+        <ArrowUp className="h-5 w-5" />
+      </a>
+    </main>
+  )
+}

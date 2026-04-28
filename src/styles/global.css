@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+:root {
+  --wenyun-ink: #263238;
+  --wenyun-deep: #143044;
+  --wenyun-cloud: #f6f4ef;
+  --wenyun-jade: #6f8f8b;
+  --wenyun-bamboo: #7a8b6f;
+  --wenyun-gold: #c9a45c;
+  --wenyun-seal: #9e3d32;
+  --wenyun-paper: #fffaf0;
+  --wenyun-line: rgba(111, 143, 139, 0.28);
+  color: var(--wenyun-ink);
+  background: var(--wenyun-cloud);
+  font-family:
+    "Noto Sans SC",
+    "Microsoft YaHei",
+    "PingFang SC",
+    system-ui,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(201, 164, 92, 0.18), transparent 30%),
+    radial-gradient(circle at 90% 16%, rgba(111, 143, 139, 0.2), transparent 28%),
+    linear-gradient(180deg, #f7f4ec 0%, #edf3ef 48%, #f8f1df 100%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  color: #fffaf0;
+  background: var(--wenyun-seal);
+}
+
+.paper-texture {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)),
+    radial-gradient(circle at 30% 20%, rgba(201, 164, 92, 0.08), transparent 28%),
+    radial-gradient(circle at 78% 68%, rgba(111, 143, 139, 0.1), transparent 24%);
+}
+
+.ink-title {
+  font-family:
+    "SimSun",
+    "STSong",
+    "Noto Serif SC",
+    serif;
+  letter-spacing: 0;
+}
+
+.cloud-drift {
+  animation: cloud-drift 18s ease-in-out infinite alternate;
+}
+
+.lantern-breathe {
+  animation: lantern-breathe 2.8s ease-in-out infinite;
+}
+
+.seal-shadow {
+  box-shadow: 0 18px 40px rgba(158, 61, 50, 0.18);
+}
+
+.scroll-panel {
+  border: 1px solid rgba(201, 164, 92, 0.32);
+  background:
+    linear-gradient(135deg, rgba(255, 250, 240, 0.96), rgba(246, 244, 239, 0.9)),
+    radial-gradient(circle at 15% 18%, rgba(201, 164, 92, 0.1), transparent 24%);
+  box-shadow: 0 22px 70px rgba(38, 50, 56, 0.11);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translate3d(-16px, 0, 0);
+  }
+  to {
+    transform: translate3d(24px, -10px, 0);
+  }
+}
+
+@keyframes lantern-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
