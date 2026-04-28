@@ -33,7 +33,9 @@ export function HomePage() {
 
       // 这里在演示模式下给出温和提示，避免用户误以为已经连上数据库。
       if (lanternResult.demoMode || announcementResult.demoMode) {
-        setNotice('当前未配置 Supabase，页面正在展示演示数据；填写环境变量后会自动连接真实数据库。')
+        setNotice(
+          '当前未读取到 Supabase 配置，页面正在展示演示数据；本地请填写 .env.local，GitHub Pages 请在仓库 Actions 密钥中填写 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
+        )
       }
     }
 

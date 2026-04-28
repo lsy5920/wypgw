@@ -31,11 +31,44 @@ jobs:
       - name: 安装依赖
         run: npm ci
 
+      - name: 写入线上运行配置
+        shell: bash
+        env:
+          ONLINE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || secrets.SUPABASE_URL || vars.SUPABASE_URL }}
+          ONLINE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY || vars.SUPABASE_ANON_KEY }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = require('path')
+
+          // 这里读取 GitHub 仓库密钥或变量，入参来自 Actions 环境变量，返回值会写进静态站公开配置。
+          const runtimeEnv = {
+            VITE_SUPABASE_URL: process.env.ONLINE_SUPABASE_URL || '',
+            VITE_SUPABASE_ANON_KEY: process.env.ONLINE_SUPABASE_ANON_KEY || ''
+          }
+
+          // 这里生成浏览器可直接读取的配置脚本，避免 GitHub Pages 静态部署时丢失 Supabase 配置。
+          const fileContent = `// 这个文件由 GitHub Actions 在部署时自动生成，用于保存线上 Supabase 公开配置。
+          window.__WENYUN_ENV__ = ${JSON.stringify(runtimeEnv, null, 2)}
+          `
+
+          // 这里保证 public 文件夹存在，然后用 UTF-8 写入 env.js。
+          fs.mkdirSync(path.join(process.cwd(), 'public'), { recursive: true })
+          fs.writeFileSync(path.join(process.cwd(), 'public', 'env.js'), fileContent, 'utf8')
+
+          // 这里只输出是否读取成功，不输出具体密钥，避免日志泄露配置。
+          if (runtimeEnv.VITE_SUPABASE_URL && runtimeEnv.VITE_SUPABASE_ANON_KEY) {
+            console.log('已写入线上 Supabase 公开配置。')
+          } else {
+            console.log('未读取到完整 Supabase 配置，线上会进入演示模式；请检查仓库 Secrets 或 Variables。')
+          }
+          NODE
+
       - name: 构建项目
         run: npm run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || secrets.SUPABASE_URL || vars.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY || vars.SUPABASE_ANON_KEY }}
 
       - name: 上传静态文件
         uses: actions/upload-pages-artifact@v3

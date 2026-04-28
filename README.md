@@ -116,14 +116,24 @@ where id = (select id from auth.users where email = '你的邮箱@example.com');
 1. 把代码推送到 GitHub 的 `main` 分支。
 2. 打开仓库设置里的 Pages 功能。
 3. 部署来源选择 GitHub Actions。
-4. 在仓库密钥中添加：
+4. 打开仓库的 `Settings` → `Secrets and variables` → `Actions`，在仓库密钥中添加：
 
 ```text
 VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
 ```
 
-5. 推送代码后，`.github/workflows/deploy.yml` 会自动构建并发布 `dist` 静态网站。
+也兼容下面这组简短名称，但优先推荐上面的 `VITE_` 名称：
+
+```text
+SUPABASE_URL
+SUPABASE_ANON_KEY
+```
+
+注意：电脑里的 `.env.local` 只对本地运行生效，不会自动上传到 GitHub。部署到 GitHub Pages 时，必须在 GitHub 仓库里单独添加上面的仓库密钥或仓库变量。
+
+5. 推送代码后，`.github/workflows/deploy.yml` 会自动生成 `public/env.js` 线上配置，再构建并发布 `dist` 静态网站。
+6. 如果刚添加密钥后页面仍提示未配置，请到 GitHub 的 `Actions` 页面重新运行最新一次部署。
 
 部署后页面地址会使用 `/#/` 形式，例如：
 
@@ -178,6 +188,7 @@ https://你的用户名.github.io/仓库名/#/canon
 ```text
 wypgw/
 ├─ public/
+│  ├─ env.js                       # 线上 Supabase 公开配置占位文件，部署时会自动改写
 │  ├─ wenyun-logo.png              # 门派正式 Logo
 │  └─ wenyun-hero.png              # 首页山门主视觉
 ├─ src/
@@ -219,6 +230,19 @@ wypgw/
 2. 检查 `VITE_SUPABASE_URL` 是否以 `https://` 开头。
 3. 检查 `VITE_SUPABASE_ANON_KEY` 是否为 Supabase 的公开匿名密钥。
 4. 修改后重新运行 `npm run dev`。
+
+### GitHub Pages 部署后仍显示未配置 Supabase
+
+原因：本地 `.env.local` 不会跟随代码部署，GitHub Actions 没有读取到仓库密钥或仓库变量。
+
+解决方法：
+
+1. 打开 GitHub 仓库的 `Settings` → `Secrets and variables` → `Actions`。
+2. 在 `Repository secrets` 中添加 `VITE_SUPABASE_URL` 和 `VITE_SUPABASE_ANON_KEY`。
+3. 如果你已经用了 `SUPABASE_URL` 和 `SUPABASE_ANON_KEY`，当前工作流也会兼容读取。
+4. 回到 `Actions` 页面，重新运行最新部署。
+5. 部署日志里看到“已写入线上 Supabase 公开配置。”就表示线上已拿到配置。
+6. 浏览器强制刷新页面，地址建议使用 `https://你的用户名.github.io/仓库名/#/`。
 
 ### 后台提示没有权限
 
@@ -278,3 +302,4 @@ npm run preview
 2026-04-28 02:14 【优化】将本地开发服务端口固定为 5176，更新 README 中的访问地址说明；已重新通过类型检查、自动测试和生产构建验证。
 2026-04-28 02:22 【优化】将前台顶部导航调整为悬浮圆角导航栏，补充页面顶部间距与手机端悬浮菜单效果，避免导航与页面内容连在一起。
 2026-04-28 08:21 【修复】修复 GitHub Pages 部署后因子路径路由被识别为未知页面而显示 404 的问题，将前端路由切换为静态托管更稳定的哈希路由，并补充部署访问说明。
+2026-04-28 08:44 【修复】修复 GitHub Pages 部署后 Supabase 配置未被前端识别的问题，新增线上运行时配置文件生成流程，兼容仓库密钥与仓库变量，并补充线上未配置排查教程。

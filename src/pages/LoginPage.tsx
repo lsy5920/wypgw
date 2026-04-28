@@ -48,7 +48,8 @@ export function LoginPage() {
       setNotice({
         type: 'error',
         title: '后台暂未启用',
-        message: '请先在 .env.local 中配置 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
+        message:
+          '请先配置 Supabase：本地填写 .env.local；GitHub Pages 部署请在仓库 Actions 密钥中填写 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
       })
       return
     }
