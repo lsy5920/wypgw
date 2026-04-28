@@ -1,6 +1,8 @@
--- 这个脚本新增执事管理所需的数据库函数。
--- 执行结果：3199912548@qq.com 会被设为 founder 超级管理员；超级管理员可在后台把成员设为 admin 执事。
--- 使用方法：复制本文件全部内容到 Supabase SQL 编辑器执行一次。
+-- 这个脚本修复执事管理名单读取时报 structure of query does not match function result type 的问题。
+-- 原因：Supabase 的 auth.users.email 在部分项目里是 varchar，函数返回表要求 text，PostgreSQL 不会自动转换。
+-- 使用方法：复制本文件全部内容到 Supabase SQL 编辑器执行一次，然后刷新执事管理页面。
+
+begin;
 
 -- 这个函数判断当前登录者是否为超级管理员，入参为空，返回值是真或假。
 create or replace function public.is_wenyun_founder()
@@ -18,7 +20,7 @@ as $$
   );
 $$;
 
--- 这个函数读取执事管理所需的用户列表，入参为空，返回值包含邮箱、昵称、角色和名册编号。
+-- 这个函数读取执事管理用户列表，入参为空，返回值包含邮箱、昵称、角色和名册编号。
 create or replace function public.list_wenyun_role_users()
 returns table (
   user_id uuid,
@@ -63,7 +65,7 @@ begin
   ) a on true
   where u.deleted_at is null
   order by
-    case coalesce(p.role, 'member')
+    case coalesce(p.role::text, 'member')
       when 'founder' then 1
       when 'admin' then 2
       else 3
@@ -106,7 +108,7 @@ begin
     raise exception '只能设置为普通成员或执事。';
   end if;
 
-  -- 这里确认目标账号存在。
+  -- 这里确认目标账号存在，同时把邮箱和角色显式转成 text。
   select u.email::text, p.role::text
   into target_email, old_role
   from auth.users u
@@ -162,7 +164,7 @@ grant execute on function public.is_wenyun_founder() to authenticated;
 grant execute on function public.list_wenyun_role_users() to authenticated;
 grant execute on function public.set_wenyun_user_role(uuid, text) to authenticated;
 
--- 这里把指定邮箱设为超级管理员；如果资料不存在则补建资料。
+-- 这里再次确保 3199912548@qq.com 是超级管理员。
 insert into public.profiles (id, nickname, role, is_public, created_at, updated_at)
 select
   u.id,
@@ -177,3 +179,10 @@ on conflict (id) do update
 set role = 'founder',
     nickname = coalesce(nullif(public.profiles.nickname, ''), excluded.nickname),
     updated_at = now();
+
+commit;
+
+-- 这里返回验证结果；能查出名单且没有报错，就表示函数结构已修复。
+select *
+from public.list_wenyun_role_users()
+limit 10;

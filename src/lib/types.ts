@@ -126,7 +126,7 @@ export interface JoinApplication {
   real_name: string | null
   // 微信号属于敏感联系方式，只在后台展示。
   wechat_id: string
-  // 出生月份用于基本了解，不强制填写。
+  // 出生年份用于后台核对和旧编号资料兼容，不进入公开名册。
   age_range: string | null
   // 性别用于名册公开展示。
   gender: MemberGender | null
@@ -188,7 +188,7 @@ export interface JoinApplicationInput {
   real_name: string
   // 微信号，不能为空。
   wechat_id: string
-  // 旧名册没有出生月份，新登记不再展示此项，保留空值用于兼容数据库。
+  // 出生年份，可为空，只给后台和本人查看。
   age_range: string
   // 性别，不能为空。
   gender: MemberGender
@@ -228,7 +228,7 @@ export interface RosterEntry {
   member_code: string
   // 性别，用于名册展示。
   gender: MemberGender
-  // 出生月份旧表没有使用，保留字段仅兼容数据库。
+  // 出生年份旧表用于账号初始密码来源，只给后台和本人查看。
   birth_month: string | null
   // 所在城市，用于名册展示。
   city: string | null
@@ -264,7 +264,7 @@ export interface JoinApplicationUpdateInput {
   real_name: string
   // 微信号，后台可修正联系信息。
   wechat_id: string
-  // 出生月份，格式通常为 YYYY-MM。
+  // 出生年份，格式通常为 YYYY。
   age_range: string
   // 性别，后台可修正登记信息。
   gender: MemberGender

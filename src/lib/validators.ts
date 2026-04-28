@@ -46,6 +46,27 @@ export function createNextMemberCode(existingCodes: Array<string | null | undefi
   return `${prefix}${String(maxNumber + 1).padStart(3, '0')}`
 }
 
+// 这个函数校验出生年份，入参是用户填写的年份，返回值表示是否为空或合理年份。
+export function isValidBirthYear(value: string): boolean {
+  // 这里允许不填写出生年份，因为部分同门可能不愿提交生日信息。
+  const cleanedValue = cleanText(value)
+
+  if (!cleanedValue) {
+    return true
+  }
+
+  // 这里只接受四位数字，避免用户误填完整生日或其他文字。
+  if (!/^\d{4}$/.test(cleanedValue)) {
+    return false
+  }
+
+  // 这里限制年份范围，避免明显错误影响后台核对。
+  const year = Number(cleanedValue)
+  const currentYear = new Date().getFullYear()
+
+  return year >= 1900 && year <= currentYear
+}
+
 // 这个函数校验名册登记，入参是表单数据，返回值是中文错误列表。
 export function validateJoinApplication(input: JoinApplicationInput): string[] {
   // 这个数组收集所有错误，方便一次性告诉用户哪里需要修改。
@@ -69,6 +90,11 @@ export function validateJoinApplication(input: JoinApplicationInput): string[] {
   // 这里检查性别选择，避免名册字段为空。
   if (!input.gender) {
     errors.push('请选择性别。')
+  }
+
+  // 这里检查出生年份格式，填写时必须是合理的四位年份。
+  if (!isValidBirthYear(input.age_range)) {
+    errors.push('出生年份请填写四位年份，例如 2003。')
   }
 
   // 这里检查宣言，避免公开名册缺少核心文字。

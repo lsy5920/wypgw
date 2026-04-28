@@ -67,6 +67,7 @@ export function YardApplicationsPage() {
               <div className="mt-5 grid gap-3 text-sm leading-7 text-[#526461] md:grid-cols-2">
                 <p>江湖名：{item.jianghu_name ?? '未填写'}</p>
                 <p>身份：{item.member_role ?? '未填写'}</p>
+                <p>出生年份：{item.age_range ?? '未填写'}</p>
                 <p>公开地域：{item.public_region ?? item.city ?? '未填写'}</p>
                 <p>入册时间：{item.joined_at ? formatDate(item.joined_at) : formatDate(item.created_at)}</p>
                 <p>审核时间：{item.reviewed_at ? formatDate(item.reviewed_at) : '尚未审核'}</p>

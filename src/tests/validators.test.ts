@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parseCanonSections } from '../pages/CanonPage'
 import { canonText } from '../data/siteContent'
 import { isEmailNotConfirmedError, translateSupabaseAuthError } from '../lib/authMessages'
-import { createNextMemberCode, createSlug, isValidDaoName, validateCloudLantern, validateJoinApplication } from '../lib/validators'
+import { createNextMemberCode, createSlug, isValidBirthYear, isValidDaoName, validateCloudLantern, validateJoinApplication } from '../lib/validators'
 
 // 这里测试基础校验逻辑，确保关键表单不会接受明显无效的数据。
 describe('问云派表单校验', () => {
@@ -38,7 +38,7 @@ describe('问云派表单校验', () => {
       jianghu_name: '清风客',
       real_name: '林青',
       wechat_id: 'wenyun_test',
-      age_range: '1998-03',
+      age_range: '1998',
       gender: '女',
       city: '杭州',
       member_role: '烟雨行客',
@@ -54,6 +54,14 @@ describe('问云派表单校验', () => {
     })
 
     expect(errors).toHaveLength(0)
+  })
+
+  // 这个用例验证出生年份只接受合理的四位年份。
+  it('会校验出生年份格式', () => {
+    expect(isValidBirthYear('2003')).toBe(true)
+    expect(isValidBirthYear('')).toBe(true)
+    expect(isValidBirthYear('2003-01')).toBe(false)
+    expect(isValidBirthYear('1888')).toBe(false)
   })
 
   // 这个用例验证空云灯会被拦截。

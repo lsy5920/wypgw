@@ -412,6 +412,18 @@ export function JoinPage() {
               </label>
 
               <label className="grid gap-2">
+                <span className="text-sm font-semibold">出生年份</span>
+                <input
+                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  inputMode="numeric"
+                  maxLength={4}
+                  onChange={(event) => updateField('age_range', event.target.value.replace(/\D/g, '').slice(0, 4))}
+                  placeholder="例如：2003，仅后台可见"
+                  value={form.age_range}
+                />
+              </label>
+
+              <label className="grid gap-2">
                 <span className="text-sm font-semibold">身份 *</span>
                 <select
                   className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
