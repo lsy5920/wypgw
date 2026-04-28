@@ -1,4 +1,4 @@
-import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck } from 'lucide-react'
+import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound } from 'lucide-react'
 import { Link, NavLink, Outlet, Navigate } from 'react-router-dom'
 import { StatusNotice } from '../components/StatusNotice'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
@@ -73,25 +73,37 @@ export function AdminLayout() {
           })}
         </nav>
 
-        {/* 这里展示退出登录按钮。 */}
-        <button
-          className="absolute bottom-5 left-5 right-5 flex items-center justify-center gap-2 rounded-xl border border-[#9e3d32]/30 px-4 py-3 text-sm text-[#9e3d32]"
-          onClick={() => void signOut()}
-          type="button"
-        >
-          <LogOut className="h-4 w-4" />
-          退出后台
-        </button>
+        {/* 这里展示问云小院入口和退出登录按钮，管理员也可以回到自己的用户后台。 */}
+        <div className="absolute bottom-5 left-5 right-5 grid gap-3">
+          <Link className="flex items-center justify-center gap-2 rounded-xl border border-[#6f8f8b]/25 px-4 py-3 text-sm text-[#526461]" to="/yard">
+            <UserRound className="h-4 w-4" />
+            返回问云小院
+          </Link>
+          <button
+            className="flex items-center justify-center gap-2 rounded-xl border border-[#9e3d32]/30 px-4 py-3 text-sm text-[#9e3d32]"
+            onClick={() => void signOut()}
+            type="button"
+          >
+            <LogOut className="h-4 w-4" />
+            退出后台
+          </button>
+        </div>
       </aside>
 
       <div className="lg:pl-72">
         {/* 这里展示移动端后台顶部导航。 */}
         <header className="sticky top-0 z-30 border-b border-[#6f8f8b]/20 bg-[#fffaf0]/92 px-4 py-3 backdrop-blur lg:hidden">
           <div className="flex items-center justify-between">
-            <Link className="flex items-center gap-2" to="/">
-              <Home className="h-4 w-4" />
-              返回官网
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link className="flex items-center gap-2" to="/">
+                <Home className="h-4 w-4" />
+                返回官网
+              </Link>
+              <Link className="flex items-center gap-1 text-sm text-[#6f8f8b]" to="/yard">
+                <UserRound className="h-4 w-4" />
+                小院
+              </Link>
+            </div>
             <button className="text-sm text-[#9e3d32]" onClick={() => void signOut()} type="button">
               退出
             </button>

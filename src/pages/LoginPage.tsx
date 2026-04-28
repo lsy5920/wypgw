@@ -4,7 +4,7 @@ import { CloudButton } from '../components/CloudButton'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
-import { isAdminProfile, useAuth } from '../hooks/useAuth'
+import { useAuth } from '../hooks/useAuth'
 import { translateSupabaseAuthError } from '../lib/authMessages'
 import { supabase } from '../lib/supabaseClient'
 import type { Profile } from '../lib/types'
@@ -57,7 +57,7 @@ async function ensureProfile(userId: string, email: string): Promise<Profile | n
 
 // 这个函数渲染问云小院登录页，入参为空，返回值是登录和注册表单。
 export function LoginPage() {
-  // 这里读取当前认证状态，用于已登录时自动进入对应后台。
+  // 这里读取当前认证状态，用于已登录时自动进入问云小院。
   const { profile, loading, refresh } = useAuth()
   // 这个变量用于页面跳转。
   const navigate = useNavigate()
@@ -76,12 +76,7 @@ export function LoginPage() {
   // 这个变量保存跳转传来的提示。
   const stateMessage = (location.state as LocationState | null)?.message
 
-  // 这里如果已经是管理员，直接进入管理后台。
-  if (!loading && isAdminProfile(profile)) {
-    return <Navigate to="/admin" replace />
-  }
-
-  // 这里如果已经是普通用户，直接进入问云小院。
+  // 这里如果已经登录，统一进入问云小院；管理员可在小院里再进入管理后台。
   if (!loading && profile) {
     return <Navigate to="/yard" replace />
   }
@@ -149,15 +144,11 @@ export function LoginPage() {
       setNotice({
         type: 'success',
         title: mode === 'login' ? '登录成功' : '注册成功',
-        message: isAdminProfile(nextProfile) ? '正在进入管理后台。' : '正在进入问云小院。'
+        message: nextProfile?.role === 'admin' || nextProfile?.role === 'founder' ? '正在进入问云小院，后台入口也会为你打开。' : '正在进入问云小院。'
       })
 
-      // 这里登录成功后按身份分流，后台和小院各自再做一次权限保护。
-      if (isAdminProfile(nextProfile)) {
-        navigate('/admin')
-      } else {
-        navigate('/yard')
-      }
+      // 这里登录成功后统一进入小院，管理员仍可从小院或直接地址进入管理后台。
+      navigate('/yard')
     } catch (error) {
       // 这里捕获认证异常，给出中文提示。
       const message = translateSupabaseAuthError(error)
@@ -170,7 +161,7 @@ export function LoginPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 md:px-6">
       <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院">
-        同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事登录后会自动进入管理后台。
+        同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事也有自己的小院，并可从小院进入管理后台。
       </SectionTitle>
 
       <ScrollPanel className="relative overflow-hidden">

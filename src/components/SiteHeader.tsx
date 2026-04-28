@@ -43,7 +43,7 @@ export function SiteHeader() {
 
         {/* 这里展示后台入口和手机菜单按钮。 */}
         <div className="flex items-center gap-2">
-          <Link className="hidden rounded-full border border-[#c9a45c]/50 px-4 py-2 text-sm text-[#263238] md:inline-flex" to="/login">
+          <Link className="hidden rounded-full border border-[#c9a45c]/50 px-4 py-2 text-sm text-[#263238] md:inline-flex" to="/yard">
             问云小院
           </Link>
           <button
@@ -75,7 +75,7 @@ export function SiteHeader() {
                 {item.label}
               </NavLink>
             ))}
-            <NavLink className="rounded-xl bg-[#9e3d32] px-4 py-3 text-sm text-white" onClick={closeMenu} to="/login">
+            <NavLink className="rounded-xl bg-[#9e3d32] px-4 py-3 text-sm text-white" onClick={closeMenu} to="/yard">
               问云小院
             </NavLink>
           </nav>

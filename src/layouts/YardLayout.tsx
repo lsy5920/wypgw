@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, FileText, Home, Lamp, LogOut, ScrollText, UserRound } from 'lucide-react'
+import { Bell, CalendarDays, FileText, Home, Lamp, LogOut, ScrollText, ShieldCheck, UserRound } from 'lucide-react'
 import { Link, Navigate, NavLink, Outlet } from 'react-router-dom'
 import { StatusNotice } from '../components/StatusNotice'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
@@ -33,10 +33,8 @@ export function YardLayout() {
     return <Navigate to="/login" replace state={{ message: message || '请先登录问云小院。' }} />
   }
 
-  // 这里管理员登录后自动进入管理后台，避免误入普通小院。
-  if (isAdminProfile(profile)) {
-    return <Navigate to="/admin" replace />
-  }
+  // 这个变量表示当前账号是否拥有后台管理权限，管理员也保留问云小院入口。
+  const canManageAdmin = isAdminProfile(profile)
 
   return (
     <div className="min-h-screen bg-[#eef3ef] text-[#263238]">
@@ -71,6 +69,17 @@ export function YardLayout() {
           })}
         </nav>
 
+        {/* 这里给掌门和执事额外展示管理后台入口，不影响普通同门的小院体验。 */}
+        {canManageAdmin ? (
+          <Link
+            className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-[#9e3d32] px-4 py-3 text-sm text-white shadow-lg shadow-[#9e3d32]/18"
+            to="/admin"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            进入管理后台
+          </Link>
+        ) : null}
+
         <div className="absolute bottom-5 left-5 right-5 grid gap-3">
           <Link className="flex items-center justify-center gap-2 rounded-xl border border-[#6f8f8b]/25 px-4 py-3 text-sm text-[#526461]" to="/">
             <FileText className="h-4 w-4" />
@@ -90,10 +99,18 @@ export function YardLayout() {
       <div className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-[#6f8f8b]/20 bg-[#fffaf0]/92 px-4 py-3 backdrop-blur lg:hidden">
           <div className="flex items-center justify-between">
-            <Link className="flex items-center gap-2" to="/">
-              <Home className="h-4 w-4" />
-              返回官网
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link className="flex items-center gap-2" to="/">
+                <Home className="h-4 w-4" />
+                返回官网
+              </Link>
+              {canManageAdmin ? (
+                <Link className="flex items-center gap-1 text-sm text-[#9e3d32]" to="/admin">
+                  <ShieldCheck className="h-4 w-4" />
+                  后台
+                </Link>
+              ) : null}
+            </div>
             <button className="text-sm text-[#9e3d32]" onClick={() => void signOut()} type="button">
               退出
             </button>
@@ -111,6 +128,11 @@ export function YardLayout() {
                 {item.label}
               </NavLink>
             ))}
+            {canManageAdmin ? (
+              <NavLink className="shrink-0 rounded-full bg-[#9e3d32] px-3 py-2 text-xs text-white" to="/admin">
+                管理后台
+              </NavLink>
+            ) : null}
           </nav>
         </header>
 
