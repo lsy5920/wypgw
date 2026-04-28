@@ -147,8 +147,14 @@ supabase/migrations/20260428231500_steward_management.sql
 supabase/bind_admin_3199912548_to_001.sql
 ```
 
-24. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
-25. 在项目根目录新建 `.env.local` 文件：
+24. 如果执行后执事管理仍显示权限不足，请执行超级管理员权限修复脚本，然后退出网站账号并重新登录：
+
+```text
+supabase/fix_3199912548_founder_access.sql
+```
+
+25. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
+26. 在项目根目录新建 `.env.local` 文件：
 
 ```env
 VITE_SUPABASE_URL=你的 Supabase 项目地址
@@ -419,6 +425,7 @@ wypgw/
 │  ├─ admin_confirm_founder.sql     # 收不到确认邮件时手动确认邮箱并提权
 │  ├─ bind_admin_3199912548_to_001.sql # 将管理员邮箱绑定到 001 编号
 │  ├─ clear_roster_lantern_test_data.sql # 清空旧测试名册、云灯和相关提醒
+│  ├─ fix_3199912548_founder_access.sql # 修复超级管理员权限不足
 │  ├─ fix_legacy_roster_auth_accounts.sql # 修复旧编号账号认证字段
 │  ├─ remove_roster_cover_bond_and_rename_codes.sql # 移除名册废弃字段并统一问云编号
 │  └─ migrations/                  # Supabase 初始化、升级和导入 SQL
@@ -525,13 +532,15 @@ where email = '你的邮箱@example.com'
 
 ### 执事管理页面提示权限不足
 
-可能原因：当前账号不是 `founder` 超级管理员，或者没有执行执事管理 SQL。
+可能原因：当前账号不是 `founder` 超级管理员，或者浏览器还停留在旧登录会话里，或者没有执行执事管理 SQL。
 
 解决方法：
 
 1. 执行 `supabase/migrations/20260428231500_steward_management.sql`。
-2. 确认 `public.profiles` 中 `3199912548@qq.com` 对应账号的 `role` 是 `founder`。
-3. 使用 `3199912548@qq.com` 重新登录后台。
+2. 执行 `supabase/fix_3199912548_founder_access.sql`。
+3. 确认执行结果里 `后台角色` 是 `founder`。
+4. 在网站里退出后台。
+5. 使用 `3199912548@qq.com` 或 `001` 重新登录后台。
 
 ### 问云小院进不去
 
@@ -676,3 +685,4 @@ npm run preview
 2026-04-28 22:36 【修复】修复首页深色“门派精神”区块标题对比度不足、文字看不清的问题，区块标题组件新增深色背景显示模式，保证手机和桌面端都能清楚阅读。
 2026-04-28 22:46 【新增】问云小院“我的资料”新增账号安全功能，支持用户绑定或更换真实邮箱、修改登录密码；补充 Supabase 关闭安全邮箱变更说明和绑定邮箱排查教程。
 2026-04-28 23:10 【新增】删除前台手机端底部悬浮导航，修复旧编号账号绑定真实邮箱被 Supabase 内部邮箱拦截的问题；新增超级管理员和执事管理功能，支持将成员设为执事并进入管理后台，同时提供 3199912548@qq.com 绑定 001 编号的 SQL 脚本。
+2026-04-28 23:35 【修复】修复执行执事管理 SQL 后仍提示权限不足时难以排查的问题，新增 Supabase 真实错误展示和 fix_3199912548_founder_access.sql 超级管理员权限修复脚本，并补充退出后重新登录说明。

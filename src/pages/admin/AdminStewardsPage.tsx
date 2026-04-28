@@ -123,7 +123,11 @@ export function AdminStewardsPage() {
       </SectionTitle>
 
       {profile?.role !== 'founder' ? (
-        <StatusNotice type="error" title="权限不足" message="当前页面只允许超级管理员使用。请使用 3199912548@qq.com 对应的超级管理员账号登录。" />
+        <StatusNotice
+          type="error"
+          title="权限不足"
+          message={`当前账号身份是“${profile ? roleLabels[profile.role] : '未读取到身份'}”。请确认已执行超级管理员修复 SQL，并退出后用 3199912548@qq.com 或 001 重新登录。`}
+        />
       ) : null}
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 

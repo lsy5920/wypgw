@@ -128,6 +128,15 @@ function getErrorMessage(error: unknown, fallback: string): string {
     return `${fallback}：${error.message}`
   }
 
+  // 这里兼容 Supabase 返回的普通对象错误，避免页面只显示笼统失败原因。
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = String((error as { message?: unknown }).message ?? '').trim()
+
+    if (message) {
+      return `${fallback}：${message}`
+    }
+  }
+
   return fallback
 }
 
