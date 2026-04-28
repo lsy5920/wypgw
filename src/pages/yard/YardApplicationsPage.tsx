@@ -55,7 +55,10 @@ export function YardApplicationsPage() {
             <ScrollPanel key={item.id}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-[#9e3d32]">{item.member_code ?? '尚未编号'}</p>
+                  <p className="text-sm text-[#9e3d32]">
+                    {item.member_code ?? '尚未编号'}
+                    {item.roster_serial ? ` · 账号 ${String(item.roster_serial).padStart(3, '0')}` : ''}
+                  </p>
                   <h2 className="ink-title mt-1 text-3xl font-bold text-[#143044]">{item.nickname}</h2>
                 </div>
                 <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-sm text-[#6f8f8b]">
@@ -64,15 +67,26 @@ export function YardApplicationsPage() {
               </div>
               <div className="mt-5 grid gap-3 text-sm leading-7 text-[#526461] md:grid-cols-2">
                 <p>江湖名：{item.jianghu_name ?? '未填写'}</p>
-                <p>城市：{item.city ?? '未填写'}</p>
-                <p>出生月份：{item.age_range ?? '未填写'}</p>
-                <p>提交时间：{formatDate(item.created_at)}</p>
-                <p>线下意愿：{item.offline_interest ?? '未填写'}</p>
+                <p>身份：{item.member_role ?? '未填写'}</p>
+                <p>公开地域：{item.public_region ?? item.city ?? '未填写'}</p>
+                <p>封面：{item.cover_name ?? '未填写'}</p>
+                <p>羁绊状态：{item.bond_status ?? '未填写'}</p>
+                <p>入册时间：{item.joined_at ? formatDate(item.joined_at) : formatDate(item.created_at)}</p>
                 <p>审核时间：{item.reviewed_at ? formatDate(item.reviewed_at) : '尚未审核'}</p>
               </div>
               <div className="mt-5 rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4">
-                <p className="text-sm font-semibold text-[#143044]">申请理由</p>
-                <p className="mt-2 text-sm leading-7 text-[#526461]">{item.reason}</p>
+                <p className="text-sm font-semibold text-[#143044]">宣言</p>
+                <p className="mt-2 text-sm leading-7 text-[#526461]">{item.motto ?? item.reason}</p>
+              </div>
+              <div className="mt-4 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
+                <p className="text-sm font-semibold text-[#143044]">公开故事</p>
+                <p className="mt-2 text-sm leading-7 text-[#526461]">{item.public_story ?? '未填写'}</p>
+                <p className="mt-3 text-sm leading-7 text-[#526461]">标签：{item.tags ?? '未填写'}</p>
+                <p className="mt-1 text-sm leading-7 text-[#526461]">同行期待：{item.companion_expectation ?? '未填写'}</p>
+              </div>
+              <div className="mt-4 rounded-2xl border border-[#c9a45c]/20 bg-white/50 p-4">
+                <p className="text-sm font-semibold text-[#143044]">联系方式</p>
+                <p className="mt-2 text-sm leading-7 text-[#526461]">{item.legacy_contact ?? item.wechat_id}</p>
               </div>
               {item.admin_note ? (
                 <div className="mt-4 rounded-2xl border border-[#9e3d32]/20 bg-[#fff1ee]/70 p-4">

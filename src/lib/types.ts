@@ -4,8 +4,8 @@ export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'conta
 // 这个类型表示名册公开展示的性别选项。
 export type MemberGender = '男' | '女'
 
-// 这个类型表示问云名册中的门派身份。
-export type WenyunMemberRole = '掌门' | '执事' | '护灯人' | '同门'
+// 这个类型表示问云名册中的江湖身份，选项以旧名册数据为准。
+export type WenyunMemberRole = '烟雨行客' | '护山执事' | '执剑游侠'
 
 // 这个类型表示云灯留言在审核流程中的状态。
 export type LanternStatus = 'pending' | 'approved' | 'rejected'
@@ -95,6 +95,30 @@ export interface JoinApplication {
   generation_name: string | null
   // 名册编号，由系统默认按已有最大编号往后生成。
   member_code: string | null
+  // 入册序号，用于兼容旧名册编号账号，例如 001。
+  roster_serial: number | null
+  // 公开地域，用于前台名册展示。
+  public_region: string | null
+  // 后台地域原文，只给管理员校对使用。
+  raw_region: string | null
+  // 宣言，用于公开名册展示。
+  motto: string | null
+  // 公开故事，用于公开名册展示。
+  public_story: string | null
+  // 后台故事原文，只给管理员校对使用。
+  raw_story: string | null
+  // 标签，用中文逗号分隔，来自旧名册标签。
+  tags: string | null
+  // 羁绊状态，用于公开名册展示。
+  bond_status: string | null
+  // 同行期待，用于公开名册展示。
+  companion_expectation: string | null
+  // 封面名称，用于保留旧名册封面选择。
+  cover_name: string | null
+  // 联系方式，只在后台和本人小院展示，不进入公开名册。
+  legacy_contact: string | null
+  // 正式入册时间，旧数据导入时使用旧入册时间。
+  joined_at: string | null
   // 审核状态，用于后台流转。
   status: JoinApplicationStatus
   // 管理员备注，只在后台可见。
@@ -117,19 +141,35 @@ export interface JoinApplicationInput {
   real_name: string
   // 微信号，不能为空。
   wechat_id: string
-  // 出生月份，可为空。
+  // 旧名册没有出生月份，新登记不再展示此项，保留空值用于兼容数据库。
   age_range: string
   // 性别，不能为空。
   gender: MemberGender
   // 所在城市，可为空。
   city: string
-  // 申请理由，不能为空。
-  reason: string
+  // 江湖身份，来自旧名册表单选项。
+  member_role: WenyunMemberRole
+  // 公开地域，可为空。
+  public_region: string
+  // 宣言，不能为空。
+  motto: string
+  // 公开故事，可为空。
+  public_story: string
+  // 标签，可为空，多个标签用顿号或逗号分隔。
+  tags: string
+  // 羁绊状态，可为空。
+  bond_status: string
+  // 同行期待，可为空。
+  companion_expectation: string
+  // 封面名称，可为空。
+  cover_name: string
+  // 联系方式，不能为空，只供后台联系和账号绑定排查。
+  legacy_contact: string
   // 是否认同门规，必须勾选。
   accept_rules: boolean
-  // 线下活动意愿，可为空。
+  // 线下活动意愿旧表没有使用，保留空值用于兼容数据库。
   offline_interest: string
-  // 备注，可为空。
+  // 备注旧表没有使用，保留空值用于兼容数据库。
   remark: string
 }
 
@@ -145,16 +185,32 @@ export interface RosterEntry {
   member_code: string
   // 性别，用于名册展示。
   gender: MemberGender
-  // 出生月份，用于名册展示。
+  // 出生月份旧表没有使用，保留字段仅兼容数据库。
   birth_month: string | null
   // 所在城市，用于名册展示。
   city: string | null
-  // 线下雅集意愿，用于名册展示。
-  offline_interest: string | null
-  // 门派身份，例如掌门、执事、护灯人、同门。
+  // 江湖身份，例如烟雨行客、护山执事、执剑游侠。
   member_role: WenyunMemberRole
   // 辈分字，例如“云”。
   generation_name: string
+  // 入册序号，用于展示短编号。
+  roster_serial: number | null
+  // 公开地域，用于名册展示。
+  public_region: string | null
+  // 宣言，用于名册展示。
+  motto: string | null
+  // 公开故事，用于名册展示。
+  public_story: string | null
+  // 标签，用中文逗号分隔。
+  tags: string | null
+  // 羁绊状态，用于名册展示。
+  bond_status: string | null
+  // 同行期待，用于名册展示。
+  companion_expectation: string | null
+  // 封面名称，用于名册展示。
+  cover_name: string | null
+  // 正式入册时间。
+  joined_at: string | null
   // 当前入册状态。
   status: JoinApplicationStatus
   // 入册时间或申请时间。
@@ -177,6 +233,10 @@ export interface JoinApplicationUpdateInput {
   gender: MemberGender
   // 所在城市。
   city: string
+  // 公开地域。
+  public_region: string
+  // 后台地域原文。
+  raw_region: string
   // 申请理由。
   reason: string
   // 是否认同门规。
@@ -193,6 +253,26 @@ export interface JoinApplicationUpdateInput {
   generation_name: string
   // 名册编号。
   member_code: string
+  // 入册序号。
+  roster_serial: string
+  // 宣言。
+  motto: string
+  // 公开故事。
+  public_story: string
+  // 后台故事原文。
+  raw_story: string
+  // 标签。
+  tags: string
+  // 羁绊状态。
+  bond_status: string
+  // 同行期待。
+  companion_expectation: string
+  // 封面名称。
+  cover_name: string
+  // 联系方式。
+  legacy_contact: string
+  // 正式入册时间。
+  joined_at: string
   // 审核状态。
   status: JoinApplicationStatus
 }

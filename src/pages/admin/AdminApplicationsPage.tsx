@@ -45,9 +45,21 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     offline_interest: item.offline_interest ?? '',
     remark: item.remark ?? '',
     admin_note: item.admin_note ?? '',
-    member_role: item.member_role ?? '同门',
+    member_role: item.member_role ?? '烟雨行客',
     generation_name: item.generation_name ?? '云',
     member_code: item.member_code ?? '',
+    roster_serial: item.roster_serial ? String(item.roster_serial).padStart(3, '0') : '',
+    public_region: item.public_region ?? item.city ?? '',
+    raw_region: item.raw_region ?? item.city ?? '',
+    motto: item.motto ?? item.reason,
+    public_story: item.public_story ?? '',
+    raw_story: item.raw_story ?? '',
+    tags: item.tags ?? '',
+    bond_status: item.bond_status ?? '',
+    companion_expectation: item.companion_expectation ?? '',
+    cover_name: item.cover_name ?? '',
+    legacy_contact: item.legacy_contact ?? item.wechat_id,
+    joined_at: item.joined_at ?? '',
     status: item.status
   }
 }
@@ -137,7 +149,8 @@ export function AdminApplicationsPage() {
         !keyword ||
         draft.nickname.includes(keyword) ||
         draft.real_name.includes(keyword) ||
-        draft.wechat_id.includes(keyword)
+        draft.wechat_id.includes(keyword) ||
+        draft.legacy_contact.includes(keyword)
       const matchesCurrentFilter = matchesFilter(item, filter)
 
       return matchesKeyword && matchesCurrentFilter
@@ -196,7 +209,7 @@ export function AdminApplicationsPage() {
   return (
     <div>
       <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订">
-        默认展示未审核名帖。点击小卡片后，可编辑道名、江湖名、真实姓名、身份、编号、状态与备注。
+        默认展示未审核名帖。点击小卡片后，可编辑旧名册字段、身份、编号、状态与备注。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -209,7 +222,7 @@ export function AdminApplicationsPage() {
             <input
               className="w-full rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="输入道名、真实姓名或微信号"
+              placeholder="输入道名、真实姓名或联系方式"
               value={searchTerm}
             />
           </span>
@@ -255,7 +268,7 @@ export function AdminApplicationsPage() {
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-[#7a6a48]">申请时间：{formatApplicationTime(item.created_at)}</p>
-                    <p className="mt-3 line-clamp-2 leading-7 text-[#526461]">申请理由：{draft.reason || '未填写'}</p>
+                    <p className="mt-3 line-clamp-2 leading-7 text-[#526461]">宣言：{draft.motto || draft.reason || '未填写'}</p>
                   </div>
                   <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#c9a45c]/40 bg-white/70 px-4 py-2 text-sm text-[#7a6a48]">
                     {expanded ? '收起详情' : '展开详情'}
@@ -291,11 +304,14 @@ export function AdminApplicationsPage() {
                         />
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">微信号</span>
+                        <span className="text-sm font-semibold">联系方式</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'wechat_id', event.target.value)}
-                          value={draft.wechat_id}
+                          onChange={(event) => {
+                            updateDraft(item.id, 'legacy_contact', event.target.value)
+                            updateDraft(item.id, 'wechat_id', event.target.value)
+                          }}
+                          value={draft.legacy_contact}
                         />
                       </label>
                     </div>
@@ -306,8 +322,17 @@ export function AdminApplicationsPage() {
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'member_code', event.target.value)}
-                          placeholder="问云-云-001"
+                          placeholder="云栖-云-001"
                           value={draft.member_code}
+                        />
+                      </label>
+                      <label className="grid gap-2">
+                        <span className="text-sm font-semibold">短编号账号</span>
+                        <input
+                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          onChange={(event) => updateDraft(item.id, 'roster_serial', event.target.value)}
+                          placeholder="001"
+                          value={draft.roster_serial}
                         />
                       </label>
                       <label className="grid gap-2">
@@ -365,50 +390,66 @@ export function AdminApplicationsPage() {
                         </select>
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">出生月份</span>
+                        <span className="text-sm font-semibold">公开地域</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'age_range', event.target.value)}
-                          type="month"
-                          value={draft.age_range}
+                          onChange={(event) => updateDraft(item.id, 'public_region', event.target.value)}
+                          value={draft.public_region}
                         />
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">城市</span>
+                        <span className="text-sm font-semibold">后台地域原文</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'city', event.target.value)}
-                          value={draft.city}
+                          onChange={(event) => updateDraft(item.id, 'raw_region', event.target.value)}
+                          value={draft.raw_region}
                         />
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">线下雅集意愿</span>
-                        <select
+                        <span className="text-sm font-semibold">封面</span>
+                        <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'offline_interest', event.target.value)}
-                          value={draft.offline_interest}
-                        >
-                          <option value="">暂不填写</option>
-                          <option value="愿意参加">愿意参加</option>
-                          <option value="先线上交流">先线上交流</option>
-                          <option value="暂不考虑">暂不考虑</option>
-                        </select>
+                          onChange={(event) => updateDraft(item.id, 'cover_name', event.target.value)}
+                          value={draft.cover_name}
+                        />
                       </label>
                     </div>
 
                     <div className="mt-4 grid gap-4 lg:grid-cols-2">
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">申请理由</span>
+                        <span className="text-sm font-semibold">宣言</span>
                         <textarea
                           className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'reason', event.target.value)}
-                          value={draft.reason}
+                          onChange={(event) => {
+                            updateDraft(item.id, 'motto', event.target.value)
+                            updateDraft(item.id, 'reason', event.target.value)
+                          }}
+                          value={draft.motto}
+                        />
+                      </label>
+                      <label className="grid gap-2">
+                        <span className="text-sm font-semibold">公开故事</span>
+                        <textarea
+                          className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                          onChange={(event) => updateDraft(item.id, 'public_story', event.target.value)}
+                          value={draft.public_story}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                      <label className="grid gap-2">
+                        <span className="text-sm font-semibold">后台故事原文</span>
+                        <textarea
+                          className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                          onChange={(event) => updateDraft(item.id, 'raw_story', event.target.value)}
+                          value={draft.raw_story}
                         />
                       </label>
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">管理员备注</span>
                         <textarea
-                          className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                          className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'admin_note', event.target.value)}
                           placeholder="填写联系记录、审核说明、暂存原因或退派说明"
                           value={draft.admin_note}
@@ -416,14 +457,32 @@ export function AdminApplicationsPage() {
                       </label>
                     </div>
 
-                    <label className="mt-4 grid gap-2">
-                      <span className="text-sm font-semibold">申请备注</span>
-                      <input
-                        className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                        onChange={(event) => updateDraft(item.id, 'remark', event.target.value)}
-                        value={draft.remark}
-                      />
-                    </label>
+                    <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                      <label className="grid gap-2">
+                        <span className="text-sm font-semibold">标签</span>
+                        <input
+                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          onChange={(event) => updateDraft(item.id, 'tags', event.target.value)}
+                          value={draft.tags}
+                        />
+                      </label>
+                      <label className="grid gap-2">
+                        <span className="text-sm font-semibold">羁绊状态</span>
+                        <input
+                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          onChange={(event) => updateDraft(item.id, 'bond_status', event.target.value)}
+                          value={draft.bond_status}
+                        />
+                      </label>
+                      <label className="grid gap-2">
+                        <span className="text-sm font-semibold">同行期待</span>
+                        <input
+                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          onChange={(event) => updateDraft(item.id, 'companion_expectation', event.target.value)}
+                          value={draft.companion_expectation}
+                        />
+                      </label>
+                    </div>
 
                     <label className="mt-4 flex items-start gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
                       <input

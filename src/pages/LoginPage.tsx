@@ -20,6 +20,32 @@ function createDefaultNickname(email: string): string {
   return email.split('@')[0] || '问云同门'
 }
 
+// 这个函数把旧名册编号账号转换成 Supabase 可登录邮箱，入参是用户输入，返回值是实际登录账号。
+function normalizeLoginAccount(account: string): string {
+  // 这里先清理前后空格，避免手机输入法带入空白。
+  const value = account.trim()
+
+  // 这里保留邮箱登录方式，兼容新注册用户。
+  if (value.includes('@')) {
+    return value
+  }
+
+  // 这里兼容完整编号，例如“云栖-云-001”或“问云-云-001”。
+  const fullCodeMatch = value.match(/(\d{1,6})$/)
+  const numberPart = fullCodeMatch ? fullCodeMatch[1] : value
+  // 这里把 1、01、001 都统一成 001，方便旧名册账号登录。
+  const normalizedNumber = numberPart.replace(/\D/g, '').padStart(3, '0')
+
+  return `${normalizedNumber}@wenyun.local`
+}
+
+// 这个函数判断当前输入是否为旧名册编号账号，入参是用户输入，返回值表示是否需要走编号登录。
+function isLegacyRosterAccount(account: string): boolean {
+  const value = account.trim()
+
+  return Boolean(value) && !value.includes('@')
+}
+
 // 这个函数确保登录用户拥有 profiles 资料，入参是用户编号和邮箱，返回值是资料或空值。
 async function ensureProfile(userId: string, email: string): Promise<Profile | null> {
   if (!supabase) {
@@ -63,7 +89,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   // 这个变量用于读取后台跳转过来的提示。
   const location = useLocation()
-  // 这个状态保存邮箱。
+  // 这个状态保存邮箱或旧名册编号。
   const [email, setEmail] = useState('')
   // 这个状态保存密码。
   const [password, setPassword] = useState('')
@@ -96,24 +122,39 @@ export function LoginPage() {
       return
     }
 
-    // 这里做基础校验，避免空邮箱或短密码提交给 Supabase。
-    if (!email.trim() || password.length < 6) {
-      setNotice({ type: 'error', title: '请检查账号信息', message: '邮箱不能为空，密码至少 6 位。' })
+    // 这里做基础校验，避免空账号或短密码提交给 Supabase。
+    if (!email.trim()) {
+      setNotice({ type: 'error', title: '请检查账号信息', message: '邮箱或编号不能为空。' })
+      return
+    }
+
+    // 这里普通注册仍要求邮箱格式，旧编号账号由导入脚本创建，不能在前台自行注册。
+    if (mode === 'signup' && isLegacyRosterAccount(email)) {
+      setNotice({ type: 'error', title: '旧编号不能直接注册', message: '001 这类编号账号由旧名册导入生成，请直接登录；新用户请用邮箱注册。' })
+      return
+    }
+
+    // 这里登录旧账号允许三位编号或四位出生年份，新邮箱注册仍要求至少 6 位。
+    const minimumPasswordLength = isLegacyRosterAccount(email) && mode === 'login' ? 3 : 6
+    if (password.length < minimumPasswordLength) {
+      setNotice({ type: 'error', title: '请检查账号信息', message: '邮箱注册密码至少 6 位；旧编号账号请输入三位编号或出生年份密码。' })
       return
     }
 
     try {
       setSubmitting(true)
+      // 这里把 001 这类旧编号转换为 Supabase Auth 能识别的内部邮箱。
+      const loginEmail = normalizeLoginAccount(email)
       // 这里根据模式调用登录或注册接口。
       const result =
         mode === 'login'
-          ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
+          ? await supabase.auth.signInWithPassword({ email: loginEmail, password })
           : await supabase.auth.signUp({
-              email: email.trim(),
+              email: loginEmail,
               password,
               options: {
                 data: {
-                  nickname: createDefaultNickname(email.trim())
+                  nickname: createDefaultNickname(loginEmail)
                 }
               }
             })
@@ -138,7 +179,7 @@ export function LoginPage() {
         throw new Error('没有读取到登录用户，请刷新页面后重试。')
       }
 
-      const nextProfile = await ensureProfile(user.id, email.trim())
+      const nextProfile = await ensureProfile(user.id, loginEmail)
       await refresh()
 
       setNotice({
@@ -188,12 +229,12 @@ export function LoginPage() {
 
         <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
           <label className="grid gap-2">
-            <span className="text-sm font-semibold">邮箱</span>
+            <span className="text-sm font-semibold">邮箱或编号</span>
             <input
               className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="请输入邮箱"
-              type="email"
+              placeholder="新用户填邮箱，旧名册可填 001"
+              type="text"
               value={email}
             />
           </label>
@@ -202,7 +243,7 @@ export function LoginPage() {
             <input
               className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="至少 6 位"
+              placeholder="邮箱密码或旧名册生日密码"
               type="password"
               value={password}
             />
@@ -213,7 +254,7 @@ export function LoginPage() {
         </form>
 
         <div className="mt-6 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
-          本站按“邮箱 + 密码”直接注册登录。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。管理员初始化方式：注册后到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。
+          新用户按“邮箱 + 密码”直接注册登录；旧名册同门可用 001 这类短编号登录，密码优先使用出生年份，没有年份时使用短编号本身。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。管理员初始化方式：注册后到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。
         </div>
       </ScrollPanel>
     </main>

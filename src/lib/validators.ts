@@ -56,9 +56,9 @@ export function validateJoinApplication(input: JoinApplicationInput): string[] {
     errors.push('道名需以“云”字开头，长度为 2 到 3 个字。')
   }
 
-  // 这里检查微信号，因为执事需要靠它联系申请人。
-  if (!cleanText(input.wechat_id)) {
-    errors.push('请填写微信号，方便执事联系。')
+  // 这里检查联系方式，因为执事需要靠它联系申请人。
+  if (!cleanText(input.legacy_contact)) {
+    errors.push('请填写联系方式，方便执事联系。')
   }
 
   // 这里检查真实姓名，真实姓名只进入后台，用于管理员核对名帖。
@@ -71,9 +71,9 @@ export function validateJoinApplication(input: JoinApplicationInput): string[] {
     errors.push('请选择性别。')
   }
 
-  // 这里检查申请理由，避免申请内容过短难以审核。
-  if (cleanText(input.reason).length < 10) {
-    errors.push('请至少用 10 个字说说为什么想加入问云派。')
+  // 这里检查宣言，避免公开名册缺少核心文字。
+  if (cleanText(input.motto).length < 2) {
+    errors.push('请至少写 2 个字作为名册宣言。')
   }
 
   // 这里检查门规确认，确保申请人明确知道问云派的边界。
