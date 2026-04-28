@@ -23,6 +23,11 @@ export function translateSupabaseAuthError(error: unknown): string {
     return '邮箱或密码不正确，请检查后再试。'
   }
 
+  // 这里处理旧编号账号导入后 Auth 令牌字段为空导致的 Supabase 认证库错误。
+  if (normalizedMessage.includes('database error querying schema')) {
+    return 'Supabase 认证库读取失败。如果你正在登录 001 这类旧编号账号，请先在 Supabase SQL 编辑器执行 supabase/fix_legacy_roster_auth_accounts.sql，再重新登录。'
+  }
+
   // 这里处理邮箱重复注册，提示用户切回登录。
   if (normalizedMessage.includes('user already registered') || normalizedMessage.includes('already registered')) {
     return '这个邮箱已经注册过，请切换到登录。'

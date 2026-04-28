@@ -26,9 +26,7 @@ const initialForm: JoinApplicationInput = {
   motto: '',
   public_story: '',
   tags: '',
-  bond_status: '',
   companion_expectation: '',
-  cover_name: '',
   legacy_contact: '',
   accept_rules: false,
   offline_interest: '',
@@ -105,14 +103,12 @@ export function JoinPage() {
     const keyword = searchTerm.trim()
 
     return roster.filter((item) => {
-      // 这里支持按道名、江湖名和短编号搜索。
-      const serialText = item.roster_serial ? String(item.roster_serial).padStart(3, '0') : ''
+      // 这里支持按道名、江湖名和公开编号搜索，不展示也不搜索登录短号。
       const matchesKeyword =
         !keyword ||
         item.dao_name.includes(keyword) ||
         (item.jianghu_name ?? '').includes(keyword) ||
-        item.member_code.includes(keyword) ||
-        serialText.includes(keyword)
+        item.member_code.includes(keyword)
       // 这里按辈分字筛选。
       const matchesGeneration = !generationFilter || item.generation_name === generationFilter
       // 这里按性别筛选。
@@ -143,7 +139,7 @@ export function JoinPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    // 这里拦截未登录用户，确保新名帖都能归属到具体账号。
+    // 这里拦截未登录用户，确保新名帖都能归属到具体登录用户。
     if (!profile) {
       setNotice({ type: 'error', title: '请先进入问云小院', message: '名册登记需要先登录，登录后再递上名帖。' })
       return
@@ -179,7 +175,7 @@ export function JoinPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
       <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号">
-        名册以旧系统字段为准，公开展示道名、江湖名、编号、性别、身份、地域、宣言、故事、标签、羁绊状态、同行期待、封面和入册时间。
+        名册以旧系统字段为准，公开展示道名、江湖名、编号、性别、身份、地域、宣言、故事、标签、同行期待和入册时间。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -207,7 +203,7 @@ export function JoinPage() {
                 <input
                   className="w-full rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="道名、江湖名或 001"
+                  placeholder="道名、江湖名或编号"
                   value={searchTerm}
                 />
               </span>
@@ -271,7 +267,6 @@ export function JoinPage() {
                     <div>
                       <p className="text-xs font-semibold text-[#9e3d32]">
                         {item.member_code}
-                        {item.roster_serial ? ` · 账号 ${String(item.roster_serial).padStart(3, '0')}` : ''}
                       </p>
                       <h3 className="ink-title mt-1 text-3xl font-bold text-[#143044]">{item.dao_name}</h3>
                       <p className="mt-1 text-sm text-[#7a6a48]">江湖名：{showText(item.jianghu_name)}</p>
@@ -284,8 +279,6 @@ export function JoinPage() {
 
                   <div className="mt-4 grid gap-3 text-sm leading-7 text-[#526461] md:grid-cols-2">
                     <p>地域：{showText(item.public_region)}</p>
-                    <p>封面：{showText(item.cover_name)}</p>
-                    <p>羁绊：{showText(item.bond_status)}</p>
                     <p>入册：{formatRosterDate(item.joined_at ?? item.created_at)}</p>
                   </div>
 
@@ -433,15 +426,6 @@ export function JoinPage() {
                 </select>
               </label>
 
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">封面</span>
-                <input
-                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateField('cover_name', event.target.value)}
-                  placeholder="例如：晨雾云笺"
-                  value={form.cover_name}
-                />
-              </label>
             </div>
 
             <label className="grid gap-2">
@@ -464,7 +448,7 @@ export function JoinPage() {
               />
             </label>
 
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2">
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">标签</span>
                 <input
@@ -472,16 +456,6 @@ export function JoinPage() {
                   onChange={(event) => updateField('tags', event.target.value)}
                   placeholder="例如：写文、摄影"
                   value={form.tags}
-                />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">羁绊状态</span>
-                <input
-                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateField('bond_status', event.target.value)}
-                  placeholder="例如：静修旁观"
-                  value={form.bond_status}
                 />
               </label>
 

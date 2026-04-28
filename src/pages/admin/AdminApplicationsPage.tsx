@@ -55,9 +55,7 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     public_story: item.public_story ?? '',
     raw_story: item.raw_story ?? '',
     tags: item.tags ?? '',
-    bond_status: item.bond_status ?? '',
     companion_expectation: item.companion_expectation ?? '',
-    cover_name: item.cover_name ?? '',
     legacy_contact: item.legacy_contact ?? item.wechat_id,
     joined_at: item.joined_at ?? '',
     status: item.status
@@ -316,23 +314,14 @@ export function AdminApplicationsPage() {
                       </label>
                     </div>
 
-                    <div className="mt-4 grid gap-4 lg:grid-cols-4">
+                    <div className="mt-4 grid gap-4 lg:grid-cols-3">
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">编号</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'member_code', event.target.value)}
-                          placeholder="云栖-云-001"
+                          placeholder="问云-云-001"
                           value={draft.member_code}
-                        />
-                      </label>
-                      <label className="grid gap-2">
-                        <span className="text-sm font-semibold">短编号账号</span>
-                        <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'roster_serial', event.target.value)}
-                          placeholder="001"
-                          value={draft.roster_serial}
                         />
                       </label>
                       <label className="grid gap-2">
@@ -405,14 +394,6 @@ export function AdminApplicationsPage() {
                           value={draft.raw_region}
                         />
                       </label>
-                      <label className="grid gap-2">
-                        <span className="text-sm font-semibold">封面</span>
-                        <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'cover_name', event.target.value)}
-                          value={draft.cover_name}
-                        />
-                      </label>
                     </div>
 
                     <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -457,21 +438,13 @@ export function AdminApplicationsPage() {
                       </label>
                     </div>
 
-                    <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">标签</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'tags', event.target.value)}
                           value={draft.tags}
-                        />
-                      </label>
-                      <label className="grid gap-2">
-                        <span className="text-sm font-semibold">羁绊状态</span>
-                        <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'bond_status', event.target.value)}
-                          value={draft.bond_status}
                         />
                       </label>
                       <label className="grid gap-2">

@@ -30,7 +30,7 @@ function normalizeLoginAccount(account: string): string {
     return value
   }
 
-  // 这里兼容完整编号，例如“云栖-云-001”或“问云-云-001”。
+  // 这里兼容完整编号，例如“问云-云-001”。
   const fullCodeMatch = value.match(/(\d{1,6})$/)
   const numberPart = fullCodeMatch ? fullCodeMatch[1] : value
   // 这里把 1、01、001 都统一成 001，方便旧名册账号登录。

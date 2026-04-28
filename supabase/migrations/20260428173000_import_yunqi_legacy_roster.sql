@@ -1,4 +1,4 @@
--- 本脚本用于把云栖旧名册同步到问云派官网。
+﻿-- 本脚本用于把旧名册同步到问云派官网。
 -- 执行方式：请先执行前面的初始化、名册、小院和 SMTP 脚本，再复制本脚本到 Supabase SQL 编辑器执行。
 -- 注意：本脚本不会导入“热度、推荐等级、更新时间、公开链接标识”。
 -- 旧同门登录方式：账号为三位短编号，例如 001；有出生年份时密码为年份，没有年份时密码等于短编号。
@@ -14,9 +14,7 @@ add column if not exists motto text,
 add column if not exists public_story text,
 add column if not exists raw_story text,
 add column if not exists tags text,
-add column if not exists bond_status text,
 add column if not exists companion_expectation text,
-add column if not exists cover_name text,
 add column if not exists legacy_contact text,
 add column if not exists joined_at timestamptz;
 
@@ -70,7 +68,7 @@ begin
   -- 这里补齐辈分字，只取第一个字，默认是“云”。
   new.generation_name = coalesce(nullif(left(trim(new.generation_name), 1), ''), '云');
 
-  -- 这里在编号为空时沿用原问云编号生成逻辑，旧导入数据会直接写入云栖编号。
+  -- 这里在编号为空时沿用原问云编号生成逻辑，旧导入数据会直接写入问云编号。
   if new.member_code is null or trim(new.member_code) = '' then
     new.member_code = public.next_wenyun_member_code(new.generation_name);
   else
@@ -84,9 +82,7 @@ begin
   new.public_story = nullif(trim(coalesce(new.public_story, '')), '');
   new.raw_story = nullif(trim(coalesce(new.raw_story, new.public_story, '')), '');
   new.tags = nullif(trim(coalesce(new.tags, '')), '');
-  new.bond_status = nullif(trim(coalesce(new.bond_status, '')), '');
   new.companion_expectation = nullif(trim(coalesce(new.companion_expectation, '')), '');
-  new.cover_name = nullif(trim(coalesce(new.cover_name, '')), '');
   new.legacy_contact = nullif(trim(coalesce(new.legacy_contact, new.wechat_id, '')), '');
 
   return new;
@@ -107,14 +103,11 @@ select
   city,
   member_role,
   generation_name,
-  roster_serial,
   public_region,
   motto,
   public_story,
   tags,
-  bond_status,
   companion_expectation,
-  cover_name,
   joined_at,
   status,
   created_at
@@ -160,7 +153,7 @@ begin
   for item in select * from jsonb_array_elements($legacy$
 [
   {
-    "member_code": "云栖-云-001",
+    "member_code": "问云-云-001",
     "generation_name": "云",
     "roster_serial": 1,
     "short_account": "001",
@@ -176,14 +169,12 @@ begin
     "public_story": "搞点奇奇怪怪的东西",
     "raw_story": "搞点奇奇怪怪的东西",
     "tags": "学生、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "小楼一夜听春雨",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "ykxklmyt0611 无 3199912548@qq.com 无",
     "joined_at": "2026-04-23T09:30:58.266252+00:00"
   },
   {
-    "member_code": "云栖-云-002",
+    "member_code": "问云-云-002",
     "generation_name": "云",
     "roster_serial": 2,
     "short_account": "002",
@@ -199,14 +190,12 @@ begin
     "public_story": "摄影，书法，吃饭，睡觉，打豆豆",
     "raw_story": "摄影，书法，吃饭，睡觉，打豆豆",
     "tags": "法师、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "茶会雅集，诗词唱和",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "RuoNe-7 无 1810187300 13211910221",
     "joined_at": "2026-04-23T09:32:23.697574+00:00"
   },
   {
-    "member_code": "云栖-云-003",
+    "member_code": "问云-云-003",
     "generation_name": "云",
     "roster_serial": 3,
     "short_account": "003",
@@ -222,14 +211,12 @@ begin
     "public_story": "驾车，写作，剪辑，主持，运营，策划，设计",
     "raw_story": "驾车，写作，剪辑，主持，运营，策划，设计",
     "tags": "设计师、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "看书，听音乐，赏花品茶，游玩",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "c584253280 无 584253280 无",
     "joined_at": "2026-04-23T10:08:48.201544+00:00"
   },
   {
-    "member_code": "云栖-云-004",
+    "member_code": "问云-云-004",
     "generation_name": "云",
     "roster_serial": 4,
     "short_account": "004",
@@ -245,14 +232,12 @@ begin
     "public_story": "算卦修行，精通通灵，略通巫术，诗词歌赋创作，",
     "raw_story": "算卦修行，精通通灵，略通巫术，诗词歌赋创作，",
     "tags": "自由职业、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "唱和闻香，观自然之景，闲修散步，听曲",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "BX-2697 11515838048 2979472641 暂无",
     "joined_at": "2026-04-23T10:33:40.602251+00:00"
   },
   {
-    "member_code": "云栖-云-005",
+    "member_code": "问云-云-005",
     "generation_name": "云",
     "roster_serial": 5,
     "short_account": "005",
@@ -268,14 +253,12 @@ begin
     "public_story": "画画唱歌",
     "raw_story": "画画唱歌",
     "tags": "学生、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "追剧",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "woshiyixin0711 woshiyixin0711 3760485158 无",
     "joined_at": "2026-04-23T10:35:45.084495+00:00"
   },
   {
-    "member_code": "云栖-云-006",
+    "member_code": "问云-云-006",
     "generation_name": "云",
     "roster_serial": 6,
     "short_account": "006",
@@ -291,14 +274,12 @@ begin
     "public_story": "研茶静修、笔墨赏字、文案创作、意境审美",
     "raw_story": "研茶静修、笔墨赏字、文案创作、意境审美",
     "tags": "舞蹈、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "闲煮清茶、诗词品读、墨香雅集、古风独静",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "G2142794968 1001103769/55746798395 629826054 无",
     "joined_at": "2026-04-23T10:38:57.176905+00:00"
   },
   {
-    "member_code": "云栖-云-007",
+    "member_code": "问云-云-007",
     "generation_name": "云",
     "roster_serial": 7,
     "short_account": "007",
@@ -314,14 +295,12 @@ begin
     "public_story": "玩水.",
     "raw_story": "玩水.",
     "tags": "老师、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "摄影,寻鲸.",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "MingFreedive MingFreedive 331918018 18588542888",
     "joined_at": "2026-04-23T10:57:09.666832+00:00"
   },
   {
-    "member_code": "云栖-云-008",
+    "member_code": "问云-云-008",
     "generation_name": "云",
     "roster_serial": 8,
     "short_account": "008",
@@ -337,14 +316,12 @@ begin
     "public_story": "中医知识，文案",
     "raw_story": "中医知识，文案",
     "tags": "学生、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "写小说",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "wxid_v94lqq9if7mp22 5017427100 2491808139 无",
     "joined_at": "2026-04-23T11:02:51.925706+00:00"
   },
   {
-    "member_code": "云栖-云-009",
+    "member_code": "问云-云-009",
     "generation_name": "云",
     "roster_serial": 9,
     "short_account": "009",
@@ -360,14 +337,12 @@ begin
     "public_story": "播音主持，导游讲解",
     "raw_story": "播音主持，导游讲解",
     "tags": "学生、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "听音乐，看书",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "wxid_1ql1wefaoswr22 94155179868 无 无",
     "joined_at": "2026-04-23T11:06:32.946462+00:00"
   },
   {
-    "member_code": "云栖-云-010",
+    "member_code": "问云-云-010",
     "generation_name": "云",
     "roster_serial": 10,
     "short_account": "010",
@@ -383,14 +358,12 @@ begin
     "public_story": "剪辑",
     "raw_story": "剪辑",
     "tags": "面点师、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "听奇闻异事",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "T0808_W0406_H0128 小红书9496566636 1978206477 快手3615533904",
     "joined_at": "2026-04-23T11:07:31.939307+00:00"
   },
   {
-    "member_code": "云栖-云-011",
+    "member_code": "问云-云-011",
     "generation_name": "云",
     "roster_serial": 11,
     "short_account": "011",
@@ -406,14 +379,12 @@ begin
     "public_story": "驾车，手工。",
     "raw_story": "驾车，手工。",
     "tags": "散人、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "饮茶，露营，做饭",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "biewutayong 隅生 无 无",
     "joined_at": "2026-04-23T11:47:25.418858+00:00"
   },
   {
-    "member_code": "云栖-云-012",
+    "member_code": "问云-云-012",
     "generation_name": "云",
     "roster_serial": 12,
     "short_account": "012",
@@ -429,14 +400,12 @@ begin
     "public_story": "写一些短打，会点舞蹈",
     "raw_story": "写一些短打，会点舞蹈",
     "tags": "学生、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "汉服出行",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "wxid_p7v6altc61y722 94152700237/无 2291358245 15671822198",
     "joined_at": "2026-04-23T13:13:56.724646+00:00"
   },
   {
-    "member_code": "云栖-云-013",
+    "member_code": "问云-云-013",
     "generation_name": "云",
     "roster_serial": 13,
     "short_account": "013",
@@ -452,14 +421,12 @@ begin
     "public_story": "写作",
     "raw_story": "写作",
     "tags": "作家、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "诗词唱和、茶会雅集",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "15895927888 小红书157988068 286265975 15895927888",
     "joined_at": "2026-04-23T13:18:04.235917+00:00"
   },
   {
-    "member_code": "云栖-云-014",
+    "member_code": "问云-云-014",
     "generation_name": "云",
     "roster_serial": 14,
     "short_account": "014",
@@ -475,14 +442,12 @@ begin
     "public_story": "创作和协调能力",
     "raw_story": "创作和协调能力",
     "tags": "销售、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "喜欢研究各种好玩的小物件，享受无事烦恼的惬意～",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "H18561739386 951209955 1243404717 18954832637",
     "joined_at": "2026-04-23T23:24:53.386164+00:00"
   },
   {
-    "member_code": "云栖-云-015",
+    "member_code": "问云-云-015",
     "generation_name": "云",
     "roster_serial": 15,
     "short_account": "015",
@@ -498,14 +463,12 @@ begin
     "public_story": "琴棋书画",
     "raw_story": "琴棋书画",
     "tags": "工程师、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "诗歌雅颂",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "J-ln123 63091318452 3578700993 13606887953",
     "joined_at": "2026-04-23T23:26:57.999444+00:00"
   },
   {
-    "member_code": "云栖-云-016",
+    "member_code": "问云-云-016",
     "generation_name": "云",
     "roster_serial": 16,
     "short_account": "016",
@@ -521,14 +484,12 @@ begin
     "public_story": "摄影剪辑",
     "raw_story": "摄影剪辑",
     "tags": "法律工作者、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "爬山徒步，饮酒作诗，桌游交友",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "18802726192 18802726192 无 无",
     "joined_at": "2026-04-23T23:28:46.250953+00:00"
   },
   {
-    "member_code": "云栖-云-017",
+    "member_code": "问云-云-017",
     "generation_name": "云",
     "roster_serial": 17,
     "short_account": "017",
@@ -544,14 +505,12 @@ begin
     "public_story": "武术技击，书法，编程",
     "raw_story": "武术技击，书法，编程",
     "tags": "算法工程师、自行登门",
-    "bond_status": "静修旁观",
     "companion_expectation": "武术交流，书法交流，骑行",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "807655723 807655723 807655723 无",
     "joined_at": "2026-04-24T04:38:57.860846+00:00"
   },
   {
-    "member_code": "云栖-云-018",
+    "member_code": "问云-云-018",
     "generation_name": "云",
     "roster_serial": 18,
     "short_account": "018",
@@ -567,14 +526,12 @@ begin
     "public_story": "无所长",
     "raw_story": "无所长",
     "tags": "学生、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "诗歌",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "lxr08110911 1008844061 1690931240 13640001916",
     "joined_at": "2026-04-24T12:36:52.375013+00:00"
   },
   {
-    "member_code": "云栖-云-019",
+    "member_code": "问云-云-019",
     "generation_name": "云",
     "roster_serial": 19,
     "short_account": "019",
@@ -590,14 +547,12 @@ begin
     "public_story": "无",
     "raw_story": "无",
     "tags": "无业、希为、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "无",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "w258963L741 5537975361 3451436636 16659673971",
     "joined_at": "2026-04-24T15:38:52.438815+00:00"
   },
   {
-    "member_code": "云栖-云-020",
+    "member_code": "问云-云-020",
     "generation_name": "云",
     "roster_serial": 20,
     "short_account": "020",
@@ -613,14 +568,12 @@ begin
     "public_story": "书法",
     "raw_story": "书法",
     "tags": "学生、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "汉服出行",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "Liu_qinyue 17891982310 无 无",
     "joined_at": "2026-04-24T16:09:03.987531+00:00"
   },
   {
-    "member_code": "云栖-云-021",
+    "member_code": "问云-云-021",
     "generation_name": "云",
     "roster_serial": 21,
     "short_account": "021",
@@ -636,14 +589,12 @@ begin
     "public_story": "唱歌",
     "raw_story": "唱歌",
     "tags": "学生、自行登门、旧册迁移",
-    "bond_status": "静修旁观",
     "companion_expectation": "喜欢唐诗宋词",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "wxid_cuc0iszn6y2o22 1112351972 317852609 无",
     "joined_at": "2026-04-25T02:38:12.967373+00:00"
   },
   {
-    "member_code": "云栖-云-022",
+    "member_code": "问云-云-022",
     "generation_name": "云",
     "roster_serial": 22,
     "short_account": "022",
@@ -659,14 +610,12 @@ begin
     "public_story": "一个爱好玄学研究命理学的爱好者，希望在此处找到一方净土。",
     "raw_story": "一个爱好玄学研究命理学的爱好者，希望在此处找到一方净土。",
     "tags": "命理爱好者、玄学",
-    "bond_status": "寻同路人",
     "companion_expectation": "真诚，友善，互爱。",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "zwzxmxwq",
     "joined_at": "2026-04-25T04:25:36.739+00:00"
   },
   {
-    "member_code": "云栖-云-023",
+    "member_code": "问云-云-023",
     "generation_name": "云",
     "roster_serial": 23,
     "short_account": "023",
@@ -682,14 +631,12 @@ begin
     "public_story": "性格开朗，但是有点社恐",
     "raw_story": "性格开朗，但是有点社恐",
     "tags": "绘图",
-    "bond_status": "寻同路人",
     "companion_expectation": "热情，能够陪我聊天玩",
-    "cover_name": "暖日云霞",
     "legacy_contact": "Y18063299539",
     "joined_at": "2026-04-25T06:45:35.012+00:00"
   },
   {
-    "member_code": "云栖-云-024",
+    "member_code": "问云-云-024",
     "generation_name": "云",
     "roster_serial": 24,
     "short_account": "024",
@@ -705,14 +652,12 @@ begin
     "public_story": "一个热爱东玄和武术的普通人",
     "raw_story": "一个热爱东玄和武术的普通人",
     "tags": "整活",
-    "bond_status": "寻同路人",
     "companion_expectation": "一起探讨爱好互相学习",
-    "cover_name": "玉露云台",
     "legacy_contact": "无",
     "joined_at": "2026-04-25T07:35:52.882+00:00"
   },
   {
-    "member_code": "云栖-云-025",
+    "member_code": "问云-云-025",
     "generation_name": "云",
     "roster_serial": 25,
     "short_account": "025",
@@ -728,14 +673,12 @@ begin
     "public_story": "此位同门选择把故事藏进云雾里。",
     "raw_story": "秘",
     "tags": "陪伴、配音、写文、整活、策划、算命",
-    "bond_status": "静修旁观",
     "companion_expectation": "所有不高兴的事情不要埋在心里，将痛苦都告诉我兴许你会高兴点",
-    "cover_name": "月白流云",
     "legacy_contact": "tbmmlove",
     "joined_at": "2026-04-25T08:15:33.039+00:00"
   },
   {
-    "member_code": "云栖-云-026",
+    "member_code": "问云-云-026",
     "generation_name": "云",
     "roster_serial": 26,
     "short_account": "026",
@@ -751,14 +694,12 @@ begin
     "public_story": "搞笑",
     "raw_story": "搞笑",
     "tags": "写文、整活、配音、陪伴",
-    "bond_status": "寻同路人",
     "companion_expectation": "唱歌，写小说，有点迷信",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "17738993791",
     "joined_at": "2026-04-25T16:27:20.586+00:00"
   },
   {
-    "member_code": "云栖-云-027",
+    "member_code": "问云-云-027",
     "generation_name": "云",
     "roster_serial": 27,
     "short_account": "027",
@@ -774,14 +715,12 @@ begin
     "public_story": "此位同门选择把故事藏进云雾里。",
     "raw_story": "我比较随和一些",
     "tags": "写文、剪辑、配音、策划",
-    "bond_status": "寻同路人",
     "companion_expectation": "愿在云海中多认几位同道，一起做些有趣之事。",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "15063555984/2730501763",
     "joined_at": "2026-04-26T04:26:49.888+00:00"
   },
   {
-    "member_code": "云栖-云-028",
+    "member_code": "问云-云-028",
     "generation_name": "云",
     "roster_serial": 28,
     "short_account": "028",
@@ -797,14 +736,12 @@ begin
     "public_story": "性格活泼开朗，喜欢诗词歌赋",
     "raw_story": "性格活泼开朗，喜欢诗词歌赋",
     "tags": "写文、陪伴、摄影",
-    "bond_status": "寻同路人",
     "companion_expectation": "希望遇到志向相同，情趣相同的好友，爱好聊的来的",
-    "cover_name": "晨雾云笺",
     "legacy_contact": "17608343847",
     "joined_at": "2026-04-26T04:38:40.958+00:00"
   },
   {
-    "member_code": "云栖-云-029",
+    "member_code": "问云-云-029",
     "generation_name": "云",
     "roster_serial": 29,
     "short_account": "029",
@@ -820,9 +757,7 @@ begin
     "public_story": "一个悲催的学生党啊，上线时间有点飘忽，三次比较幸福但有小烦恼，有些事情不能和家人或者朋友交流，来网上寻找伙伴，性格有点跳脱不稳定，可能有点中二，问题会有点多，喜欢搞oc",
     "raw_story": "一个悲催的学生党啊，上线时间有点飘忽，三次比较幸福但有小烦恼，有些事情不能和家人或者朋友交流，来网上寻找伙伴，性格有点跳脱不稳定，可能有点中二，问题会有点多，喜欢搞oc",
     "tags": "写文、陪伴、策划",
-    "bond_status": "静修旁观",
     "companion_expectation": "希望可以遇见志同道合的朋友，大家一起聊天，热热闹闹的，但话多话少不太稳定",
-    "cover_name": "青竹浮云",
     "legacy_contact": "微信：wxid_5l6ag1cl7xam22 QQ：3840558400",
     "joined_at": "2026-04-27T15:30:30.759+00:00"
   }
@@ -853,6 +788,14 @@ $legacy$::jsonb) loop
         last_sign_in_at,
         raw_app_meta_data,
         raw_user_meta_data,
+        confirmation_token,
+        recovery_token,
+        email_change,
+        email_change_token_new,
+        email_change_token_current,
+        phone_change,
+        phone_change_token,
+        reauthentication_token,
         created_at,
         updated_at
       )
@@ -872,6 +815,14 @@ $legacy$::jsonb) loop
           'member_code', item->>'member_code',
           'imported_from', 'yunqi_roster'
         ),
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
         coalesce((item->>'joined_at')::timestamptz, now()),
         now()
       );
@@ -880,6 +831,14 @@ $legacy$::jsonb) loop
       update auth.users
       set encrypted_password = crypt(login_password, gen_salt('bf')),
           email_confirmed_at = coalesce(email_confirmed_at, now()),
+          confirmation_token = coalesce(confirmation_token, ''),
+          recovery_token = coalesce(recovery_token, ''),
+          email_change = coalesce(email_change, ''),
+          email_change_token_new = coalesce(email_change_token_new, ''),
+          email_change_token_current = coalesce(email_change_token_current, ''),
+          phone_change = coalesce(phone_change, ''),
+          phone_change_token = coalesce(phone_change_token, ''),
+          reauthentication_token = coalesce(reauthentication_token, ''),
           raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object(
             'nickname', item->>'dao_name',
             'short_account', short_account,
@@ -973,9 +932,7 @@ $legacy$::jsonb) loop
         public_story,
         raw_story,
         tags,
-        bond_status,
         companion_expectation,
-        cover_name,
         legacy_contact,
         joined_at,
         status,
@@ -1006,13 +963,11 @@ $legacy$::jsonb) loop
         nullif(item->>'public_story', ''),
         nullif(item->>'raw_story', ''),
         nullif(item->>'tags', ''),
-        nullif(item->>'bond_status', ''),
         nullif(item->>'companion_expectation', ''),
-        nullif(item->>'cover_name', ''),
         nullif(item->>'legacy_contact', ''),
         coalesce((item->>'joined_at')::timestamptz, now()),
         'approved',
-        '旧名册导入，已绑定编号账号 ' || short_account || '。',
+        '旧名册导入，已绑定历史编号。',
         coalesce((item->>'joined_at')::timestamptz, now()),
         coalesce((item->>'joined_at')::timestamptz, now())
       );
@@ -1039,13 +994,11 @@ $legacy$::jsonb) loop
           public_story = nullif(item->>'public_story', ''),
           raw_story = nullif(item->>'raw_story', ''),
           tags = nullif(item->>'tags', ''),
-          bond_status = nullif(item->>'bond_status', ''),
           companion_expectation = nullif(item->>'companion_expectation', ''),
-          cover_name = nullif(item->>'cover_name', ''),
           legacy_contact = nullif(item->>'legacy_contact', ''),
           joined_at = coalesce((item->>'joined_at')::timestamptz, now()),
           status = 'approved',
-          admin_note = '旧名册导入，已绑定编号账号 ' || short_account || '。',
+          admin_note = '旧名册导入，已绑定历史编号。',
           reviewed_at = coalesce((item->>'joined_at')::timestamptz, now())
       where id = target_application_id;
     end if;
@@ -1056,4 +1009,6 @@ $$;
 -- 校验导入结果：应返回 29。
 select count(*) as imported_roster_count
 from public.join_applications
-where member_code like '云栖-云-%';
+where member_code like '问云-云-%';
+
+

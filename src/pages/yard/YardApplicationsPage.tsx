@@ -57,7 +57,6 @@ export function YardApplicationsPage() {
                 <div>
                   <p className="text-sm text-[#9e3d32]">
                     {item.member_code ?? '尚未编号'}
-                    {item.roster_serial ? ` · 账号 ${String(item.roster_serial).padStart(3, '0')}` : ''}
                   </p>
                   <h2 className="ink-title mt-1 text-3xl font-bold text-[#143044]">{item.nickname}</h2>
                 </div>
@@ -69,8 +68,6 @@ export function YardApplicationsPage() {
                 <p>江湖名：{item.jianghu_name ?? '未填写'}</p>
                 <p>身份：{item.member_role ?? '未填写'}</p>
                 <p>公开地域：{item.public_region ?? item.city ?? '未填写'}</p>
-                <p>封面：{item.cover_name ?? '未填写'}</p>
-                <p>羁绊状态：{item.bond_status ?? '未填写'}</p>
                 <p>入册时间：{item.joined_at ? formatDate(item.joined_at) : formatDate(item.created_at)}</p>
                 <p>审核时间：{item.reviewed_at ? formatDate(item.reviewed_at) : '尚未审核'}</p>
               </div>

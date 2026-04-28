@@ -109,12 +109,8 @@ export interface JoinApplication {
   raw_story: string | null
   // 标签，用中文逗号分隔，来自旧名册标签。
   tags: string | null
-  // 羁绊状态，用于公开名册展示。
-  bond_status: string | null
   // 同行期待，用于公开名册展示。
   companion_expectation: string | null
-  // 封面名称，用于保留旧名册封面选择。
-  cover_name: string | null
   // 联系方式，只在后台和本人小院展示，不进入公开名册。
   legacy_contact: string | null
   // 正式入册时间，旧数据导入时使用旧入册时间。
@@ -157,12 +153,8 @@ export interface JoinApplicationInput {
   public_story: string
   // 标签，可为空，多个标签用顿号或逗号分隔。
   tags: string
-  // 羁绊状态，可为空。
-  bond_status: string
   // 同行期待，可为空。
   companion_expectation: string
-  // 封面名称，可为空。
-  cover_name: string
   // 联系方式，不能为空，只供后台联系和账号绑定排查。
   legacy_contact: string
   // 是否认同门规，必须勾选。
@@ -193,8 +185,6 @@ export interface RosterEntry {
   member_role: WenyunMemberRole
   // 辈分字，例如“云”。
   generation_name: string
-  // 入册序号，用于展示短编号。
-  roster_serial: number | null
   // 公开地域，用于名册展示。
   public_region: string | null
   // 宣言，用于名册展示。
@@ -203,12 +193,8 @@ export interface RosterEntry {
   public_story: string | null
   // 标签，用中文逗号分隔。
   tags: string | null
-  // 羁绊状态，用于名册展示。
-  bond_status: string | null
   // 同行期待，用于名册展示。
   companion_expectation: string | null
-  // 封面名称，用于名册展示。
-  cover_name: string | null
   // 正式入册时间。
   joined_at: string | null
   // 当前入册状态。
@@ -263,12 +249,8 @@ export interface JoinApplicationUpdateInput {
   raw_story: string
   // 标签。
   tags: string
-  // 羁绊状态。
-  bond_status: string
   // 同行期待。
   companion_expectation: string
-  // 封面名称。
-  cover_name: string
   // 联系方式。
   legacy_contact: string
   // 正式入册时间。
