@@ -5,7 +5,7 @@ import { EmptyState } from '../components/EmptyState'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
-import { genderOptions } from '../data/siteContent'
+import { applicationStatusLabels, genderOptions } from '../data/siteContent'
 import { fetchPublicRoster, submitJoinApplication } from '../lib/services'
 import type { JoinApplicationInput, MemberGender, RosterEntry } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
@@ -34,6 +34,17 @@ function formatBirthMonth(value: string | null): string {
   const [year, month] = value.split('-')
 
   return year && month ? `${year}年${month}月` : value
+}
+
+// 这个函数格式化登记时间，入参是数据库时间字符串，返回值是中文日期。
+function formatRosterDate(value: string): string {
+  try {
+    // 这里把数据库时间转成本地日期，便于手机端和桌面端阅读。
+    return new Date(value).toLocaleDateString('zh-CN')
+  } catch {
+    // 这里兜底处理异常日期，避免页面因为时间格式问题报错。
+    return value
+  }
 }
 
 // 这个函数渲染问云名册页，入参为空，返回值是名册展示和登记表单。
@@ -134,7 +145,7 @@ export function JoinPage() {
           ) : (
             <>
               <div className="hidden overflow-x-auto rounded-2xl border border-[#c9a45c]/25 bg-white/60 md:block">
-                <table className="w-full min-w-[780px] text-left text-sm">
+                <table className="w-full min-w-[980px] text-left text-sm">
                   <thead className="bg-[#edf3ef] text-[#263238]">
                     <tr>
                       <th className="px-4 py-3">编号</th>
@@ -145,6 +156,8 @@ export function JoinPage() {
                       <th className="px-4 py-3">身份</th>
                       <th className="px-4 py-3">辈分字</th>
                       <th className="px-4 py-3">线下意愿</th>
+                      <th className="px-4 py-3">状态</th>
+                      <th className="px-4 py-3">登记时间</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -158,6 +171,8 @@ export function JoinPage() {
                         <td className="px-4 py-3">{item.member_role}</td>
                         <td className="px-4 py-3">{item.generation_name}</td>
                         <td className="px-4 py-3">{item.offline_interest ?? '未填写'}</td>
+                        <td className="px-4 py-3">{applicationStatusLabels[item.status]}</td>
+                        <td className="px-4 py-3">{formatRosterDate(item.created_at)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -179,6 +194,8 @@ export function JoinPage() {
                       <p>辈分：{item.generation_name}</p>
                       <p>出生：{formatBirthMonth(item.birth_month)}</p>
                       <p>城市：{item.city ?? '未填写'}</p>
+                      <p>状态：{applicationStatusLabels[item.status]}</p>
+                      <p>登记：{formatRosterDate(item.created_at)}</p>
                     </div>
                     <p className="mt-3 text-sm text-[#526461]">线下意愿：{item.offline_interest ?? '未填写'}</p>
                   </div>

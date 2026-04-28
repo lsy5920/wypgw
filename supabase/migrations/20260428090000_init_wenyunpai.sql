@@ -358,7 +358,7 @@ values (
   'contact',
   jsonb_build_object(
     'wechatName', '问云派执事',
-    'contactTip', '请先提交入派帖，执事查看后会择时联系。',
+    'contactTip', '请先提交名册登记，执事查看后会择时联系。',
     'qrDescription', '首版不公开永久群二维码，避免广告和陌生人直接入群。'
   )
 )

@@ -51,7 +51,7 @@ export const mockAnnouncements: Announcement[] = [
     slug: 'wenyun-open',
     category: '山门公告',
     summary: '问云派官网第一版上线，愿来者可歇，留者相知。',
-    content: '问云派官网第一版上线，前台展示、入派问路、云灯留言与后台雏形已经准备完毕。',
+    content: '问云派官网第一版上线，前台展示、问云名册、云灯留言与后台雏形已经准备完毕。',
     cover_url: null,
     is_pinned: true,
     status: 'published',

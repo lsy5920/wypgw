@@ -101,3 +101,16 @@ order by member_code asc;
 
 -- 这里授权游客读取公开名册视图，视图中没有敏感联系方式。
 grant select on public.roster_entries to anon, authenticated;
+
+-- 这里收紧游客提交策略，游客只能登记待审核同门，不能自行把身份改成掌门或直接公开入册。
+drop policy if exists "游客可提交入派申请" on public.join_applications;
+drop policy if exists "游客可提交名册登记" on public.join_applications;
+create policy "游客可提交名册登记"
+on public.join_applications
+for insert
+with check (
+  accept_rules = true
+  and status = 'pending'
+  and member_role = '同门'
+  and generation_name = '云'
+);
