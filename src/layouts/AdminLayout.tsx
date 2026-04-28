@@ -7,7 +7,7 @@ import { getPublicAsset } from '../lib/assets'
 // 这个数组保存后台导航项，返回值用于侧栏和移动端后台入口。
 const adminNavItems = [
   { label: '后台总览', path: '/admin', icon: BarChart3 },
-  { label: '入派审核', path: '/admin/applications', icon: ShieldCheck },
+  { label: '名册管理', path: '/admin/applications', icon: ShieldCheck },
   { label: '云灯审核', path: '/admin/lanterns', icon: Lamp },
   { label: '公告管理', path: '/admin/announcements', icon: Megaphone },
   { label: '活动管理', path: '/admin/events', icon: FileText },

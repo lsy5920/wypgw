@@ -8,7 +8,7 @@ export const siteNavItems = [
   { label: '首页', path: '/' },
   { label: '立派金典', path: '/canon' },
   { label: '山门介绍', path: '/about' },
-  { label: '入派问路', path: '/join' },
+  { label: '问云名册', path: '/join' },
   { label: '云灯留言', path: '/cloud-lantern' },
   { label: '门派公告', path: '/announcements' },
   { label: '问云雅集', path: '/events' },
@@ -29,10 +29,16 @@ export const spiritItems = [
 export const joinSteps = [
   '问云而来',
   '阅读金典',
-  '填写入派帖',
+  '登记道名',
   '执事审核',
-  '入微信群山门'
+  '列入问云名册'
 ]
+
+// 这个数组保存名册性别选项，返回值用于前台登记和后台编辑。
+export const genderOptions = ['男', '女', '不公开'] as const
+
+// 这个数组保存门派身份选项，返回值用于后台名册编辑。
+export const memberRoleOptions = ['掌门', '执事', '护灯人', '同门'] as const
 
 // 这个数组保存门派架构，返回值用于山门介绍页展示。
 export const sectRoles = [

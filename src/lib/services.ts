@@ -1,10 +1,11 @@
 import { supabase, supabaseReady } from './supabaseClient'
-import { createSlug } from './validators'
+import { createNextMemberCode, createSlug } from './validators'
 import {
   mockAnnouncements,
   mockApplications,
   mockEvents,
   mockLanterns,
+  mockRosterEntries,
   mockSettings
 } from '../data/mockData'
 import type {
@@ -15,7 +16,9 @@ import type {
   JoinApplication,
   JoinApplicationInput,
   JoinApplicationStatus,
+  JoinApplicationUpdateInput,
   LanternStatus,
+  RosterEntry,
   SiteSetting,
   WenyunEvent
 } from './types'
@@ -124,11 +127,14 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
     nickname: input.nickname.trim(),
     wechat_id: input.wechat_id.trim(),
     age_range: input.age_range.trim() || null,
+    gender: input.gender,
     city: input.city.trim() || null,
     reason: input.reason.trim(),
     accept_rules: input.accept_rules,
     offline_interest: input.offline_interest.trim() || null,
     remark: input.remark.trim() || null,
+    member_role: '同门',
+    generation_name: '云',
     status: 'pending'
   }
 
@@ -138,6 +144,7 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
       {
         id: `demo-application-${Date.now()}`,
         ...payload,
+        member_code: createNextMemberCode(mockApplications.map((item) => item.member_code), '云'),
         status: 'pending',
         admin_note: null,
         reviewed_by: null,
@@ -170,6 +177,30 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
       } as JoinApplication,
       getErrorMessage(error, '提交入派申请失败')
     )
+  }
+}
+
+// 这个函数读取公开问云名册，入参为空，返回值是不含微信号的公开成员列表。
+export async function fetchPublicRoster(): Promise<ApiResult<RosterEntry[]>> {
+  // 这里在未配置 Supabase 时返回演示名册，保证页面可直接预览。
+  if (!supabase) {
+    return okResult(mockRosterEntries, '当前为演示名册。')
+  }
+
+  try {
+    // 这里读取数据库公开视图，视图只包含非敏感名册字段。
+    const { data, error } = await supabase
+      .from('roster_entries')
+      .select('*')
+      .order('member_code', { ascending: true })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as RosterEntry[])
+  } catch (error) {
+    return failResult(mockRosterEntries, getErrorMessage(error, '读取问云名册失败，已显示演示名册'))
   }
 }
 
@@ -277,6 +308,55 @@ export async function updateApplicationStatus(
     return okResult(data as JoinApplication, '入派申请状态已更新。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '更新入派申请失败'))
+  }
+}
+
+// 这个函数保存后台名册详情，入参是申请编号和全部可编辑字段，返回值是更新后的申请。
+export async function updateApplicationDetails(
+  id: string,
+  input: JoinApplicationUpdateInput
+): Promise<ApiResult<JoinApplication | null>> {
+  // 这个对象保存将写入数据库的字段，空字符串会转成空值。
+  const payload = {
+    nickname: input.nickname.trim(),
+    wechat_id: input.wechat_id.trim(),
+    age_range: input.age_range.trim() || null,
+    gender: input.gender,
+    city: input.city.trim() || null,
+    reason: input.reason.trim(),
+    accept_rules: input.accept_rules,
+    offline_interest: input.offline_interest.trim() || null,
+    remark: input.remark.trim() || null,
+    admin_note: input.admin_note.trim() || null,
+    member_role: input.member_role,
+    generation_name: input.generation_name.trim() || '云',
+    member_code: input.member_code.trim(),
+    status: input.status,
+    reviewed_at: new Date().toISOString()
+  }
+
+  // 这里演示模式只返回本地拼装结果，不会真正保存。
+  if (!supabase) {
+    const current = mockApplications.find((item) => item.id === id) ?? null
+    return okResult(current ? { ...current, ...payload } : null, '演示模式下已模拟保存名册。')
+  }
+
+  try {
+    // 这里保存管理员直接编辑的名册字段，权限由 RLS 限制为管理员可写。
+    const { data, error } = await supabase
+      .from('join_applications')
+      .update(payload)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as JoinApplication, '名册资料已保存。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '保存名册资料失败'))
   }
 }
 

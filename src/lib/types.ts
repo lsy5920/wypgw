@@ -1,6 +1,12 @@
 // 这个类型表示入派申请在后台审核时可能出现的状态。
 export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'contacted' | 'joined'
 
+// 这个类型表示名册公开展示的性别选项。
+export type MemberGender = '男' | '女' | '不公开'
+
+// 这个类型表示问云名册中的门派身份。
+export type WenyunMemberRole = '掌门' | '执事' | '护灯人' | '同门'
+
 // 这个类型表示云灯留言在审核流程中的状态。
 export type LanternStatus = 'pending' | 'approved' | 'rejected'
 
@@ -36,12 +42,14 @@ export interface Profile {
 export interface JoinApplication {
   // 申请唯一编号，由数据库生成。
   id: string
-  // 申请人在群内想使用的昵称。
+  // 申请人在名册中想使用的道名。
   nickname: string
   // 微信号属于敏感联系方式，只在后台展示。
   wechat_id: string
-  // 年龄段用于基本了解，不强制填写。
+  // 出生月份用于基本了解，不强制填写。
   age_range: string | null
+  // 性别用于名册公开展示，可选择不公开。
+  gender: MemberGender | null
   // 所在城市用于后续线下活动参考。
   city: string | null
   // 申请理由是审核时最重要的文字。
@@ -52,6 +60,12 @@ export interface JoinApplication {
   offline_interest: string | null
   // 备注用于补充说明。
   remark: string | null
+  // 门派身份，只能由管理员在后台编辑。
+  member_role: WenyunMemberRole | null
+  // 辈分字，只能由管理员在后台编辑，默认是“云”。
+  generation_name: string | null
+  // 名册编号，由系统默认按已有最大编号往后生成。
+  member_code: string | null
   // 审核状态，用于后台流转。
   status: JoinApplicationStatus
   // 管理员备注，只在后台可见。
@@ -66,12 +80,14 @@ export interface JoinApplication {
 
 // 这个接口描述入派申请提交时需要传入的字段。
 export interface JoinApplicationInput {
-  // 申请昵称，不能为空。
+  // 申请道名，不能为空。
   nickname: string
   // 微信号，不能为空。
   wechat_id: string
-  // 年龄段，可为空。
+  // 出生月份，可为空。
   age_range: string
+  // 性别，不能为空。
+  gender: MemberGender
   // 所在城市，可为空。
   city: string
   // 申请理由，不能为空。
@@ -82,6 +98,64 @@ export interface JoinApplicationInput {
   offline_interest: string
   // 备注，可为空。
   remark: string
+}
+
+// 这个接口描述公开名册条目，入参来自 Supabase 公开视图，返回给前台展示。
+export interface RosterEntry {
+  // 公开条目唯一编号，对应入派申请编号。
+  id: string
+  // 道名，用于名册展示。
+  dao_name: string
+  // 名册编号，例如“问云-云-001”。
+  member_code: string
+  // 性别，用于名册展示。
+  gender: MemberGender
+  // 出生月份，用于名册展示。
+  birth_month: string | null
+  // 所在城市，用于名册展示。
+  city: string | null
+  // 线下雅集意愿，用于名册展示。
+  offline_interest: string | null
+  // 门派身份，例如掌门、执事、护灯人、同门。
+  member_role: WenyunMemberRole
+  // 辈分字，例如“云”。
+  generation_name: string
+  // 当前入册状态。
+  status: JoinApplicationStatus
+  // 入册时间或申请时间。
+  created_at: string
+}
+
+// 这个接口描述后台编辑名册时可修改的字段。
+export interface JoinApplicationUpdateInput {
+  // 道名，后台可修正错别字。
+  nickname: string
+  // 微信号，后台可修正联系信息。
+  wechat_id: string
+  // 出生月份，格式通常为 YYYY-MM。
+  age_range: string
+  // 性别，后台可修正登记信息。
+  gender: MemberGender
+  // 所在城市。
+  city: string
+  // 申请理由。
+  reason: string
+  // 是否认同门规。
+  accept_rules: boolean
+  // 线下雅集意愿。
+  offline_interest: string
+  // 申请备注。
+  remark: string
+  // 管理员备注。
+  admin_note: string
+  // 门派身份。
+  member_role: WenyunMemberRole
+  // 辈分字。
+  generation_name: string
+  // 名册编号。
+  member_code: string
+  // 审核状态。
+  status: JoinApplicationStatus
 }
 
 // 这个接口描述云灯留言的展示和审核数据。

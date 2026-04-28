@@ -48,7 +48,7 @@ export function ContactPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-14 md:px-6">
       <SectionTitle center eyebrow="联系山门" title="不公开永久二维码，只留清净入口">
-        问云派首版采用入派申请与人工审核，不直接公开永久微信群二维码，避免广告和陌生人直接入群。
+        问云派首版采用名册登记与人工审核，不直接公开永久微信群二维码，避免广告和陌生人直接入群。
       </SectionTitle>
 
       {notice ? <StatusNotice title="演示模式提示" message={notice} /> : null}
@@ -58,11 +58,11 @@ export function ContactPage() {
           <img className="mx-auto h-48 w-48 rounded-full object-cover shadow-xl" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
           <h2 className="ink-title mt-6 text-center text-3xl font-bold">问云派山门</h2>
           <p className="mt-4 text-center leading-8 text-[#526461]">
-            {contact.contactTip ?? '请先提交入派帖，执事查看后会择时联系。'}
+            {contact.contactTip ?? '请先提交名册登记，执事查看后会择时联系。'}
           </p>
           <div className="mt-6 flex justify-center">
             <CloudButton to="/join" variant="seal">
-              入派问路
+              登记名册
               <Mail className="h-4 w-4" />
             </CloudButton>
           </div>
@@ -73,7 +73,7 @@ export function ContactPage() {
             <ShieldCheck className="mb-4 h-9 w-9 text-[#6f8f8b]" />
             <h2 className="text-2xl font-bold">联系方式说明</h2>
             <p className="mt-4 leading-8 text-[#526461]">
-              联系人：{contact.wechatName ?? '问云派执事'}。微信号和申请理由只用于入派审核，不会在前台公开展示。
+              联系人：{contact.wechatName ?? '问云派执事'}。微信号和申请理由只用于名册审核，不会在前台公开展示。
             </p>
           </ScrollPanel>
           <ScrollPanel>
@@ -83,7 +83,7 @@ export function ContactPage() {
             </p>
           </ScrollPanel>
           <ScrollPanel>
-            <h2 className="text-2xl font-bold">入派后如何相处</h2>
+            <h2 className="text-2xl font-bold">入册后如何相处</h2>
             <p className="mt-4 leading-8 text-[#526461]">
               守礼、守真、守善、守界、守静、守净、守和、守信。愿你此来，不添风浪，只添灯火。
             </p>

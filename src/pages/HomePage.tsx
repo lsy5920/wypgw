@@ -80,7 +80,7 @@ export function HomePage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <CloudButton to="/join" variant="seal">
-                入派问路
+                登记名册
                 <ArrowRight className="h-4 w-4" />
               </CloudButton>
               <CloudButton to="/canon" variant="ghost">
@@ -165,7 +165,7 @@ export function HomePage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-        <SectionTitle eyebrow="入派流程" title="问云而来，归心有路">
+        <SectionTitle eyebrow="名册流程" title="问云而来，归心有路">
           申请不是门槛，而是彼此确认边界。愿来者真诚，守门者温和。
         </SectionTitle>
         <div className="grid gap-4 lg:grid-cols-5">
@@ -227,7 +227,7 @@ export function HomePage() {
           <p className="mt-5 max-w-3xl leading-8 text-[#d8d7ca]">问云派山门已开。愿你此来，不添风浪，只添灯火。</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <CloudButton to="/join" variant="seal">
-              申请入派
+              登记名册
             </CloudButton>
             <CloudButton to="/contact" variant="ghost">
               叩问山门

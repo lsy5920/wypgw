@@ -20,7 +20,7 @@ export function SiteFooter() {
           <p className="mb-4 font-semibold text-[#c9a45c]">山门入口</p>
           <div className="grid gap-3 text-sm text-[#d8d7ca]">
             <Link to="/canon">立派金典</Link>
-            <Link to="/join">入派问路</Link>
+            <Link to="/join">问云名册</Link>
             <Link to="/cloud-lantern">云灯留言</Link>
             <Link to="/announcements">门派公告</Link>
           </div>
@@ -30,7 +30,7 @@ export function SiteFooter() {
         <div>
           <p className="mb-4 font-semibold text-[#c9a45c]">守门提醒</p>
           <p className="text-sm leading-7 text-[#d8d7ca]">
-            首版不公开永久微信群二维码。入派申请由掌门或执事人工查看，微信号只用于联系入群。
+            首版不公开永久微信群二维码。名册登记由掌门或执事人工查看，微信号只用于联系入群。
           </p>
         </div>
       </div>

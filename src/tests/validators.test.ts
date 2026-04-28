@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parseCanonSections } from '../pages/CanonPage'
 import { canonText } from '../data/siteContent'
 import { isEmailNotConfirmedError, translateSupabaseAuthError } from '../lib/authMessages'
-import { createSlug, validateCloudLantern, validateJoinApplication } from '../lib/validators'
+import { createNextMemberCode, createSlug, isValidDaoName, validateCloudLantern, validateJoinApplication } from '../lib/validators'
 
 // 这里测试基础校验逻辑，确保关键表单不会接受明显无效的数据。
 describe('问云派表单校验', () => {
@@ -12,6 +12,7 @@ describe('问云派表单校验', () => {
       nickname: '',
       wechat_id: '',
       age_range: '',
+      gender: '不公开',
       city: '',
       reason: '太短',
       accept_rules: false,
@@ -25,9 +26,10 @@ describe('问云派表单校验', () => {
   // 这个用例验证合格入派申请不会返回错误。
   it('会接受内容完整的入派申请', () => {
     const errors = validateJoinApplication({
-      nickname: '云边来客',
+      nickname: '云初',
       wechat_id: 'wenyun_test',
-      age_range: '25-30',
+      age_range: '1998-03',
+      gender: '女',
       city: '杭州',
       reason: '我想加入一个真诚温暖、有边界、有分寸的社群。',
       accept_rules: true,
@@ -48,6 +50,24 @@ describe('问云派表单校验', () => {
     })
 
     expect(errors.length).toBeGreaterThan(0)
+  })
+})
+
+// 这里测试问云名册规则，确保道名和编号生成稳定。
+describe('问云名册规则', () => {
+  // 这个用例验证道名必须以云字开头且 2 到 3 个字。
+  it('会校验道名格式', () => {
+    expect(isValidDaoName('云初')).toBe(true)
+    expect(isValidDaoName('云灯月')).toBe(true)
+    expect(isValidDaoName('山月')).toBe(false)
+    expect(isValidDaoName('云')).toBe(false)
+  })
+
+  // 这个用例验证编号会按辈分字顺延。
+  it('会生成下一个名册编号', () => {
+    const code = createNextMemberCode(['问云-云-001', '问云-云-008', '问云-清-002'], '云')
+
+    expect(code).toBe('问云-云-009')
   })
 })
 

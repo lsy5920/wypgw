@@ -6,7 +6,7 @@ const mobileItems = [
   { label: '首页', path: '/', icon: Home },
   { label: '金典', path: '/canon', icon: BookOpen },
   { label: '云灯', path: '/cloud-lantern', icon: Lamp },
-  { label: '入派', path: '/join', icon: Cloud },
+  { label: '名册', path: '/join', icon: Cloud },
   { label: '联系', path: '/contact', icon: Mail }
 ]
 

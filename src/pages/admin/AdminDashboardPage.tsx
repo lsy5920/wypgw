@@ -12,7 +12,7 @@ import {
 
 // 这个接口描述后台总览统计，入参来自各列表接口，返回值用于卡片展示。
 interface DashboardStats {
-  // 待审核入派申请数。
+  // 待审核名册登记数。
   pendingApplications: number
   // 待审核云灯留言数。
   pendingLanterns: number
@@ -62,14 +62,14 @@ export function AdminDashboardPage() {
   return (
     <div>
       <SectionTitle eyebrow="后台总览" title="护灯与守门">
-        查看入派申请、云灯留言、公告和雅集的当前状态。
+        查看名册登记、云灯留言、公告和雅集的当前状态。
       </SectionTitle>
 
       {notice ? <StatusNotice title="演示模式提示" message={notice} /> : null}
 
       <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { title: '待审核入派', value: stats.pendingApplications, icon: Users },
+          { title: '待审核登记', value: stats.pendingApplications, icon: Users },
           { title: '待审核云灯', value: stats.pendingLanterns, icon: Lamp },
           { title: '公告数量', value: stats.announcements, icon: Megaphone },
           { title: '活动数量', value: stats.events, icon: FileText }

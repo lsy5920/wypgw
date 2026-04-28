@@ -1,4 +1,4 @@
-import type { Announcement, CloudLantern, JoinApplication, SiteSetting, WenyunEvent } from '../lib/types'
+import type { Announcement, CloudLantern, JoinApplication, RosterEntry, SiteSetting, WenyunEvent } from '../lib/types'
 
 // 这个常量保存演示用时间，返回值用于无数据库时保持页面内容稳定。
 const demoNow = '2026-04-28T09:00:00+08:00'
@@ -115,21 +115,62 @@ export const mockEvents: WenyunEvent[] = [
 export const mockApplications: JoinApplication[] = [
   {
     id: 'application-1',
-    nickname: '山月',
+    nickname: '云山',
     wechat_id: 'wenyun_demo_001',
-    age_range: '25-30',
+    age_range: '1998-03',
+    gender: '不公开',
     city: '杭州',
     reason: '想找一个不吵闹、能真诚说话的地方，也愿意一起守护门派氛围。',
     accept_rules: true,
     offline_interest: '愿意参加',
     remark: '希望先从线上交流开始。',
-    status: 'pending',
+    member_role: '同门',
+    generation_name: '云',
+    member_code: '问云-云-001',
+    status: 'joined',
     admin_note: null,
     reviewed_by: null,
     reviewed_at: null,
     created_at: demoNow
+  },
+  {
+    id: 'application-2',
+    nickname: '云灯',
+    wechat_id: 'wenyun_demo_002',
+    age_range: '1995-09',
+    gender: '女',
+    city: '苏州',
+    reason: '愿意做一点温暖的小事，也愿意提醒大家守住边界。',
+    accept_rules: true,
+    offline_interest: '先线上交流',
+    remark: '',
+    member_role: '护灯人',
+    generation_name: '云',
+    member_code: '问云-云-002',
+    status: 'approved',
+    admin_note: '演示名册成员。',
+    reviewed_by: null,
+    reviewed_at: demoNow,
+    created_at: demoNow
   }
 ]
+
+// 这个数组保存公开名册演示数据，未连接 Supabase 时用于前台展示。
+export const mockRosterEntries: RosterEntry[] = mockApplications
+  .filter((item) => item.status !== 'pending' && item.status !== 'rejected')
+  .map((item) => ({
+    id: item.id,
+    dao_name: item.nickname,
+    member_code: item.member_code ?? '问云-云-000',
+    gender: item.gender ?? '不公开',
+    birth_month: item.age_range,
+    city: item.city,
+    offline_interest: item.offline_interest,
+    member_role: item.member_role ?? '同门',
+    generation_name: item.generation_name ?? '云',
+    status: item.status,
+    created_at: item.created_at
+  }))
 
 // 这个数组保存演示站点设置，未连接 Supabase 时用于联系页和后台设置。
 export const mockSettings: SiteSetting[] = [
@@ -137,7 +178,7 @@ export const mockSettings: SiteSetting[] = [
     key: 'contact',
     value: {
       wechatName: '问云派执事',
-      contactTip: '请先提交入派帖，执事查看后会择时联系。',
+      contactTip: '请先提交名册登记，执事查看后会择时联系。',
       qrDescription: '首版不公开永久群二维码，避免广告和陌生人直接入群。'
     },
     updated_by: null,
