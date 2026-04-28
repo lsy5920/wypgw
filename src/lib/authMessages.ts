@@ -36,7 +36,7 @@ export function translateSupabaseAuthError(error: unknown): string {
   return rawMessage || '操作失败，请稍后再试。'
 }
 
-// 这个函数生成 Supabase 邮箱确认后的回跳地址，入参为空，返回值是当前网站登录页地址。
+// 这个函数生成 Supabase 邮箱确认后的回跳地址，入参为空，返回值是当前网站根地址。
 export function getAuthRedirectUrl(): string {
   try {
     // 这里兼容构建和测试环境，避免没有浏览器窗口对象时报错。
@@ -44,8 +44,8 @@ export function getAuthRedirectUrl(): string {
       return ''
     }
 
-    // 这里保留 GitHub Pages 仓库子路径，并用哈希路由回到登录页。
-    return `${window.location.origin}${window.location.pathname}#/login`
+    // 这里保留 GitHub Pages 仓库子路径，并回到站点根地址，避免 Supabase 确认参数和哈希路由互相冲突。
+    return `${window.location.origin}${window.location.pathname}`
   } catch {
     // 这里兜底处理极少数浏览器环境异常，返回空值表示使用 Supabase 默认回跳。
     return ''

@@ -218,7 +218,7 @@ export function LoginPage() {
         </form>
 
         <div className="mt-6 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
-          管理员初始化方式：先注册账号并完成邮箱确认，再到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。若 Supabase 开启邮箱确认，未确认邮箱时即使已经提权，也会被登录入口拦住。
+          管理员初始化方式：先注册账号并完成邮箱确认，再到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。若收不到确认邮件，可执行项目里的 supabase/admin_confirm_founder.sql 手动确认邮箱并授予掌门权限。
         </div>
       </ScrollPanel>
     </main>

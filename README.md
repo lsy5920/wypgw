@@ -87,7 +87,48 @@ npm run dev
 
 注意：不要把 `service_role` 密钥放进前端项目，也不要提交到 Git 仓库。
 
-### 三、初始化管理员
+### 三、配置 Supabase 登录回跳地址
+
+1. 打开 Supabase 项目后台。
+2. 进入 `Authentication` → `URL Configuration`。
+3. 把 `Site URL` 改成你的 GitHub Pages 真实首页地址。
+
+如果你的地址栏显示的是：
+
+```text
+https://lsy5920.github.io/
+```
+
+就填写：
+
+```text
+https://lsy5920.github.io/
+```
+
+如果你的网站是仓库子路径，例如：
+
+```text
+https://你的用户名.github.io/仓库名/
+```
+
+就填写完整子路径地址。
+
+4. 在 `Redirect URLs` 里添加你的线上地址，建议至少添加：
+
+```text
+https://lsy5920.github.io/*
+```
+
+如果你是仓库子路径部署，再额外添加：
+
+```text
+https://你的用户名.github.io/仓库名/*
+```
+
+5. 保存后，回到官网 `/login` 页面重新点击“重发确认邮件”。
+6. 旧邮件里如果仍然跳到 `http://localhost:3000`，说明那是旧链接，请不要再用旧邮件，必须使用新发的确认邮件。
+
+### 四、初始化管理员
 
 1. 打开 `/login` 页面。
 2. 使用邮箱和密码注册一个账号。
@@ -104,10 +145,12 @@ where id = (select id from auth.users where email = '你的邮箱@example.com');
 6. 回到官网 `/login` 登录。
 7. 登录成功后进入 `/admin` 后台。
 
-如果你只是测试后台，不想处理邮箱确认，可以二选一：
+如果你只是测试后台，不想处理邮箱确认，或重发确认邮件一直收不到，可以二选一：
 
 1. 在 Supabase 控制台的 Authentication 邮箱登录设置中关闭邮箱确认。
-2. 在 Supabase SQL 编辑器中临时确认指定邮箱：
+2. 打开本项目文件 `supabase/admin_confirm_founder.sql`，把里面的 `你的邮箱@example.com` 改成你的管理员邮箱，然后复制到 Supabase SQL 编辑器执行。
+
+也可以只执行下面这段临时确认指定邮箱：
 
 ```sql
 update auth.users
@@ -126,7 +169,7 @@ where email = '你的邮箱@example.com'
 | `admin` | 执事，拥有后台管理权限 |
 | `member` | 普通同门，不能进入后台 |
 
-### 四、部署到 GitHub Pages
+### 五、部署到 GitHub Pages
 
 1. 把代码推送到 GitHub 的 `main` 分支。
 2. 打开仓库设置里的 Pages 功能。
@@ -219,6 +262,7 @@ wypgw/
 │  ├─ App.tsx                      # 全站路由入口
 │  └─ main.tsx                     # React 挂载入口
 ├─ supabase/
+│  ├─ admin_confirm_founder.sql     # 收不到确认邮件时手动确认邮箱并提权
 │  └─ migrations/                  # Supabase 初始化 SQL
 ├─ 网站开发资料/
 │  ├─ 立派金典.txt                 # 金典原文资料
@@ -271,9 +315,10 @@ wypgw/
 
 解决方法：
 
-1. 打开注册邮箱，找到 Supabase 确认邮件并点击确认链接。
-2. 如果没有收到邮件，在 `/login` 页面填写邮箱后点击“重发确认邮件”。
-3. 如果只是本地或内部测试，可以在 Supabase SQL 编辑器执行：
+1. 先到 Supabase 的 `Authentication` → `URL Configuration`，确认 `Site URL` 和 `Redirect URLs` 都是线上 GitHub Pages 地址，不要是 `http://localhost:3000`。
+2. 回到 `/login` 页面填写邮箱，点击“重发确认邮件”。
+3. 打开新收到的邮件，点击最新确认链接。旧邮件如果跳到 `localhost`，请直接忽略。
+4. 如果只是本地或内部测试，可以在 Supabase SQL 编辑器执行：
 
 ```sql
 update auth.users
@@ -282,7 +327,32 @@ where email = '你的邮箱@example.com'
   and email_confirmed_at is null;
 ```
 
-4. 确认邮箱后，再检查 `public.profiles` 表里该用户的 `role` 是否为 `founder` 或 `admin`。
+5. 确认邮箱后，再检查 `public.profiles` 表里该用户的 `role` 是否为 `founder` 或 `admin`。
+
+### 重发确认邮件还是收不到
+
+原因：Supabase 默认邮件服务可能被 QQ 邮箱、手机邮箱客户端或垃圾邮件规则拦截；免费项目也可能遇到发送频率限制。这个问题不代表网站代码坏了。
+
+最快解决方法：
+
+1. 打开本项目文件 `supabase/admin_confirm_founder.sql`。
+2. 把脚本里的 `你的邮箱@example.com` 改成你的管理员邮箱，例如 `3199912548@qq.com`。
+3. 复制整段脚本到 Supabase SQL 编辑器执行。
+4. 看到“已确认邮箱并授予掌门权限”后，回到官网 `/login` 直接登录。
+
+后续正式使用时，建议进入 Supabase 的 `Authentication` → `Emails`，配置自己的 SMTP 邮箱服务，这样确认邮件更容易送达。
+
+### 确认邮件跳到 localhost 打不开
+
+原因：Supabase 后台的登录回跳地址仍然是本地开发地址，或你点击的是修改配置前发出的旧邮件。
+
+解决方法：
+
+1. 在 Supabase 后台把 `Authentication` → `URL Configuration` → `Site URL` 改成线上地址，例如 `https://lsy5920.github.io/`。
+2. 在 `Redirect URLs` 添加 `https://lsy5920.github.io/*`。
+3. 回到官网 `/login` 页面点击“重发确认邮件”。
+4. 打开新邮件确认，不要再点旧邮件。
+5. 如果急着进入后台，可以直接执行上方 SQL 手动确认邮箱。
 
 ### 入派申请提交失败
 
@@ -338,3 +408,5 @@ npm run preview
 2026-04-28 08:21 【修复】修复 GitHub Pages 部署后因子路径路由被识别为未知页面而显示 404 的问题，将前端路由切换为静态托管更稳定的哈希路由，并补充部署访问说明。
 2026-04-28 08:44 【修复】修复 GitHub Pages 部署后 Supabase 配置未被前端识别的问题，新增线上运行时配置文件生成流程，兼容仓库密钥与仓库变量，并补充线上未配置排查教程。
 2026-04-28 09:34 【修复】修复管理员登录遇到 Supabase 邮箱未确认时只显示英文错误的问题，新增中文原因说明、确认邮件重发入口、邮箱确认回跳地址和相关自动测试，并补充 README 中的邮箱确认排查步骤。
+2026-04-28 09:45 【修复】修复 Supabase 邮箱确认链接跳转到 localhost 导致手机无法打开的问题，将确认邮件回跳地址调整为线上站点根地址，并补充 Supabase URL Configuration 设置教程与旧邮件失效说明。
+2026-04-28 10:48 【修复】补充 Supabase 确认邮件收不到时的手动处理方案，新增 admin_confirm_founder.sql 脚本用于确认管理员邮箱、补建资料并授予掌门权限，同时更新登录页提示和 README 排查说明。
