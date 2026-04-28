@@ -1,10 +1,12 @@
 import { Lamp } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
+import { useAuth } from '../hooks/useAuth'
 import { fetchApprovedLanterns, submitCloudLantern } from '../lib/services'
 import type { CloudLantern, CloudLanternInput } from '../lib/types'
 import { validateCloudLantern } from '../lib/validators'
@@ -19,6 +21,8 @@ const initialForm: CloudLanternInput = {
 
 // 这个函数渲染云灯留言页，入参为空，返回值是留言表单和公开云灯列表。
 export function CloudLanternPage() {
+  // 这里读取当前登录资料，云灯提交要求先进入问云小院。
+  const { profile, loading: authLoading } = useAuth()
   // 这个状态保存公开云灯。
   const [lanterns, setLanterns] = useState<CloudLantern[]>([])
   // 这个状态保存表单数据。
@@ -50,6 +54,12 @@ export function CloudLanternPage() {
   // 这个函数处理云灯提交，入参是表单事件，返回值为空。
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    // 这里拦截未登录用户，确保新云灯能在问云小院里看到审核状态。
+    if (!profile) {
+      setNotice({ type: 'error', title: '请先进入问云小院', message: '点亮云灯需要先用邮箱和密码登录，登录后可在小院查看审核状态。' })
+      return
+    }
 
     // 这里先校验留言内容，避免空内容进入审核列表。
     const errors = validateCloudLantern(form)
@@ -84,6 +94,14 @@ export function CloudLanternPage() {
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <ScrollPanel>
           {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
+          {!profile ? (
+            <div className="mt-6 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/80 p-4 text-sm leading-7 text-[#526461]">
+              云灯留言需要先进入问云小院，这样审核结果会回到你自己的消息里。
+              <Link className="ml-2 font-semibold text-[#9e3d32]" to="/login">
+                去登录或注册
+              </Link>
+            </div>
+          ) : null}
           <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
             <label className="grid gap-2">
               <span className="text-sm font-semibold">署名</span>
@@ -121,7 +139,7 @@ export function CloudLanternPage() {
               />
               <span className="text-sm text-[#526461]">匿名展示为“匿名同门”</span>
             </label>
-            <CloudButton disabled={submitting} type="submit">
+            <CloudButton disabled={submitting || authLoading || !profile} type="submit">
               {submitting ? '正在点灯...' : '点亮云灯'}
               <Lamp className="h-4 w-4" />
             </CloudButton>

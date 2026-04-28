@@ -13,6 +13,15 @@ export type LanternStatus = 'pending' | 'approved' | 'rejected'
 // 这个类型表示公告和活动的发布状态。
 export type PublishStatus = 'draft' | 'published' | 'closed' | 'ended'
 
+// 这个类型表示活动报名状态。
+export type EventRegistrationStatus = 'registered' | 'cancelled' | 'attended'
+
+// 这个类型表示用户站内提醒所属的业务模块。
+export type UserNotificationKind = 'application' | 'lantern' | 'event'
+
+// 这个类型表示提醒邮件的发送状态。
+export type NotificationEmailStatus = 'pending' | 'sent' | 'failed' | 'skipped'
+
 // 这个类型表示当前登录账号在问云派后台中的身份。
 export type ProfileRole = 'visitor' | 'applicant' | 'member' | 'guardian' | 'admin' | 'founder'
 
@@ -38,10 +47,26 @@ export interface Profile {
   updated_at: string
 }
 
+// 这个接口描述用户在问云小院里可以自己编辑的资料字段。
+export interface ProfileUpdateInput {
+  // 用户公开昵称，用于小院和公开资料展示。
+  nickname: string
+  // 用户头像地址，可为空。
+  avatar_url: string
+  // 所在城市，可为空。
+  city: string
+  // 个人简介，可为空。
+  bio: string
+  // 是否公开资料。
+  is_public: boolean
+}
+
 // 这个接口描述名册登记表单与后台列表的数据结构。
 export interface JoinApplication {
   // 申请唯一编号，由数据库生成。
   id: string
+  // 提交名帖的登录用户编号，旧游客数据可能为空。
+  user_id: string | null
   // 申请人在名册中想使用的道名。
   nickname: string
   // 江湖名用于前台名册展示和搜索，可为空。
@@ -266,6 +291,76 @@ export interface WenyunEvent {
   created_at: string
   // 更新时间。
   updated_at: string
+}
+
+// 这个接口描述用户报名问云雅集的数据。
+export interface EventRegistration {
+  // 报名唯一编号。
+  id: string
+  // 活动编号。
+  event_id: string
+  // 报名用户编号。
+  user_id: string | null
+  // 报名昵称，默认取用户资料昵称。
+  nickname: string | null
+  // 联系方式，默认取登录邮箱。
+  contact: string | null
+  // 报名备注。
+  note: string | null
+  // 报名状态。
+  status: EventRegistrationStatus
+  // 创建时间。
+  created_at: string
+}
+
+// 这个接口描述小院活动列表的一项，包含活动和当前用户报名状态。
+export interface YardEventItem {
+  // 活动资料。
+  event: WenyunEvent
+  // 当前用户报名记录，未报名时为空。
+  registration: EventRegistration | null
+}
+
+// 这个接口描述用户站内提醒。
+export interface UserNotification {
+  // 提醒唯一编号。
+  id: string
+  // 接收提醒的用户编号。
+  user_id: string
+  // 提醒所属业务模块。
+  kind: UserNotificationKind
+  // 提醒标题。
+  title: string
+  // 提醒正文。
+  content: string
+  // 关联数据表，可为空。
+  target_table: string | null
+  // 关联数据编号，可为空。
+  target_id: string | null
+  // 邮件发送状态。
+  email_status: NotificationEmailStatus
+  // 邮件失败原因，可为空。
+  email_error: string | null
+  // 邮件发送时间，可为空。
+  sent_at: string | null
+  // 站内提醒阅读时间，可为空。
+  read_at: string | null
+  // 创建时间。
+  created_at: string
+}
+
+// 这个接口描述问云小院总览所需的整包数据。
+export interface YardOverview {
+  // 当前用户资料。
+  profile: Profile
+  // 当前用户提交的名帖。
+  applications: JoinApplication[]
+  // 当前用户提交的云灯。
+  lanterns: CloudLantern[]
+  // 当前用户的活动报名。
+  registrations: EventRegistration[]
+  // 当前用户最近提醒。
+  notifications: UserNotification[]
 }
 
 // 这个接口描述站点设置项，后台可以按键值维护。

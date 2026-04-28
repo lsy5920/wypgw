@@ -1,11 +1,13 @@
 import { ClipboardPenLine, Search, Send, UsersRound } from 'lucide-react'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { applicationStatusLabels, genderOptions } from '../data/siteContent'
+import { useAuth } from '../hooks/useAuth'
 import { fetchPublicRoster, submitJoinApplication } from '../lib/services'
 import type { JoinApplicationInput, MemberGender, RosterEntry } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
@@ -51,6 +53,8 @@ function formatRosterDate(value: string): string {
 
 // 这个函数渲染问云名册页，入参为空，返回值是名册展示和登记表单。
 export function JoinPage() {
+  // 这里读取当前登录资料，名帖登记要求先进入问云小院。
+  const { profile, loading: authLoading } = useAuth()
   // 这个状态保存公开名册条目。
   const [roster, setRoster] = useState<RosterEntry[]>([])
   // 这个状态保存表单数据。
@@ -120,6 +124,12 @@ export function JoinPage() {
   // 这个函数处理表单提交，入参是提交事件，返回值为空。
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    // 这里拦截未登录用户，确保新名帖都能归属到具体账号。
+    if (!profile) {
+      setNotice({ type: 'error', title: '请先进入问云小院', message: '名册登记需要先用邮箱和密码登录，登录后再递上名帖。' })
+      return
+    }
 
     // 这里先做前端校验，让用户不用等数据库返回才知道问题。
     const errors = validateJoinApplication(form)
@@ -298,6 +308,15 @@ export function JoinPage() {
             </p>
           </div>
 
+          {!profile ? (
+            <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/80 p-4 text-sm leading-7 text-[#526461]">
+              名帖登记需要先进入问云小院，这样执事审核后你能在小院看到状态和提醒。
+              <Link className="ml-2 font-semibold text-[#9e3d32]" to="/login">
+                去登录或注册
+              </Link>
+            </div>
+          ) : null}
+
           <form className="grid gap-5" onSubmit={handleSubmit}>
             <label className="grid gap-2">
               <span className="text-sm font-semibold">道名 *</span>
@@ -426,7 +445,7 @@ export function JoinPage() {
               </span>
             </label>
 
-            <CloudButton disabled={submitting} type="submit" variant="seal">
+            <CloudButton disabled={submitting || authLoading || !profile} type="submit" variant="seal">
               {submitting ? '正在送帖...' : '提交名册登记'}
               <Send className="h-4 w-4" />
             </CloudButton>

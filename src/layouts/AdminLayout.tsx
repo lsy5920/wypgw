@@ -33,22 +33,9 @@ export function AdminLayout() {
     return <Navigate to="/login" replace state={{ message }} />
   }
 
-  // 这里已登录但不是管理员时展示拒绝访问，避免普通成员看到后台数据。
+  // 这里已登录但不是管理员时进入问云小院，避免普通成员看到管理后台数据。
   if (!isAdminProfile(profile)) {
-    return (
-      <main className="min-h-screen bg-[#f6f4ef] p-6">
-        <div className="mx-auto max-w-2xl">
-          <StatusNotice
-            type="error"
-            title="尚无后台权限"
-            message="当前账号已登录，但 profiles.role 不是 admin 或 founder。请在 Supabase SQL 中手动指定管理员身份。"
-          />
-          <Link className="mt-6 inline-flex rounded-full bg-[#6f8f8b] px-5 py-3 text-white" to="/">
-            返回官网
-          </Link>
-        </div>
-      </main>
-    )
+    return <Navigate to="/yard" replace />
   }
 
   return (

@@ -44,7 +44,7 @@ export function SiteHeader() {
         {/* 这里展示后台入口和手机菜单按钮。 */}
         <div className="flex items-center gap-2">
           <Link className="hidden rounded-full border border-[#c9a45c]/50 px-4 py-2 text-sm text-[#263238] md:inline-flex" to="/login">
-            后台入口
+            问云小院
           </Link>
           <button
             aria-label={open ? '关闭菜单' : '打开菜单'}
@@ -76,7 +76,7 @@ export function SiteHeader() {
               </NavLink>
             ))}
             <NavLink className="rounded-xl bg-[#9e3d32] px-4 py-3 text-sm text-white" onClick={closeMenu} to="/login">
-              后台入口
+              问云小院
             </NavLink>
           </nav>
         </div>

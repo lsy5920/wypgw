@@ -5,6 +5,9 @@ import {
   mockApplications,
   mockEvents,
   mockLanterns,
+  mockNotifications,
+  mockProfile,
+  mockRegistrations,
   mockRosterEntries,
   mockSettings
 } from '../data/mockData'
@@ -13,13 +16,21 @@ import type {
   ApiResult,
   CloudLantern,
   CloudLanternInput,
+  EventRegistration,
   JoinApplication,
   JoinApplicationInput,
   JoinApplicationStatus,
   JoinApplicationUpdateInput,
   LanternStatus,
+  Profile,
+  ProfileUpdateInput,
   RosterEntry,
   SiteSetting,
+  UserNotification,
+  UserNotificationKind,
+  YardEventItem,
+  YardOverview,
+  EventRegistrationStatus,
   WenyunEvent
 } from './types'
 
@@ -33,6 +44,64 @@ function failResult<T>(data: T, message: string): ApiResult<T> {
   return { ok: false, data, message, demoMode: !supabaseReady }
 }
 
+// 这个函数生成空名帖兜底对象，入参为空，返回值用于接口失败时保持类型稳定。
+function createEmptyApplication(): JoinApplication {
+  return {
+    id: '',
+    user_id: null,
+    nickname: '',
+    jianghu_name: null,
+    real_name: null,
+    wechat_id: '',
+    age_range: null,
+    gender: '男',
+    city: null,
+    reason: '',
+    accept_rules: false,
+    offline_interest: null,
+    remark: null,
+    member_role: '同门',
+    generation_name: '云',
+    member_code: null,
+    status: 'pending',
+    admin_note: null,
+    reviewed_by: null,
+    reviewed_at: null,
+    created_at: new Date().toISOString()
+  }
+}
+
+// 这个函数读取当前登录用户，入参为空，返回值是用户对象或空值。
+async function getCurrentUser() {
+  // 这里处理没有配置 Supabase 的情况，演示模式不需要真实用户。
+  if (!supabase) {
+    return null
+  }
+
+  const {
+    data: { user },
+    error
+  } = await supabase.auth.getUser()
+
+  if (error) {
+    throw error
+  }
+
+  return user
+}
+
+// 这个函数要求用户必须登录，入参为空，返回值是当前用户。
+async function requireCurrentUser() {
+  const user = await getCurrentUser()
+
+  // 这里统一给未登录场景返回中文错误，方便前台引导进入问云小院。
+  if (!user) {
+    throw new Error('请先登录问云小院，再继续提交。')
+  }
+
+  return user
+}
+
 // 这个函数把未知异常转换为中文说明，入参是异常对象，返回值是可展示给用户的文字。
 function getErrorMessage(error: unknown, fallback: string): string {
   // 这里处理常见 Error 对象，优先展示真实错误信息。
@@ -41,6 +110,97 @@ function getErrorMessage(error: unknown, fallback: string): string {
   }
 
   return fallback
+}
+
+// 这个函数把审核状态转成中文，入参是状态值，返回值是提醒正文中使用的中文。
+function getApplicationStatusText(status: JoinApplicationStatus): string {
+  const labels: Record<JoinApplicationStatus, string> = {
+    pending: '待审核',
+    approved: '已审核',
+    rejected: '未通过',
+    contacted: '已联系',
+    joined: '已入群',
+    draft: '暂存',
+    retired: '已退派'
+  }
+
+  return labels[status]
+}
+
+// 这个函数把云灯状态转成中文，入参是状态值，返回值是提醒正文中使用的中文。
+function getLanternStatusText(status: LanternStatus): string {
+  const labels: Record<LanternStatus, string> = {
+    pending: '待审核',
+    approved: '已公开',
+    rejected: '已拒绝'
+  }
+
+  return labels[status]
+}
+
+// 这个函数把活动报名状态转成中文，入参是状态值，返回值是提醒正文中使用的中文。
+function getRegistrationStatusText(status: EventRegistrationStatus): string {
+  const labels: Record<EventRegistrationStatus, string> = {
+    registered: '已报名',
+    cancelled: '已取消',
+    attended: '已参加'
+  }
+
+  return labels[status]
+}
+
+// 这个函数创建用户站内提醒并尝试发送邮件，入参是提醒内容，返回值为空。
+async function createUserNotification(input: {
+  userId: string | null
+  kind: UserNotificationKind
+  title: string
+  content: string
+  targetTable: string
+  targetId: string
+}) {
+  // 这里跳过没有归属用户或没有配置 Supabase 的旧数据，避免审核旧游客数据时报错。
+  if (!supabase || !input.userId) {
+    return
+  }
+
+  try {
+    // 这里先写入站内提醒，确保邮件失败时用户仍能在小院看到消息。
+    const { data, error } = await supabase
+      .from('user_notifications')
+      .insert({
+        user_id: input.userId,
+        kind: input.kind,
+        title: input.title,
+        content: input.content,
+        target_table: input.targetTable,
+        target_id: input.targetId,
+        email_status: 'pending'
+      })
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    const notification = data as UserNotification
+    // 这里调用 Supabase Edge Function 发送邮件，失败不影响主流程。
+    const { error: functionError } = await supabase.functions.invoke('send-user-notice', {
+      body: { notificationId: notification.id }
+    })
+
+    if (functionError) {
+      await supabase
+        .from('user_notifications')
+        .update({
+          email_status: 'failed',
+          email_error: functionError.message
+        })
+        .eq('id', notification.id)
+    }
+  } catch {
+    // 这里故意吞掉提醒异常，避免邮件或通知表故障影响审核、报名等主流程。
+  }
 }
 
 // 这个函数读取公开云灯，入参为空，返回值是审核通过的云灯列表。
@@ -96,14 +256,30 @@ export async function submitCloudLantern(input: CloudLanternInput): Promise<ApiR
   }
 
   try {
-    // 这里写入云灯表，RLS 会保证游客只能新增不能乱读后台数据。
-    const { data, error } = await supabase.from('cloud_lanterns').insert(payload).select('*').single()
+    // 这里要求先登录问云小院，再把云灯归属到当前账号。
+    const user = await requireCurrentUser()
+    // 这里写入云灯表，RLS 会保证用户只能新增自己的云灯。
+    const { data, error } = await supabase
+      .from('cloud_lanterns')
+      .insert({ ...payload, created_by: user.id })
+      .select('*')
+      .single()
 
     if (error) {
       throw error
     }
 
-    return okResult(data as CloudLantern, '云灯已送至山门，待执事审核后公开。')
+    const lantern = data as CloudLantern
+    await createUserNotification({
+      userId: user.id,
+      kind: 'lantern',
+      title: '云灯已送至山门',
+      content: '你的云灯已进入待审核状态，执事查看后会决定是否公开。',
+      targetTable: 'cloud_lanterns',
+      targetId: lantern.id
+    })
+
+    return okResult(lantern, '云灯已送至山门，待执事审核后公开。')
   } catch (error) {
     return failResult(
       {
@@ -145,6 +321,7 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
     return okResult(
       {
         id: `demo-application-${Date.now()}`,
+        user_id: null,
         ...payload,
         member_code: createNextMemberCode(mockApplications.map((item) => item.member_code), '云'),
         status: 'pending',
@@ -158,24 +335,35 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
   }
 
   try {
-    // 这里写入名册登记表，游客只能新增，不能读取别人的名帖。
-    const { data, error } = await supabase.from('join_applications').insert(payload).select('*').single()
+    // 这里要求先登录问云小院，再把名帖归属到当前账号。
+    const user = await requireCurrentUser()
+    // 这里写入名册登记表，用户只能新增自己的待审核名帖。
+    const { data, error } = await supabase
+      .from('join_applications')
+      .insert({ ...payload, user_id: user.id })
+      .select('*')
+      .single()
 
     if (error) {
       throw error
     }
 
-    return okResult(data as JoinApplication, '名册登记已送至山门，执事查看后会择时联系。')
+    const application = data as JoinApplication
+    await createUserNotification({
+      userId: user.id,
+      kind: 'application',
+      title: '名帖已送至山门',
+      content: '你的问云名帖已进入待审核状态，掌门或执事查看后会更新状态。',
+      targetTable: 'join_applications',
+      targetId: application.id
+    })
+
+    return okResult(application, '名册登记已送至山门，执事查看后会择时联系。')
   } catch (error) {
     return failResult(
       {
-        id: '',
+        ...createEmptyApplication(),
         ...payload,
-        status: 'pending',
-        admin_note: null,
-        reviewed_by: null,
-        reviewed_at: null,
-        created_at: new Date().toISOString()
       } as JoinApplication,
       getErrorMessage(error, '提交名册登记失败')
     )
@@ -291,6 +479,13 @@ export async function updateApplicationStatus(
   }
 
   try {
+    // 这里先读取旧状态和用户归属，用于判断是否需要发送小院提醒。
+    const { data: before } = await supabase
+      .from('join_applications')
+      .select('user_id,status')
+      .eq('id', id)
+      .maybeSingle()
+
     // 这里更新名帖状态，并记录审核时间和备注。
     const { data, error } = await supabase
       .from('join_applications')
@@ -307,7 +502,23 @@ export async function updateApplicationStatus(
       throw error
     }
 
-    return okResult(data as JoinApplication, '名帖状态已更新。')
+    const application = data as JoinApplication
+    const oldStatus = (before as Pick<JoinApplication, 'status' | 'user_id'> | null)?.status
+    const userId = (before as Pick<JoinApplication, 'status' | 'user_id'> | null)?.user_id ?? application.user_id
+
+    // 这里在状态发生变化时给用户写入站内提醒并尝试发送邮件。
+    if (oldStatus !== status) {
+      await createUserNotification({
+        userId,
+        kind: 'application',
+        title: '名帖状态已更新',
+        content: `你的问云名帖状态已更新为“${getApplicationStatusText(status)}”。${adminNote ? `备注：${adminNote}` : ''}`,
+        targetTable: 'join_applications',
+        targetId: id
+      })
+    }
+
+    return okResult(application, '名帖状态已更新。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '更新名帖状态失败'))
   }
@@ -346,6 +557,13 @@ export async function updateApplicationDetails(
   }
 
   try {
+    // 这里先读取旧状态和用户归属，用于判断是否需要发送小院提醒。
+    const { data: before } = await supabase
+      .from('join_applications')
+      .select('user_id,status,admin_note')
+      .eq('id', id)
+      .maybeSingle()
+
     // 这里保存管理员直接编辑的名册字段，权限由 RLS 限制为管理员可写。
     const { data, error } = await supabase
       .from('join_applications')
@@ -358,7 +576,24 @@ export async function updateApplicationDetails(
       throw error
     }
 
-    return okResult(data as JoinApplication, '名册资料已保存。')
+    const application = data as JoinApplication
+    const oldApplication = before as Pick<JoinApplication, 'status' | 'user_id' | 'admin_note'> | null
+
+    // 这里在状态或管理员备注变化时给用户写入站内提醒并尝试发送邮件。
+    if (oldApplication?.status !== input.status || oldApplication?.admin_note !== payload.admin_note) {
+      await createUserNotification({
+        userId: oldApplication?.user_id ?? application.user_id,
+        kind: 'application',
+        title: '名帖审核有新消息',
+        content: `你的问云名帖当前状态为“${getApplicationStatusText(input.status)}”。${
+          payload.admin_note ? `备注：${payload.admin_note}` : ''
+        }`,
+        targetTable: 'join_applications',
+        targetId: id
+      })
+    }
+
+    return okResult(application, '名册资料已保存。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '保存名册资料失败'))
   }
@@ -394,6 +629,13 @@ export async function updateLanternStatus(id: string, status: LanternStatus): Pr
   }
 
   try {
+    // 这里先读取旧状态和创建人，用于状态变化提醒。
+    const { data: before } = await supabase
+      .from('cloud_lanterns')
+      .select('created_by,status')
+      .eq('id', id)
+      .maybeSingle()
+
     // 这里更新留言状态，只有 approved 才会在前台公开出现。
     const { data, error } = await supabase
       .from('cloud_lanterns')
@@ -409,7 +651,22 @@ export async function updateLanternStatus(id: string, status: LanternStatus): Pr
       throw error
     }
 
-    return okResult(data as CloudLantern, '云灯审核状态已更新。')
+    const lantern = data as CloudLantern
+    const oldLantern = before as Pick<CloudLantern, 'created_by' | 'status'> | null
+
+    // 这里在状态发生变化时给用户写入站内提醒并尝试发送邮件。
+    if (oldLantern?.status !== status) {
+      await createUserNotification({
+        userId: oldLantern?.created_by ?? lantern.created_by,
+        kind: 'lantern',
+        title: '云灯审核已更新',
+        content: `你的云灯状态已更新为“${getLanternStatusText(status)}”。`,
+        targetTable: 'cloud_lanterns',
+        targetId: id
+      })
+    }
+
+    return okResult(lantern, '云灯审核状态已更新。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '更新云灯状态失败'))
   }
@@ -507,6 +764,79 @@ export async function fetchAdminEvents(): Promise<ApiResult<WenyunEvent[]>> {
   }
 }
 
+// 这个函数读取后台活动报名列表，入参为空，返回值是全部活动报名。
+export async function fetchAdminRegistrations(): Promise<ApiResult<EventRegistration[]>> {
+  if (!supabase) {
+    return okResult(mockRegistrations, '当前为后台演示报名。')
+  }
+
+  try {
+    // 这里读取全部活动报名，实际权限由 RLS 限制为管理员可读。
+    const { data, error } = await supabase
+      .from('event_registrations')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as EventRegistration[])
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取活动报名失败，请确认当前账号是管理员'))
+  }
+}
+
+// 这个函数更新活动报名状态，入参是报名编号和状态，返回值是更新后的报名。
+export async function updateEventRegistrationStatus(
+  id: string,
+  status: EventRegistrationStatus
+): Promise<ApiResult<EventRegistration | null>> {
+  if (!supabase) {
+    const current = mockRegistrations.find((item) => item.id === id) ?? null
+    return okResult(current ? { ...current, status } : null, '演示模式下已模拟更新报名。')
+  }
+
+  try {
+    // 这里先读取旧状态和用户归属，用于状态变化提醒。
+    const { data: before } = await supabase
+      .from('event_registrations')
+      .select('user_id,status')
+      .eq('id', id)
+      .maybeSingle()
+
+    const { data, error } = await supabase
+      .from('event_registrations')
+      .update({ status })
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    const registration = data as EventRegistration
+    const oldRegistration = before as Pick<EventRegistration, 'user_id' | 'status'> | null
+
+    // 这里在报名状态变化时给用户写入站内提醒并尝试发送邮件。
+    if (oldRegistration?.status !== status) {
+      await createUserNotification({
+        userId: oldRegistration?.user_id ?? registration.user_id,
+        kind: 'event',
+        title: '雅集报名状态已更新',
+        content: `你的问云雅集报名状态已更新为“${getRegistrationStatusText(status)}”。`,
+        targetTable: 'event_registrations',
+        targetId: id
+      })
+    }
+
+    return okResult(registration, '活动报名状态已更新。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '更新活动报名失败'))
+  }
+}
+
 // 这个函数创建活动，入参是活动基础内容，返回值是新活动。
 export async function createEvent(input: {
   title: string
@@ -555,6 +885,310 @@ export async function createEvent(input: {
     return okResult(data as WenyunEvent, '活动已创建。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '创建活动失败'))
+  }
+}
+
+// 这个函数读取当前用户资料，入参为空，返回值是问云小院资料。
+export async function fetchMyProfile(): Promise<ApiResult<Profile>> {
+  if (!supabase) {
+    return okResult(mockProfile, '当前为演示小院资料。')
+  }
+
+  try {
+    // 这里要求登录后才能读取自己的资料。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as Profile)
+  } catch (error) {
+    return failResult(mockProfile, getErrorMessage(error, '读取小院资料失败'))
+  }
+}
+
+// 这个函数保存当前用户资料，入参是可编辑资料，返回值是保存后的资料。
+export async function updateMyProfile(input: ProfileUpdateInput): Promise<ApiResult<Profile>> {
+  const payload = {
+    nickname: input.nickname.trim() || '问云同门',
+    avatar_url: input.avatar_url.trim() || null,
+    city: input.city.trim() || null,
+    bio: input.bio.trim() || null,
+    is_public: input.is_public
+  }
+
+  if (!supabase) {
+    return okResult({ ...mockProfile, ...payload, updated_at: new Date().toISOString() }, '演示模式下已模拟保存资料。')
+  }
+
+  try {
+    // 这里要求登录后只能更新自己的非角色资料，角色由数据库 RLS 保护。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase.from('profiles').update(payload).eq('id', user.id).select('*').single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as Profile, '小院资料已保存。')
+  } catch (error) {
+    return failResult(mockProfile, getErrorMessage(error, '保存小院资料失败'))
+  }
+}
+
+// 这个函数读取当前用户名帖，入参为空，返回值是自己的名帖列表。
+export async function fetchMyApplications(): Promise<ApiResult<JoinApplication[]>> {
+  if (!supabase) {
+    return okResult(mockApplications.filter((item) => item.user_id), '当前为演示名帖。')
+  }
+
+  try {
+    // 这里只读取当前用户自己的名帖，RLS 会再次保护数据边界。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('join_applications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as JoinApplication[])
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取我的名帖失败'))
+  }
+}
+
+// 这个函数读取当前用户云灯，入参为空，返回值是自己的云灯列表。
+export async function fetchMyLanterns(): Promise<ApiResult<CloudLantern[]>> {
+  if (!supabase) {
+    return okResult(mockLanterns.filter((item) => item.created_by), '当前为演示云灯。')
+  }
+
+  try {
+    // 这里只读取当前用户自己的云灯，包含待审核和拒绝状态。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('cloud_lanterns')
+      .select('*')
+      .eq('created_by', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as CloudLantern[])
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取我的云灯失败'))
+  }
+}
+
+// 这个函数读取当前用户报名，入参为空，返回值是自己的报名列表。
+export async function fetchMyRegistrations(): Promise<ApiResult<EventRegistration[]>> {
+  if (!supabase) {
+    return okResult(mockRegistrations, '当前为演示雅集报名。')
+  }
+
+  try {
+    // 这里只读取当前用户自己的活动报名。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('event_registrations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as EventRegistration[])
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取我的雅集报名失败'))
+  }
+}
+
+// 这个函数读取当前用户提醒，入参为空，返回值是自己的站内提醒。
+export async function fetchMyNotifications(): Promise<ApiResult<UserNotification[]>> {
+  if (!supabase) {
+    return okResult(mockNotifications, '当前为演示提醒。')
+  }
+
+  try {
+    // 这里只读取当前用户自己的站内提醒。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('user_notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data ?? []) as UserNotification[])
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取小院提醒失败'))
+  }
+}
+
+// 这个函数读取问云小院总览数据，入参为空，返回值是资料、名帖、云灯、报名和提醒。
+export async function fetchYardOverview(): Promise<ApiResult<YardOverview>> {
+  const [profileResult, applicationResult, lanternResult, registrationResult, notificationResult] = await Promise.all([
+    fetchMyProfile(),
+    fetchMyApplications(),
+    fetchMyLanterns(),
+    fetchMyRegistrations(),
+    fetchMyNotifications()
+  ])
+
+  return {
+    ok:
+      profileResult.ok &&
+      applicationResult.ok &&
+      lanternResult.ok &&
+      registrationResult.ok &&
+      notificationResult.ok,
+    data: {
+      profile: profileResult.data,
+      applications: applicationResult.data,
+      lanterns: lanternResult.data,
+      registrations: registrationResult.data,
+      notifications: notificationResult.data
+    },
+    message: profileResult.message,
+    demoMode: profileResult.demoMode
+  }
+}
+
+// 这个函数读取小院活动列表，入参为空，返回值包含活动和用户报名状态。
+export async function fetchYardEvents(): Promise<ApiResult<YardEventItem[]>> {
+  const [eventResult, registrationResult] = await Promise.all([fetchPublishedEvents(), fetchMyRegistrations()])
+  const items = eventResult.data.map((event) => ({
+    event,
+    registration: registrationResult.data.find((item) => item.event_id === event.id) ?? null
+  }))
+
+  return {
+    ok: eventResult.ok && registrationResult.ok,
+    data: items,
+    message: eventResult.message,
+    demoMode: eventResult.demoMode
+  }
+}
+
+// 这个函数报名问云雅集，入参是活动编号和备注，返回值是报名记录。
+export async function registerForEvent(eventId: string, note: string): Promise<ApiResult<EventRegistration | null>> {
+  if (!supabase) {
+    const current = mockRegistrations.find((item) => item.event_id === eventId)
+    return okResult(current ?? mockRegistrations[0] ?? null, '演示模式下已模拟报名。')
+  }
+
+  try {
+    // 这里要求先登录，再把报名归属到当前账号。
+    const user = await requireCurrentUser()
+    const profileResult = await fetchMyProfile()
+    const payload = {
+      event_id: eventId,
+      user_id: user.id,
+      nickname: profileResult.data.nickname,
+      contact: user.email ?? null,
+      note: note.trim() || null,
+      status: 'registered'
+    }
+
+    const { data, error } = await supabase
+      .from('event_registrations')
+      .upsert(payload, { onConflict: 'event_id,user_id' })
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    const registration = data as EventRegistration
+    await createUserNotification({
+      userId: user.id,
+      kind: 'event',
+      title: '雅集报名成功',
+      content: '你的问云雅集报名已记录在小院里，后续变动会继续提醒你。',
+      targetTable: 'event_registrations',
+      targetId: registration.id
+    })
+
+    return okResult(registration, '雅集报名已记录。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '雅集报名失败'))
+  }
+}
+
+// 这个函数取消问云雅集报名，入参是报名编号，返回值是更新后的报名记录。
+export async function cancelEventRegistration(id: string): Promise<ApiResult<EventRegistration | null>> {
+  if (!supabase) {
+    const current = mockRegistrations.find((item) => item.id === id) ?? null
+    return okResult(current ? { ...current, status: 'cancelled' } : null, '演示模式下已模拟取消报名。')
+  }
+
+  try {
+    // 这里要求先登录，RLS 会保证只能取消自己的报名。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('event_registrations')
+      .update({ status: 'cancelled' })
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    const registration = data as EventRegistration
+    await createUserNotification({
+      userId: user.id,
+      kind: 'event',
+      title: '雅集报名已取消',
+      content: '你的问云雅集报名已取消，如需参加可重新报名。',
+      targetTable: 'event_registrations',
+      targetId: registration.id
+    })
+
+    return okResult(registration, '雅集报名已取消。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '取消雅集报名失败'))
+  }
+}
+
+// 这个函数标记提醒已读，入参是提醒编号，返回值是更新后的提醒。
+export async function markNotificationRead(id: string): Promise<ApiResult<UserNotification | null>> {
+  if (!supabase) {
+    const current = mockNotifications.find((item) => item.id === id) ?? null
+    return okResult(current ? { ...current, read_at: new Date().toISOString() } : null, '演示模式下已模拟已读。')
+  }
+
+  try {
+    // 这里只更新自己的提醒，RLS 会保护用户边界。
+    const { data, error } = await supabase
+      .from('user_notifications')
+      .update({ read_at: new Date().toISOString() })
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as UserNotification, '提醒已标记为已读。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '标记提醒失败'))
   }
 }
 

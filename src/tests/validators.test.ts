@@ -104,6 +104,6 @@ describe('问云派登录提示', () => {
   it('可以把邮箱未确认错误翻译成中文', () => {
     const message = translateSupabaseAuthError(new Error('Email not confirmed'))
 
-    expect(message).toContain('邮箱还没有确认')
+    expect(message).toContain('关闭邮箱确认')
   })
 })

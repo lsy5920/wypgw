@@ -2,7 +2,7 @@
 
 ## 项目介绍
 
-问云派官网是一座“线上山门”，用于展示问云派愿景、立派金典、问云名册、云灯留言、门派公告、问云雅集、联系山门与后台管理。
+问云派官网是一座“线上山门”，用于展示问云派愿景、立派金典、问云名册、云灯留言、门派公告、问云雅集、联系山门、问云小院与后台管理。
 
 网站核心气质是：清雅江湖、温暖港湾、来去自由、有界有礼。
 
@@ -12,7 +12,8 @@
 2. Node.js：建议 `22.0.0` 或更高版本，本机已验证 `25.8.0` 可运行。
 3. npm：建议 `10.0.0` 或更高版本，本机已验证 `11.11.0` 可运行。
 4. 浏览器：最新版 Edge、Chrome 或其他现代浏览器。
-5. 数据库：Supabase 项目一个，用于真实名册登记、云灯留言、公告、活动和后台管理。
+5. 数据库：Supabase 项目一个，用于真实登录、问云小院、名册登记、云灯留言、公告、活动和后台管理。
+6. 邮件提醒：Supabase Edge Function 一个，使用 SMTP 密钥发送小院状态提醒邮件。
 
 本项目依赖已在 `package.json` 中锁定版本：
 
@@ -27,6 +28,8 @@
 | `react-router-dom` | `7.14.2` | 页面路由 |
 | `@supabase/supabase-js` | `2.105.0` | 连接 Supabase |
 | `vitest` | `4.1.5` | 自动测试 |
+
+Supabase Edge Function 内使用 `nodemailer@7.0.10` 发送 SMTP 邮件，该依赖写在函数文件的 `npm:` 导入中，不需要安装到前端依赖里。
 
 ## 安装部署教程
 
@@ -85,15 +88,22 @@ supabase/migrations/20260428125300_roster_names_and_review.sql
 ```
 
 9. 复制全部 SQL 内容到 Supabase SQL 编辑器并执行，新增江湖名、真实姓名、暂存、已退派等名册字段与筛选状态，并移除性别里的“不公开”选项。
-10. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
-11. 在项目根目录新建 `.env.local` 文件：
+10. 再打开问云小院升级文件：
+
+```text
+supabase/migrations/20260428133000_wenyun_yard_and_notifications.sql
+```
+
+11. 复制全部 SQL 内容到 Supabase SQL 编辑器并执行，新增登录用户归属、站内提醒、活动报名状态提醒和问云小院 RLS 权限。
+12. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
+13. 在项目根目录新建 `.env.local` 文件：
 
 ```env
 VITE_SUPABASE_URL=你的 Supabase 项目地址
 VITE_SUPABASE_ANON_KEY=你的 Supabase 公开匿名密钥
 ```
 
-12. 重新启动本地服务：
+14. 重新启动本地服务：
 
 ```powershell
 npm run dev
@@ -101,7 +111,17 @@ npm run dev
 
 注意：不要把 `service_role` 密钥放进前端项目，也不要提交到 Git 仓库。
 
-### 三、配置 Supabase 登录回跳地址
+### 三、关闭 Supabase 邮箱确认
+
+1. 打开 Supabase 项目后台。
+2. 进入 `Authentication` → `Sign In / Providers`。
+3. 找到邮箱登录相关设置。
+4. 关闭邮箱确认，让用户使用邮箱和密码注册后可以直接登录问云小院。
+5. 保存设置。
+
+注意：本项目按“邮箱 + 密码直接注册登录”设计。如果没有关闭邮箱确认，Supabase 仍会提示邮箱未确认，导致 `/login` 无法直接进入 `/yard`。
+
+### 四、配置 Supabase 登录回跳地址
 
 1. 打开 Supabase 项目后台。
 2. 进入 `Authentication` → `URL Configuration`。
@@ -139,16 +159,55 @@ https://lsy5920.github.io/*
 https://你的用户名.github.io/仓库名/*
 ```
 
-5. 保存后，回到官网 `/login` 页面重新点击“重发确认邮件”。
-6. 旧邮件里如果仍然跳到 `http://localhost:3000`，说明那是旧链接，请不要再用旧邮件，必须使用新发的确认邮件。
+5. 保存设置。虽然当前关闭了邮箱确认，但保留正确回跳地址可以方便后续扩展找回密码、邮箱变更等功能。
 
-### 四、初始化管理员
+### 五、配置小院邮件提醒
+
+1. 安装 Supabase CLI。
+2. 在 PowerShell 中登录 Supabase：
+
+```powershell
+supabase login
+```
+
+3. 关联你的 Supabase 项目：
+
+```powershell
+supabase link --project-ref 你的项目引用
+```
+
+4. 设置 SMTP 密钥。下面示例使用 QQ 邮箱 SMTP，请把占位内容换成你自己的邮箱和授权码，不要写进代码仓库：
+
+```powershell
+supabase secrets set SMTP_HOST=smtp.qq.com
+supabase secrets set SMTP_PORT=465
+supabase secrets set SMTP_USER=你的邮箱
+supabase secrets set SMTP_PASS=你的邮箱授权码
+supabase secrets set SMTP_FROM=你的邮箱
+```
+
+5. 部署 Edge Function：
+
+```powershell
+supabase functions deploy send-user-notice
+```
+
+6. 邮件提醒触发位置：
+
+```text
+管理员审核名帖状态
+管理员审核云灯状态
+管理员调整活动报名状态
+用户报名或取消雅集
+```
+
+注意：邮件发送失败不会影响审核或报名，失败原因会写入问云小院的消息提醒里。
+
+### 六、初始化管理员
 
 1. 打开 `/login` 页面。
 2. 使用邮箱和密码注册一个账号。
-3. 如果 Supabase 要求邮箱验证，请先打开注册邮箱，点击 Supabase 发来的确认链接。
-4. 如果页面提示“邮箱还没有确认”，可以在登录页点击“重发确认邮件”。
-5. 回到 Supabase SQL 编辑器，把下面语句里的邮箱改成你的管理员邮箱：
+3. 回到 Supabase SQL 编辑器，把下面语句里的邮箱改成你的管理员邮箱：
 
 ```sql
 update public.profiles
@@ -156,24 +215,10 @@ set role = 'founder'
 where id = (select id from auth.users where email = '你的邮箱@example.com');
 ```
 
-6. 回到官网 `/login` 登录。
-7. 登录成功后进入 `/admin` 后台。
+4. 回到官网 `/login` 登录。
+5. 登录成功后会按身份自动分流：普通同门进入 `/yard`，掌门或执事进入 `/admin`。
 
-如果你只是测试后台，不想处理邮箱确认，或重发确认邮件一直收不到，可以二选一：
-
-1. 在 Supabase 控制台的 Authentication 邮箱登录设置中关闭邮箱确认。
-2. 打开本项目文件 `supabase/admin_confirm_founder.sql`，把里面的 `你的邮箱@example.com` 改成你的管理员邮箱，然后复制到 Supabase SQL 编辑器执行。
-
-也可以只执行下面这段临时确认指定邮箱：
-
-```sql
-update auth.users
-set email_confirmed_at = now()
-where email = '你的邮箱@example.com'
-  and email_confirmed_at is null;
-```
-
-注意：正式公开使用时，建议保留邮箱确认，避免别人用不存在或不属于自己的邮箱注册。
+如果你之前已经开启邮箱确认并注册过账号，导致登录仍被拦住，可以执行项目里的 `supabase/admin_confirm_founder.sql` 手动确认管理员邮箱并提权。
 
 角色说明：
 
@@ -181,9 +226,9 @@ where email = '你的邮箱@example.com'
 | --- | --- |
 | `founder` | 掌门，拥有后台管理权限 |
 | `admin` | 执事，拥有后台管理权限 |
-| `member` | 普通同门，不能进入后台 |
+| `member` | 普通同门，可进入问云小院，不能进入管理后台 |
 
-### 五、部署到 GitHub Pages
+### 七、部署到 GitHub Pages
 
 1. 把代码推送到 GitHub 的 `main` 分支。
 2. 打开仓库设置里的 Pages 功能。
@@ -231,26 +276,49 @@ https://你的用户名.github.io/仓库名/#/canon
 1. 打开 `/join`。
 2. 在页面上方查看公开名册，名册展示道名、江湖名、编号、性别、出生月份、城市、身份、辈分字、线下雅集意愿、状态和登记时间。
 3. 可用道名或江湖名搜索，也可以按辈分字和性别筛选名单。
-4. 在登记入口填写道名、江湖名、真实姓名、微信号、出生月份、性别、城市、申请理由等内容。
-5. 江湖名会在公开名册展示，真实姓名只给后台管理员核对。
-6. 道名必须以“云”字开头，长度为 2 到 3 个字，例如“云初”“云灯”。
-7. 勾选认同门规。
-8. 点击“提交名册登记”。
-9. 登记会进入后台待审核列表，系统会默认生成类似“问云-云-001”的编号。
+4. 点击“问云小院”登录或注册账号。
+5. 回到登记入口填写道名、江湖名、真实姓名、微信号、出生月份、性别、城市、申请理由等内容。
+6. 江湖名会在公开名册展示，真实姓名只给后台管理员核对。
+7. 道名必须以“云”字开头，长度为 2 到 3 个字，例如“云初”“云灯”。
+8. 勾选认同门规。
+9. 点击“提交名册登记”。
+10. 登记会进入后台待审核列表，系统会默认生成类似“问云-云-001”的编号。
+11. 审核状态会回到你的问云小院消息提醒里。
 
 注意：真实姓名、微信号和申请理由只在后台展示，不会进入前台公开名册。
 
 ### 点亮云灯
 
 1. 打开 `/cloud-lantern`。
-2. 填写留言内容。
-3. 可选择匿名展示。
-4. 提交后默认进入待审核状态。
-5. 管理员审核通过后，留言会在前台公开展示。
+2. 先登录问云小院。
+3. 填写留言内容。
+4. 可选择匿名展示。
+5. 提交后默认进入待审核状态。
+6. 管理员审核通过后，留言会在前台公开展示。
+7. 审核状态会回到你的问云小院消息提醒里。
+
+### 进入问云小院
+
+1. 打开 `/login`。
+2. 使用邮箱和密码注册账号。
+3. 注册成功后普通同门会进入 `/yard` 问云小院。
+4. 问云小院包含小院总览、我的资料、我的名帖、我的云灯、我的雅集和消息提醒。
+5. 我的资料可以编辑昵称、城市、简介、头像地址和是否公开资料。
+6. 我的名帖、我的云灯只展示状态和备注，不能直接修改审核结果。
+7. 我的雅集可以报名或取消报名。
+8. 消息提醒会展示站内通知和邮件发送状态。
+
+### 报名问云雅集
+
+1. 打开 `/events` 或 `/yard/events`。
+2. 先登录问云小院。
+3. 找到想参加的活动，填写报名备注。
+4. 点击“报名雅集”。
+5. 报名后可在问云小院查看状态，也可以取消报名。
 
 ### 管理后台
 
-后台地址为 `/admin`，必须先通过 `/login` 登录管理员账号。
+后台地址为 `/admin`，必须先通过 `/login` 登录管理员账号。普通用户访问 `/admin` 会自动回到 `/yard`。
 
 后台包含：
 
@@ -258,7 +326,7 @@ https://你的用户名.github.io/仓库名/#/canon
 2. 名册管理：默认展示未审核名帖，可按道名、真实姓名、微信号搜索，可按未审核、已审核、全部、暂存、已退派筛选；列表先显示道名、申请时间、申请理由和当前状态，点击卡片后再展开详情编辑审核。
 3. 云灯审核：通过或拒绝留言。
 4. 公告管理：创建草稿或发布公告。
-5. 活动管理：创建线上或线下雅集。
+5. 活动管理：创建线上或线下雅集，查看活动报名并调整报名状态。
 6. 站点设置：修改联系山门说明文字。
 
 ## 项目目录结构
@@ -273,10 +341,11 @@ wypgw/
 │  ├─ components/                  # 通用组件，如按钮、标题、导航、提示条
 │  ├─ data/                        # 金典原文入口、导航配置、演示数据
 │  ├─ hooks/                       # 登录状态和权限判断
-│  ├─ layouts/                     # 前台布局和后台布局
+│  ├─ layouts/                     # 前台布局、问云小院布局和后台布局
 │  ├─ lib/                         # Supabase 客户端、类型、服务函数、校验函数
 │  ├─ pages/                       # 前台页面
 │  │  └─ admin/                    # 后台管理页面
+│  │  └─ yard/                     # 问云小院用户后台页面
 │  ├─ styles/                      # 全局样式和动画
 │  ├─ tests/                       # 自动测试
 │  ├─ App.tsx                      # 全站路由入口
@@ -286,7 +355,10 @@ wypgw/
 │  └─ migrations/                  # Supabase 初始化和升级 SQL
 │     ├─ 20260428090000_init_wenyunpai.sql          # 初始化基础表、权限和演示数据
 │     ├─ 20260428110000_wenyun_roster.sql           # 升级问云名册、编号和公开视图
-│     └─ 20260428125300_roster_names_and_review.sql # 升级江湖名、真实姓名和名帖审核状态
+│     ├─ 20260428125300_roster_names_and_review.sql # 升级江湖名、真实姓名和名帖审核状态
+│     └─ 20260428133000_wenyun_yard_and_notifications.sql # 升级问云小院、用户归属和消息提醒
+├─ supabase/functions/
+│  └─ send-user-notice/             # 发送小院状态提醒邮件的 Edge Function
 ├─ 网站开发资料/
 │  ├─ 立派金典.txt                 # 金典原文资料
 │  └─ 网站设计文档.txt             # 设计需求资料
@@ -334,14 +406,15 @@ wypgw/
 
 ### 登录提示邮箱还没有确认
 
-原因：Supabase 开启了邮箱确认。即使已经把 `profiles.role` 改成 `founder` 或 `admin`，只要 `auth.users.email_confirmed_at` 还是空，Supabase 仍然会拒绝登录。
+原因：Supabase 开启了邮箱确认。本项目要求邮箱和密码直接注册登录，不走确认邮件流程，所以需要关闭邮箱确认。
 
 解决方法：
 
-1. 先到 Supabase 的 `Authentication` → `URL Configuration`，确认 `Site URL` 和 `Redirect URLs` 都是线上 GitHub Pages 地址，不要是 `http://localhost:3000`。
-2. 回到 `/login` 页面填写邮箱，点击“重发确认邮件”。
-3. 打开新收到的邮件，点击最新确认链接。旧邮件如果跳到 `localhost`，请直接忽略。
-4. 如果只是本地或内部测试，可以在 Supabase SQL 编辑器执行：
+1. 打开 Supabase 后台。
+2. 进入 `Authentication` → `Sign In / Providers`。
+3. 关闭邮箱确认。
+4. 回到 `/login` 重新注册或登录。
+5. 如果旧账号已经被确认流程卡住，可以在 Supabase SQL 编辑器执行：
 
 ```sql
 update auth.users
@@ -350,32 +423,40 @@ where email = '你的邮箱@example.com'
   and email_confirmed_at is null;
 ```
 
-5. 确认邮箱后，再检查 `public.profiles` 表里该用户的 `role` 是否为 `founder` 或 `admin`。
+6. 管理员账号还需要检查 `public.profiles` 表里该用户的 `role` 是否为 `founder` 或 `admin`。
 
-### 重发确认邮件还是收不到
+### 问云小院进不去
 
-原因：Supabase 默认邮件服务可能被 QQ 邮箱、手机邮箱客户端或垃圾邮件规则拦截；免费项目也可能遇到发送频率限制。这个问题不代表网站代码坏了。
+可能原因：
 
-最快解决方法：
-
-1. 打开本项目文件 `supabase/admin_confirm_founder.sql`。
-2. 把脚本里的 `你的邮箱@example.com` 改成你的管理员邮箱，例如 `3199912548@qq.com`。
-3. 复制整段脚本到 Supabase SQL 编辑器执行。
-4. 看到“已确认邮箱并授予掌门权限”后，回到官网 `/login` 直接登录。
-
-后续正式使用时，建议进入 Supabase 的 `Authentication` → `Emails`，配置自己的 SMTP 邮箱服务，这样确认邮件更容易送达。
-
-### 确认邮件跳到 localhost 打不开
-
-原因：Supabase 后台的登录回跳地址仍然是本地开发地址，或你点击的是修改配置前发出的旧邮件。
+1. 没有配置 Supabase。
+2. 没有关闭邮箱确认。
+3. 没有执行 `20260428133000_wenyun_yard_and_notifications.sql`。
+4. `profiles` 表没有自动生成当前用户资料。
 
 解决方法：
 
-1. 在 Supabase 后台把 `Authentication` → `URL Configuration` → `Site URL` 改成线上地址，例如 `https://lsy5920.github.io/`。
-2. 在 `Redirect URLs` 添加 `https://lsy5920.github.io/*`。
-3. 回到官网 `/login` 页面点击“重发确认邮件”。
-4. 打开新邮件确认，不要再点旧邮件。
-5. 如果急着进入后台，可以直接执行上方 SQL 手动确认邮箱。
+1. 确认 `.env.local` 或 GitHub Actions 密钥已经配置。
+2. 确认 Supabase 已关闭邮箱确认。
+3. 执行 `supabase/migrations/20260428133000_wenyun_yard_and_notifications.sql`。
+4. 重新打开 `/login` 注册并登录。
+
+### 小院邮件提醒发送失败
+
+可能原因：
+
+1. 没有部署 `send-user-notice` Edge Function。
+2. 没有配置 SMTP 密钥。
+3. SMTP 授权码错误。
+4. 邮箱服务商限制登录或发信。
+
+解决方法：
+
+1. 执行 `supabase functions deploy send-user-notice`。
+2. 在 Supabase Secrets 中配置 `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASS`、`SMTP_FROM`。
+3. QQ 邮箱通常使用 `SMTP_HOST=smtp.qq.com` 和 `SMTP_PORT=465`。
+4. 不要把 SMTP 授权码写进前端代码、README 或 Git 仓库。
+5. 到问云小院消息提醒里查看 `邮件状态` 和失败原因。
 
 ### 名册登记提交失败
 
@@ -386,16 +467,20 @@ where email = '你的邮箱@example.com'
 3. 表单没有勾选认同门规。
 4. 没有执行 `20260428110000_wenyun_roster.sql`，导致数据库缺少性别、身份、辈分字或编号字段。
 5. 没有执行 `20260428125300_roster_names_and_review.sql`，导致数据库缺少江湖名、真实姓名、暂存或已退派字段规则。
-6. 道名没有以“云”字开头，或长度不是 2 到 3 个字。
+6. 没有执行 `20260428133000_wenyun_yard_and_notifications.sql`，导致数据库缺少 `user_id` 或登录用户提交策略。
+7. 没有先登录问云小院。
+8. 道名没有以“云”字开头，或长度不是 2 到 3 个字。
 
 解决方法：
 
 1. 先执行 `supabase/migrations/20260428090000_init_wenyunpai.sql`。
 2. 再执行 `supabase/migrations/20260428110000_wenyun_roster.sql`。
-3. 最后执行 `supabase/migrations/20260428125300_roster_names_and_review.sql`。
-4. 确认 `join_applications` 表存在，并且有 `jianghu_name` 和 `real_name` 字段。
-5. 确认 `roster_entries` 公开视图存在，并且公开字段里有 `jianghu_name`。
-6. 确认登记表单已勾选门规确认，且道名符合“云”字开头的规则。
+3. 再执行 `supabase/migrations/20260428125300_roster_names_and_review.sql`。
+4. 最后执行 `supabase/migrations/20260428133000_wenyun_yard_and_notifications.sql`。
+5. 确认 `join_applications` 表存在，并且有 `jianghu_name`、`real_name` 和 `user_id` 字段。
+6. 确认 `roster_entries` 公开视图存在，并且公开字段里有 `jianghu_name`。
+7. 确认已经登录问云小院。
+8. 确认登记表单已勾选门规确认，且道名符合“云”字开头的规则。
 
 ### 执行名册升级脚本时报 member_code 改名失败
 
@@ -453,3 +538,4 @@ npm run preview
 2026-04-28 12:24 【优化】将入派页面升级为问云名册，新增公开名册展示、名册登记入口、道名校验、性别和出生月份字段、系统自动编号、后台名册直接编辑、Supabase 名册升级脚本和相关 README 说明。
 2026-04-28 13:00 【优化】优化问云名册登记与审核流程，新增江湖名和真实姓名字段，移除性别“不公开”选项，前台支持按道名或江湖名搜索并按辈分字、性别筛选，后台名帖审核支持搜索筛选、小卡片展开编辑、暂存和已退派状态，并补充 Supabase 升级脚本与文档说明。
 2026-04-28 13:08 【修复】修复 Supabase 名册升级脚本重建公开名册视图时报 member_code 改名失败的问题，改为先删除旧视图再创建新视图，并补充 README 排查说明。
+2026-04-28 14:27 【新增】新增问云小院登录系统与用户后台，支持邮箱密码直接注册登录、普通用户进入小院、管理员进入后台；新增我的资料、我的名帖、我的云灯、我的雅集、消息提醒页面，名帖、云灯、活动报名改为登录后归属当前账号，并新增 Supabase 小院迁移脚本、SMTP 邮件提醒 Edge Function 和 README 配置教程。

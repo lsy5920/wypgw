@@ -5,8 +5,9 @@ import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
-import { getAuthRedirectUrl, isEmailNotConfirmedError, translateSupabaseAuthError } from '../lib/authMessages'
+import { translateSupabaseAuthError } from '../lib/authMessages'
 import { supabase } from '../lib/supabaseClient'
+import type { Profile } from '../lib/types'
 
 // 这个类型描述路由传来的状态，入参来自 Navigate，返回值用于显示登录原因。
 interface LocationState {
@@ -14,10 +15,50 @@ interface LocationState {
   message?: string
 }
 
-// 这个函数渲染管理员登录页，入参为空，返回值是登录和注册表单。
+// 这个函数用邮箱生成默认昵称，入参是邮箱，返回值是邮箱前缀或兜底昵称。
+function createDefaultNickname(email: string): string {
+  return email.split('@')[0] || '问云同门'
+}
+
+// 这个函数确保登录用户拥有 profiles 资料，入参是用户编号和邮箱，返回值是资料或空值。
+async function ensureProfile(userId: string, email: string): Promise<Profile | null> {
+  if (!supabase) {
+    return null
+  }
+
+  // 这里先读取现有资料，避免重复插入。
+  const { data: existing, error: readError } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
+
+  if (readError) {
+    throw readError
+  }
+
+  if (existing) {
+    return existing as Profile
+  }
+
+  // 这里补建资料，防止数据库触发器没有及时执行时小院无法进入。
+  const { data, error } = await supabase
+    .from('profiles')
+    .insert({
+      id: userId,
+      nickname: createDefaultNickname(email),
+      role: 'member'
+    })
+    .select('*')
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data as Profile
+}
+
+// 这个函数渲染问云小院登录页，入参为空，返回值是登录和注册表单。
 export function LoginPage() {
-  // 这里读取当前认证状态，用于已登录时自动进入后台。
-  const { profile, loading } = useAuth()
+  // 这里读取当前认证状态，用于已登录时自动进入对应后台。
+  const { profile, loading, refresh } = useAuth()
   // 这个变量用于页面跳转。
   const navigate = useNavigate()
   // 这个变量用于读取后台跳转过来的提示。
@@ -30,30 +71,30 @@ export function LoginPage() {
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   // 这个状态表示是否正在提交。
   const [submitting, setSubmitting] = useState(false)
-  // 这个状态表示是否正在重发确认邮件。
-  const [resending, setResending] = useState(false)
-  // 这个状态表示当前错误是否允许重发邮箱确认邮件。
-  const [canResendConfirmation, setCanResendConfirmation] = useState(false)
   // 这个状态保存表单提示。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
   // 这个变量保存跳转传来的提示。
   const stateMessage = (location.state as LocationState | null)?.message
 
-  // 这里如果已经是管理员，直接进入后台。
+  // 这里如果已经是管理员，直接进入管理后台。
   if (!loading && isAdminProfile(profile)) {
     return <Navigate to="/admin" replace />
+  }
+
+  // 这里如果已经是普通用户，直接进入问云小院。
+  if (!loading && profile) {
+    return <Navigate to="/yard" replace />
   }
 
   // 这个函数处理登录或注册，入参是表单事件，返回值为空。
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setCanResendConfirmation(false)
 
     // 这里处理未配置 Supabase 的情况，避免用户误以为可以登录。
     if (!supabase) {
       setNotice({
         type: 'error',
-        title: '后台暂未启用',
+        title: '问云小院暂未启用',
         message:
           '请先配置 Supabase：本地填写 .env.local；GitHub Pages 部署请在仓库 Actions 密钥中填写 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
       })
@@ -68,8 +109,6 @@ export function LoginPage() {
 
     try {
       setSubmitting(true)
-      // 这里生成邮箱确认后的回跳地址，方便 GitHub Pages 上确认后回到登录页。
-      const emailRedirectTo = getAuthRedirectUrl()
       // 这里根据模式调用登录或注册接口。
       const result =
         mode === 'login'
@@ -77,102 +116,67 @@ export function LoginPage() {
           : await supabase.auth.signUp({
               email: email.trim(),
               password,
-              options: emailRedirectTo ? { emailRedirectTo } : undefined
+              options: {
+                data: {
+                  nickname: createDefaultNickname(email.trim())
+                }
+              }
             })
 
       if (result.error) {
         throw result.error
       }
 
+      // 这里提示用户关闭邮箱确认，因为本项目要求注册后无需邮箱校验。
+      if (mode === 'signup' && !result.data.session) {
+        setNotice({
+          type: 'error',
+          title: '注册被邮箱确认拦住了',
+          message: '请到 Supabase 后台关闭邮箱确认后再注册：Authentication → Sign In / Providers → 关闭邮箱确认。'
+        })
+        return
+      }
+
+      const user = result.data.user
+
+      if (!user) {
+        throw new Error('没有读取到登录用户，请刷新页面后重试。')
+      }
+
+      const nextProfile = await ensureProfile(user.id, email.trim())
+      await refresh()
+
       setNotice({
         type: 'success',
-        title: mode === 'login' ? '登录成功' : '注册已提交',
-        message:
-          mode === 'login'
-            ? '正在进入后台。若没有权限，请先用 SQL 把 profiles.role 改为 admin 或 founder。'
-            : '账号已注册，请打开邮箱点击确认链接；确认完成后再登录后台，并确保 profiles.role 已设为 admin 或 founder。'
+        title: mode === 'login' ? '登录成功' : '注册成功',
+        message: isAdminProfile(nextProfile) ? '正在进入管理后台。' : '正在进入问云小院。'
       })
 
-      // 这里登录成功后进入后台，后台会再次校验角色。
-      if (mode === 'login') {
+      // 这里登录成功后按身份分流，后台和小院各自再做一次权限保护。
+      if (isAdminProfile(nextProfile)) {
         navigate('/admin')
       } else {
-        setCanResendConfirmation(true)
+        navigate('/yard')
       }
     } catch (error) {
       // 这里捕获认证异常，给出中文提示。
       const message = translateSupabaseAuthError(error)
-      setCanResendConfirmation(isEmailNotConfirmedError(error))
       setNotice({ type: 'error', title: '操作失败', message })
     } finally {
       setSubmitting(false)
     }
   }
 
-  // 这个函数重新发送邮箱确认邮件，入参为空，返回值为空。
-  async function handleResendConfirmation() {
-    // 这里处理未配置 Supabase 的情况，避免调用空客户端报错。
-    if (!supabase) {
-      setNotice({
-        type: 'error',
-        title: '后台暂未启用',
-        message:
-          '请先配置 Supabase：本地填写 .env.local；GitHub Pages 部署请在仓库 Actions 密钥中填写 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
-      })
-      return
-    }
-
-    // 这里检查邮箱是否为空，避免 Supabase 无法知道要给谁发邮件。
-    if (!email.trim()) {
-      setNotice({ type: 'error', title: '请先填写邮箱', message: '请输入注册时使用的邮箱，再重发确认邮件。' })
-      return
-    }
-
-    try {
-      setResending(true)
-      // 这里生成确认邮件点击后的回跳地址，确保线上哈希路由能回到登录页。
-      const emailRedirectTo = getAuthRedirectUrl()
-      // 这里调用 Supabase 重发注册确认邮件接口。
-      const result = await supabase.auth.resend({
-        type: 'signup',
-        email: email.trim(),
-        options: emailRedirectTo ? { emailRedirectTo } : undefined
-      })
-
-      if (result.error) {
-        throw result.error
-      }
-
-      setNotice({
-        type: 'success',
-        title: '确认邮件已重发',
-        message: '请打开注册邮箱查看 Supabase 确认邮件，点击确认链接后再回来登录。'
-      })
-      setCanResendConfirmation(false)
-    } catch (error) {
-      // 这里捕获重发邮件异常，避免按钮点击后页面没有反馈。
-      setNotice({ type: 'error', title: '重发失败', message: translateSupabaseAuthError(error) })
-    } finally {
-      setResending(false)
-    }
-  }
-
   return (
-    <main className="mx-auto max-w-3xl px-4 py-14 md:px-6">
-      <SectionTitle center eyebrow="后台入口" title="执事入山门">
-        后台仅供掌门和执事使用。普通同门即使登录，也无法读取后台数据。
+    <main className="mx-auto max-w-4xl px-4 py-14 md:px-6">
+      <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院">
+        同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事登录后会自动进入管理后台。
       </SectionTitle>
 
-      <ScrollPanel>
+      <ScrollPanel className="relative overflow-hidden">
+        <div className="pointer-events-none absolute right-6 top-6 h-28 w-28 rounded-full border border-[#c9a45c]/30 bg-[#edf3ef]/70" />
         {stateMessage ? <StatusNotice title="访问提示" message={stateMessage} /> : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-        {canResendConfirmation ? (
-          <div className="mt-4 flex flex-wrap gap-3">
-            <CloudButton disabled={resending} onClick={handleResendConfirmation} variant="ghost">
-              {resending ? '正在重发...' : '重发确认邮件'}
-            </CloudButton>
-          </div>
-        ) : null}
 
         <div className="mt-6 grid grid-cols-2 rounded-full bg-[#edf3ef] p-1">
           <button
@@ -197,7 +201,7 @@ export function LoginPage() {
             <input
               className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="请输入管理员邮箱"
+              placeholder="请输入邮箱"
               type="email"
               value={email}
             />
@@ -213,12 +217,12 @@ export function LoginPage() {
             />
           </label>
           <CloudButton disabled={submitting} type="submit" variant="seal">
-            {submitting ? '正在处理...' : mode === 'login' ? '进入后台' : '注册账号'}
+            {submitting ? '正在处理...' : mode === 'login' ? '进入问云小院' : '注册并进入小院'}
           </CloudButton>
         </form>
 
         <div className="mt-6 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
-          管理员初始化方式：先注册账号并完成邮箱确认，再到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。若收不到确认邮件，可执行项目里的 supabase/admin_confirm_founder.sql 手动确认邮箱并授予掌门权限。
+          本站按“邮箱 + 密码”直接注册登录。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。管理员初始化方式：注册后到 Supabase SQL 编辑器中把对应用户的 profiles.role 改为 founder 或 admin。
         </div>
       </ScrollPanel>
     </main>

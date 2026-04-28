@@ -4,8 +4,8 @@ import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
-import { createEvent, fetchAdminEvents } from '../../lib/services'
-import type { WenyunEvent } from '../../lib/types'
+import { createEvent, fetchAdminEvents, fetchAdminRegistrations, updateEventRegistrationStatus } from '../../lib/services'
+import type { EventRegistration, EventRegistrationStatus, WenyunEvent } from '../../lib/types'
 
 // 这个接口描述活动表单，入参来自后台输入，返回值用于创建问云雅集。
 interface EventForm {
@@ -39,10 +39,19 @@ const initialForm: EventForm = {
   status: 'draft'
 }
 
+// 这个数组保存报名状态选项，返回值用于后台修改报名状态。
+const registrationStatuses: Array<{ label: string; value: EventRegistrationStatus }> = [
+  { label: '已报名', value: 'registered' },
+  { label: '已取消', value: 'cancelled' },
+  { label: '已参加', value: 'attended' }
+]
+
 // 这个函数渲染活动管理页，入参为空，返回值是活动创建表单和列表。
 export function AdminEventsPage() {
   // 这个状态保存活动列表。
   const [events, setEvents] = useState<WenyunEvent[]>([])
+  // 这个状态保存活动报名列表。
+  const [registrations, setRegistrations] = useState<EventRegistration[]>([])
   // 这个状态保存表单。
   const [form, setForm] = useState<EventForm>(initialForm)
   // 这个状态保存提示。
@@ -60,8 +69,19 @@ export function AdminEventsPage() {
     }
   }
 
+  // 这个函数读取活动报名列表，入参为空，返回值为空。
+  async function loadRegistrations() {
+    const result = await fetchAdminRegistrations()
+    setRegistrations(result.data)
+
+    if (!result.ok) {
+      setNotice({ type: 'error', title: '读取报名失败', message: result.message })
+    }
+  }
+
   useEffect(() => {
     void loadEvents()
+    void loadRegistrations()
   }, [])
 
   // 这个函数更新表单字段，入参是字段和值，返回值为空。
@@ -89,6 +109,20 @@ export function AdminEventsPage() {
     if (result.ok) {
       setForm(initialForm)
       await loadEvents()
+    }
+  }
+
+  // 这个函数更新报名状态，入参是报名编号和新状态，返回值为空。
+  async function handleRegistrationStatus(id: string, status: EventRegistrationStatus) {
+    const result = await updateEventRegistrationStatus(id, status)
+    setNotice({
+      type: result.ok ? 'success' : 'error',
+      title: result.ok ? '报名状态已更新' : '更新失败',
+      message: result.message
+    })
+
+    if (result.ok) {
+      await loadRegistrations()
     }
   }
 
@@ -212,6 +246,45 @@ export function AdminEventsPage() {
             </ScrollPanel>
           ))
         )}
+      </div>
+
+      <div className="mt-8">
+        <SectionTitle eyebrow="报名管理" title="雅集名单，及时回音">
+          管理员可在这里调整活动报名状态，状态变化会写入用户小院提醒并尝试发送邮件。
+        </SectionTitle>
+
+        <div className="mt-5 grid gap-4">
+          {registrations.length === 0 ? (
+            <EmptyState title="暂无报名" message="同门报名问云雅集后，会在这里出现。" />
+          ) : (
+            registrations.map((item) => (
+              <ScrollPanel key={item.id}>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-[#9e3d32]">活动编号：{item.event_id}</p>
+                    <h3 className="mt-2 text-xl font-bold text-[#143044]">{item.nickname ?? '未填写昵称'}</h3>
+                  </div>
+                  <select
+                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    onChange={(event) => void handleRegistrationStatus(item.id, event.target.value as EventRegistrationStatus)}
+                    value={item.status}
+                  >
+                    {registrationStatuses.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mt-4 grid gap-2 text-sm leading-7 text-[#526461] md:grid-cols-2">
+                  <p>联系方式：{item.contact ?? '未填写'}</p>
+                  <p>报名时间：{new Date(item.created_at).toLocaleString('zh-CN')}</p>
+                  <p className="md:col-span-2">备注：{item.note ?? '未填写'}</p>
+                </div>
+              </ScrollPanel>
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

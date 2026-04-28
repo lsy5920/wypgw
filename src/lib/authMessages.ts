@@ -13,9 +13,9 @@ export function translateSupabaseAuthError(error: unknown): string {
   // 这里统一小写，避免大小写不同导致匹配失败。
   const normalizedMessage = rawMessage.toLowerCase()
 
-  // 这里处理邮箱未确认的场景，注册和提权完成后也必须先确认邮箱才能登录。
+  // 这里处理邮箱未确认的场景，本项目要求关闭邮箱确认后直接登录。
   if (isEmailNotConfirmedError(error)) {
-    return '邮箱还没有确认，所以 Supabase 暂时不允许登录。请先打开注册邮箱点击确认链接；如果没有收到邮件，可以点下方“重发确认邮件”。也可以在 Supabase 后台关闭邮箱确认，或用 SQL 手动确认该邮箱。'
+    return 'Supabase 仍然开启了邮箱确认，所以暂时不允许直接登录。请到 Supabase 后台关闭邮箱确认：Authentication → Sign In / Providers → 关闭邮箱确认，然后重新注册或登录。'
   }
 
   // 这里处理账号或密码错误，避免直接显示英文。

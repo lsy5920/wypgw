@@ -42,7 +42,7 @@ export function useAuth(): UseAuthResult {
       setUser(null)
       setProfile(null)
       setLoading(false)
-      setMessage('当前未配置 Supabase，后台登录需要先填写环境变量。')
+      setMessage('当前未配置 Supabase，问云小院登录需要先填写环境变量。')
       return
     }
 

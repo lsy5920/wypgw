@@ -1,7 +1,33 @@
-import type { Announcement, CloudLantern, JoinApplication, RosterEntry, SiteSetting, WenyunEvent } from '../lib/types'
+import type {
+  Announcement,
+  CloudLantern,
+  EventRegistration,
+  JoinApplication,
+  Profile,
+  RosterEntry,
+  SiteSetting,
+  UserNotification,
+  WenyunEvent
+} from '../lib/types'
 
 // 这个常量保存演示用时间，返回值用于无数据库时保持页面内容稳定。
 const demoNow = '2026-04-28T09:00:00+08:00'
+
+// 这个常量保存演示用户编号，返回值用于无数据库时模拟问云小院。
+export const mockUserId = 'demo-user-001'
+
+// 这个对象保存演示用户资料，未连接 Supabase 时用于问云小院兜底展示。
+export const mockProfile: Profile = {
+  id: mockUserId,
+  nickname: '云间小友',
+  avatar_url: null,
+  role: 'member',
+  city: '杭州',
+  bio: '愿在问云小院里慢慢修心，也慢慢认识同门。',
+  is_public: false,
+  created_at: demoNow,
+  updated_at: demoNow
+}
 
 // 这个数组保存首页和云灯页演示留言，未连接 Supabase 时用于兜底展示。
 export const mockLanterns: CloudLantern[] = [
@@ -12,7 +38,7 @@ export const mockLanterns: CloudLantern[] = [
     mood: '温暖',
     is_anonymous: true,
     status: 'approved',
-    created_by: null,
+    created_by: mockUserId,
     reviewed_by: null,
     reviewed_at: demoNow,
     created_at: demoNow
@@ -24,7 +50,7 @@ export const mockLanterns: CloudLantern[] = [
     mood: '清明',
     is_anonymous: false,
     status: 'approved',
-    created_by: null,
+    created_by: mockUserId,
     reviewed_by: null,
     reviewed_at: demoNow,
     created_at: demoNow
@@ -115,6 +141,7 @@ export const mockEvents: WenyunEvent[] = [
 export const mockApplications: JoinApplication[] = [
   {
     id: 'application-1',
+    user_id: mockUserId,
     nickname: '云山',
     jianghu_name: '山月客',
     real_name: '林一',
@@ -137,6 +164,7 @@ export const mockApplications: JoinApplication[] = [
   },
   {
     id: 'application-2',
+    user_id: mockUserId,
     nickname: '云灯',
     jianghu_name: '灯下人',
     real_name: '苏青',
@@ -159,6 +187,7 @@ export const mockApplications: JoinApplication[] = [
   },
   {
     id: 'application-3',
+    user_id: mockUserId,
     nickname: '云初',
     jianghu_name: '清风客',
     real_name: '周小北',
@@ -181,6 +210,7 @@ export const mockApplications: JoinApplication[] = [
   },
   {
     id: 'application-4',
+    user_id: null,
     nickname: '云归',
     jianghu_name: '归舟',
     real_name: '陈远',
@@ -203,6 +233,7 @@ export const mockApplications: JoinApplication[] = [
   },
   {
     id: 'application-5',
+    user_id: null,
     nickname: '云离',
     jianghu_name: '旧雨',
     real_name: '赵南',
@@ -242,6 +273,52 @@ export const mockRosterEntries: RosterEntry[] = mockApplications
     status: item.status,
     created_at: item.created_at
   }))
+
+// 这个数组保存演示活动报名，未连接 Supabase 时用于问云小院雅集页兜底。
+export const mockRegistrations: EventRegistration[] = [
+  {
+    id: 'registration-1',
+    event_id: 'event-1',
+    user_id: mockUserId,
+    nickname: mockProfile.nickname,
+    contact: 'demo@wenyun.local',
+    note: '想听大家聊聊如何安放心事。',
+    status: 'registered',
+    created_at: demoNow
+  }
+]
+
+// 这个数组保存演示站内提醒，未连接 Supabase 时用于问云小院消息页兜底。
+export const mockNotifications: UserNotification[] = [
+  {
+    id: 'notification-1',
+    user_id: mockUserId,
+    kind: 'application',
+    title: '名帖已收到',
+    content: '你的问云名帖已经送至山门，执事会择时查看。',
+    target_table: 'join_applications',
+    target_id: 'application-3',
+    email_status: 'skipped',
+    email_error: null,
+    sent_at: null,
+    read_at: null,
+    created_at: demoNow
+  },
+  {
+    id: 'notification-2',
+    user_id: mockUserId,
+    kind: 'event',
+    title: '雅集报名成功',
+    content: '你已经报名“问云清谈：何以安放此心”。',
+    target_table: 'event_registrations',
+    target_id: 'registration-1',
+    email_status: 'skipped',
+    email_error: null,
+    sent_at: null,
+    read_at: demoNow,
+    created_at: demoNow
+  }
+]
 
 // 这个数组保存演示站点设置，未连接 Supabase 时用于联系页和后台设置。
 export const mockSettings: SiteSetting[] = [

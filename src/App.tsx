@@ -1,6 +1,7 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { SiteLayout } from './layouts/SiteLayout'
 import { AdminLayout } from './layouts/AdminLayout'
+import { YardLayout } from './layouts/YardLayout'
 import { AboutPage } from './pages/AboutPage'
 import { AnnouncementsPage } from './pages/AnnouncementsPage'
 import { CanonPage } from './pages/CanonPage'
@@ -17,6 +18,12 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
 import { AdminEventsPage } from './pages/admin/AdminEventsPage'
 import { AdminLanternsPage } from './pages/admin/AdminLanternsPage'
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage'
+import { YardApplicationsPage } from './pages/yard/YardApplicationsPage'
+import { YardDashboardPage } from './pages/yard/YardDashboardPage'
+import { YardEventsPage } from './pages/yard/YardEventsPage'
+import { YardLanternsPage } from './pages/yard/YardLanternsPage'
+import { YardNotificationsPage } from './pages/yard/YardNotificationsPage'
+import { YardProfilePage } from './pages/yard/YardProfilePage'
 
 // 这个函数是官网总路由入口，入参为空，返回值是完整的前台与后台页面路由。
 export default function App() {
@@ -36,6 +43,16 @@ export default function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/404" element={<NotFoundPage />} />
+        </Route>
+
+        {/* 这里放置普通同门的问云小院页面，共用小院侧栏和登录保护。 */}
+        <Route path="/yard" element={<YardLayout />}>
+          <Route index element={<YardDashboardPage />} />
+          <Route path="profile" element={<YardProfilePage />} />
+          <Route path="applications" element={<YardApplicationsPage />} />
+          <Route path="lanterns" element={<YardLanternsPage />} />
+          <Route path="events" element={<YardEventsPage />} />
+          <Route path="notifications" element={<YardNotificationsPage />} />
         </Route>
 
         {/* 这里放置后台管理页面，共用后台侧栏和登录保护。 */}
