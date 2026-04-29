@@ -68,7 +68,7 @@ export function YardApplicationsPage() {
                 <p>江湖名：{item.jianghu_name ?? '未填写'}</p>
                 <p>身份：{item.member_role ?? '未填写'}</p>
                 <p>出生年份：{item.age_range ?? '未填写'}</p>
-                <p>公开地域：{item.public_region ?? item.city ?? '未填写'}</p>
+                <p>所在城市：{item.public_region ?? item.city ?? '未填写'}</p>
                 <p>入册时间：{item.joined_at ? formatDate(item.joined_at) : formatDate(item.created_at)}</p>
                 <p>审核时间：{item.reviewed_at ? formatDate(item.reviewed_at) : '尚未审核'}</p>
               </div>
@@ -77,9 +77,10 @@ export function YardApplicationsPage() {
                 <p className="mt-2 text-sm leading-7 text-[#526461]">{item.motto ?? item.reason}</p>
               </div>
               <div className="mt-4 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
-                <p className="text-sm font-semibold text-[#143044]">公开故事</p>
-                <p className="mt-2 text-sm leading-7 text-[#526461]">{item.public_story ?? '未填写'}</p>
-                <p className="mt-3 text-sm leading-7 text-[#526461]">标签：{item.tags ?? '未填写'}</p>
+                <p className="text-sm font-semibold text-[#143044]">兴趣爱好</p>
+                <p className="mt-2 text-sm leading-7 text-[#526461]">
+                  {[item.public_story, item.tags].map((value) => value?.trim()).filter(Boolean).join('、') || '未填写'}
+                </p>
                 <p className="mt-1 text-sm leading-7 text-[#526461]">同行期待：{item.companion_expectation ?? '未填写'}</p>
               </div>
               <div className="mt-4 rounded-2xl border border-[#c9a45c]/20 bg-white/50 p-4">

@@ -4,8 +4,8 @@ export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'conta
 // 这个类型表示名册公开展示的性别选项。
 export type MemberGender = '男' | '女'
 
-// 这个类型表示问云名册中的江湖身份，选项以旧名册数据为准。
-export type WenyunMemberRole = '烟雨行客' | '护山执事' | '执剑游侠'
+// 这个类型表示问云名册中的公开身份，普通用户默认是同门，只能由管理员调整。
+export type WenyunMemberRole = '掌门' | '执事' | '护灯人' | '同门'
 
 // 这个类型表示云灯留言在审核流程中的状态。
 export type LanternStatus = 'pending' | 'approved' | 'rejected'
@@ -100,7 +100,7 @@ export interface AccountSecurityInfo {
 
 // 这个接口描述修改密码表单，入参来自小院资料页，返回值用于服务函数校验。
 export interface PasswordUpdateInput {
-  // 新密码，至少 6 位。
+  // 新密码，可由用户自行设置，前端不再限制最少位数。
   new_password: string
   // 确认新密码，用来防止用户输错。
   confirm_password: string
@@ -148,22 +148,28 @@ export interface JoinApplication {
   member_code: string | null
   // 入册序号，用于兼容旧名册编号账号，例如 001。
   roster_serial: number | null
-  // 公开地域，用于前台名册展示。
+  // 所在城市，用于前台名册展示。
   public_region: string | null
   // 后台地域原文，只给管理员校对使用。
   raw_region: string | null
   // 宣言，用于公开名册展示。
   motto: string | null
-  // 公开故事，用于公开名册展示。
+  // 公开故事旧字段，现在和兴趣爱好合并展示。
   public_story: string | null
   // 后台故事原文，只给管理员校对使用。
   raw_story: string | null
-  // 标签，用中文逗号分隔，来自旧名册标签。
+  // 兴趣爱好，用中文顿号或逗号分隔。
   tags: string | null
   // 同行期待，用于公开名册展示。
   companion_expectation: string | null
   // 联系方式，只在后台和本人小院展示，不进入公开名册。
   legacy_contact: string | null
+  // 待审核道名，用户在小院申请修改道名时写入，管理员同意后才会生效。
+  requested_nickname: string | null
+  // 待审核联系方式，用户在小院申请修改联系方式时写入，管理员同意后才会生效。
+  requested_legacy_contact: string | null
+  // 用户提交待审核修改的时间，没有待审核修改时为空。
+  requested_at: string | null
   // 正式入册时间，旧数据导入时使用旧入册时间。
   joined_at: string | null
   // 审核状态，用于后台流转。
@@ -194,15 +200,15 @@ export interface JoinApplicationInput {
   gender: MemberGender
   // 所在城市，可为空。
   city: string
-  // 江湖身份，来自旧名册表单选项。
+  // 公开身份，前台提交时固定为同门，用户不能自行调整。
   member_role: WenyunMemberRole
-  // 公开地域，可为空。
+  // 所在城市，可为空，进入公开名册展示。
   public_region: string
-  // 宣言，不能为空。
+  // 宣言，不能为空，进入公开名册展示。
   motto: string
-  // 公开故事，可为空。
+  // 公开故事旧字段，仅保留兼容，前台表单不再单独展示。
   public_story: string
-  // 标签，可为空，多个标签用顿号或逗号分隔。
+  // 兴趣爱好，可为空，多个内容可用顿号或逗号分隔。
   tags: string
   // 同行期待，可为空。
   companion_expectation: string
@@ -232,17 +238,17 @@ export interface RosterEntry {
   birth_month: string | null
   // 所在城市，用于名册展示。
   city: string | null
-  // 江湖身份，例如烟雨行客、护山执事、执剑游侠。
+  // 公开身份，例如掌门、执事、护灯人、同门。
   member_role: WenyunMemberRole
   // 辈分字，例如“云”。
   generation_name: string
-  // 公开地域，用于名册展示。
+  // 所在城市，用于名册展示。
   public_region: string | null
   // 宣言，用于名册展示。
   motto: string | null
-  // 公开故事，用于名册展示。
+  // 公开故事旧字段，用于兼容旧数据展示。
   public_story: string | null
-  // 标签，用中文逗号分隔。
+  // 兴趣爱好，用中文顿号或逗号分隔。
   tags: string | null
   // 同行期待，用于名册展示。
   companion_expectation: string | null
@@ -270,7 +276,7 @@ export interface JoinApplicationUpdateInput {
   gender: MemberGender
   // 所在城市。
   city: string
-  // 公开地域。
+  // 所在城市。
   public_region: string
   // 后台地域原文。
   raw_region: string
@@ -294,20 +300,46 @@ export interface JoinApplicationUpdateInput {
   roster_serial: string
   // 宣言。
   motto: string
-  // 公开故事。
+  // 公开故事旧字段，后台保留兼容。
   public_story: string
   // 后台故事原文。
   raw_story: string
-  // 标签。
+  // 兴趣爱好。
   tags: string
   // 同行期待。
   companion_expectation: string
   // 联系方式。
   legacy_contact: string
+  // 待审核道名。
+  requested_nickname: string
+  // 待审核联系方式。
+  requested_legacy_contact: string
   // 正式入册时间。
   joined_at: string
   // 审核状态。
   status: JoinApplicationStatus
+}
+
+// 这个接口描述用户在问云小院里直接维护自己的名册公开资料。
+export interface RosterProfileUpdateInput {
+  // 名帖编号，用于确认要修改哪一张名帖。
+  application_id: string
+  // 江湖名，可由用户直接修改。
+  jianghu_name: string
+  // 性别，可由用户直接修改。
+  gender: MemberGender
+  // 所在城市，可由用户直接修改。
+  city: string
+  // 宣言，可由用户直接修改。
+  motto: string
+  // 兴趣爱好，可由用户直接修改。
+  hobbies: string
+  // 同行期待，可由用户直接修改。
+  companion_expectation: string
+  // 想申请修改的新道名，管理员审核后生效。
+  requested_nickname: string
+  // 想申请修改的新联系方式，管理员审核后生效。
+  requested_legacy_contact: string
 }
 
 // 这个接口描述云灯留言的展示和审核数据。

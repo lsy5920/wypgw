@@ -4,6 +4,12 @@
 
 begin;
 
+-- 这里补齐最新名册待审核字段，避免单独执行本脚本时触发器引用不到字段。
+alter table public.join_applications
+add column if not exists requested_nickname text,
+add column if not exists requested_legacy_contact text,
+add column if not exists requested_at timestamptz;
+
 -- 这里先把已有名册编号统一改为问云编号，避免前台继续显示旧门派前缀。
 update public.join_applications
 set member_code = replace(member_code, '云栖-云-', '问云-云-')
@@ -28,7 +34,7 @@ set admin_note = '旧名册导入，已绑定历史编号。'
 where member_code like '问云-云-%'
   and admin_note like '%编号账号%';
 
--- 这里重建名册触发器函数，去掉已经废弃的封面和羁绊字段。
+-- 这里重建名册触发器函数，去掉已经废弃的封面和羁绊字段，并保持最新身份规则。
 create or replace function public.set_wenyun_roster_fields()
 returns trigger
 language plpgsql
@@ -48,8 +54,13 @@ begin
   -- 这里补齐性别。
   new.gender = coalesce(nullif(trim(new.gender), ''), '男');
 
-  -- 这里补齐旧名册江湖身份。
-  new.member_role = coalesce(nullif(trim(new.member_role), ''), '烟雨行客');
+  -- 这里兼容旧身份并统一成新身份。
+  new.member_role = case
+    when trim(coalesce(new.member_role, '')) in ('掌门') then '掌门'
+    when trim(coalesce(new.member_role, '')) in ('执事', '护山执事') then '执事'
+    when trim(coalesce(new.member_role, '')) in ('护灯人') then '护灯人'
+    else '同门'
+  end;
 
   -- 这里补齐辈分字，只取第一个字，默认是“云”。
   new.generation_name = coalesce(nullif(left(trim(new.generation_name), 1), ''), '云');
@@ -61,7 +72,7 @@ begin
     new.member_code = replace(trim(new.member_code), '云栖-云-', '问云-云-');
   end if;
 
-  -- 这里让公开地域、宣言、故事、标签和联系方式有兜底值。
+  -- 这里让所在城市、宣言、兴趣爱好和联系方式有兜底值。
   new.public_region = nullif(trim(coalesce(new.public_region, new.city, '')), '');
   new.raw_region = nullif(trim(coalesce(new.raw_region, new.public_region, new.city, '')), '');
   new.motto = nullif(trim(coalesce(new.motto, new.reason, '')), '');
@@ -70,6 +81,15 @@ begin
   new.tags = nullif(trim(coalesce(new.tags, '')), '');
   new.companion_expectation = nullif(trim(coalesce(new.companion_expectation, '')), '');
   new.legacy_contact = nullif(trim(coalesce(new.legacy_contact, new.wechat_id, '')), '');
+  new.requested_nickname = nullif(trim(coalesce(new.requested_nickname, '')), '');
+  new.requested_legacy_contact = nullif(trim(coalesce(new.requested_legacy_contact, '')), '');
+
+  -- 这里没有待审核修改时清空提交时间，避免后台误判。
+  if new.requested_nickname is null and new.requested_legacy_contact is null then
+    new.requested_at = null;
+  elsif new.requested_at is null then
+    new.requested_at = now();
+  end if;
 
   return new;
 end;

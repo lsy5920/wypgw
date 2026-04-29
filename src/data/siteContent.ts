@@ -37,8 +37,8 @@ export const joinSteps = [
 // 这个数组保存名册性别选项，返回值用于前台登记、前台筛选和后台编辑。
 export const genderOptions = ['男', '女'] as const
 
-// 这个数组保存旧名册江湖身份选项，返回值用于前台登记和后台名册编辑。
-export const memberRoleOptions = ['烟雨行客', '护山执事', '执剑游侠'] as const
+// 这个数组保存名册公开身份选项，返回值用于后台名册编辑和前台筛选。
+export const memberRoleOptions = ['同门', '护灯人', '执事', '掌门'] as const
 
 // 这个数组保存门派架构，返回值用于山门介绍页展示。
 export const sectRoles = [

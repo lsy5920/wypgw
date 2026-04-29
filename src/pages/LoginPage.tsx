@@ -139,10 +139,9 @@ export function LoginPage() {
       return
     }
 
-    // 这里登录旧账号允许三位编号或四位出生年份，新邮箱注册仍要求至少 6 位。
-    const minimumPasswordLength = isLegacyRosterAccount(email) && mode === 'login' ? 3 : 6
-    if (password.length < minimumPasswordLength) {
-      setNotice({ type: 'error', title: '请检查账号信息', message: '邮箱注册密码至少 6 位；旧编号账号请输入三位编号或出生年份密码。' })
+    // 这里只检查密码是否为空，最少位数不再由前端限制。
+    if (!password) {
+      setNotice({ type: 'error', title: '请检查账号信息', message: '密码不能为空。' })
       return
     }
 

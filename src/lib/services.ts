@@ -30,6 +30,7 @@ import type {
   PasswordUpdateInput,
   Profile,
   ProfileUpdateInput,
+  RosterProfileUpdateInput,
   StewardManageableRole,
   RosterEntry,
   SiteSetting,
@@ -69,7 +70,7 @@ function createEmptyApplication(): JoinApplication {
     accept_rules: false,
     offline_interest: null,
     remark: null,
-    member_role: '烟雨行客',
+    member_role: '同门',
     generation_name: '云',
     member_code: null,
     roster_serial: null,
@@ -81,6 +82,9 @@ function createEmptyApplication(): JoinApplication {
     tags: null,
     companion_expectation: null,
     legacy_contact: null,
+    requested_nickname: null,
+    requested_legacy_contact: null,
+    requested_at: null,
     joined_at: null,
     status: 'pending',
     admin_note: null,
@@ -383,13 +387,13 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
     accept_rules: input.accept_rules,
     offline_interest: null,
     remark: input.remark.trim() || null,
-    member_role: input.member_role,
+    member_role: '同门',
     generation_name: '云',
     public_region: input.public_region.trim() || input.city.trim() || null,
     raw_region: input.public_region.trim() || input.city.trim() || null,
     motto: input.motto.trim(),
-    public_story: input.public_story.trim() || null,
-    raw_story: input.public_story.trim() || null,
+    public_story: null,
+    raw_story: null,
     tags: input.tags.trim() || null,
     companion_expectation: input.companion_expectation.trim() || null,
     legacy_contact: input.legacy_contact.trim(),
@@ -635,6 +639,12 @@ export async function updateApplicationDetails(
     tags: input.tags.trim() || null,
     companion_expectation: input.companion_expectation.trim() || null,
     legacy_contact: input.legacy_contact.trim() || input.wechat_id.trim(),
+    requested_nickname: input.requested_nickname.trim() || null,
+    requested_legacy_contact: input.requested_legacy_contact.trim() || null,
+    requested_at:
+      input.requested_nickname.trim() || input.requested_legacy_contact.trim()
+        ? new Date().toISOString()
+        : null,
     joined_at: input.joined_at ? new Date(input.joined_at).toISOString() : null,
     status: input.status,
     reviewed_at: new Date().toISOString()
@@ -1028,6 +1038,64 @@ export async function updateMyProfile(input: ProfileUpdateInput): Promise<ApiRes
   }
 }
 
+// 这个函数保存当前用户的名册公开资料，入参是小院名册资料表单，返回值是更新后的名帖。
+export async function updateMyRosterProfile(input: RosterProfileUpdateInput): Promise<ApiResult<JoinApplication | null>> {
+  // 这个对象保存用户可以直接修改或申请修改的名册字段。
+  const payload = {
+    application_id: input.application_id,
+    next_jianghu_name: input.jianghu_name.trim(),
+    next_gender: input.gender,
+    next_city: input.city.trim(),
+    next_motto: input.motto.trim(),
+    next_hobbies: input.hobbies.trim(),
+    next_companion_expectation: input.companion_expectation.trim(),
+    requested_dao_name: input.requested_nickname.trim(),
+    requested_contact: input.requested_legacy_contact.trim()
+  }
+
+  // 这里演示模式只更新本地名帖，方便无数据库时预览小院资料页。
+  if (!supabase) {
+    const current = mockApplications.find((item) => item.id === input.application_id) ?? mockApplications[0] ?? null
+
+    if (!current) {
+      return okResult(null, '演示模式下没有找到名帖。')
+    }
+
+    return okResult(
+      {
+        ...current,
+        jianghu_name: payload.next_jianghu_name || null,
+        gender: payload.next_gender,
+        city: payload.next_city || null,
+        public_region: payload.next_city || null,
+        motto: payload.next_motto || current.motto,
+        reason: payload.next_motto || current.reason,
+        public_story: null,
+        raw_story: null,
+        tags: payload.next_hobbies || null,
+        companion_expectation: payload.next_companion_expectation || null,
+        requested_nickname: payload.requested_dao_name || null,
+        requested_legacy_contact: payload.requested_contact || null,
+        requested_at: payload.requested_dao_name || payload.requested_contact ? new Date().toISOString() : null
+      },
+      '演示模式下已模拟保存名册资料。'
+    )
+  }
+
+  try {
+    // 这里通过数据库安全函数保存，函数会保证只能改自己的名帖，并把道名和联系方式写成待审核。
+    const { data, error } = await supabase.rpc('update_my_roster_profile', payload)
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as JoinApplication, '名册资料已保存；如申请了道名或联系方式变更，将等待管理员审核。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '保存名册资料失败，请确认已执行最新 Supabase SQL 脚本'))
+  }
+}
+
 // 这个函数读取当前账号安全信息，入参为空，返回值包含登录邮箱和待确认邮箱。
 export async function fetchMyAccountSecurity(): Promise<ApiResult<AccountSecurityInfo>> {
   // 这里在演示模式下返回固定账号，避免未配置 Supabase 时页面空白。
@@ -1069,9 +1137,9 @@ export async function updateMyPassword(input: PasswordUpdateInput): Promise<ApiR
     return failResult(null, '两次输入的新密码不一致，请重新填写。')
   }
 
-  // 这里要求新密码至少 6 位，符合 Supabase 邮箱密码账号的基础要求。
-  if (input.new_password.length < 6) {
-    return failResult(null, '新密码至少需要 6 位。')
+  // 这里只拦截空密码，最少位数交给 Supabase 后台策略处理。
+  if (!input.new_password) {
+    return failResult(null, '新密码不能为空。')
   }
 
   // 这里在演示模式下只模拟成功，不写入真实认证系统。

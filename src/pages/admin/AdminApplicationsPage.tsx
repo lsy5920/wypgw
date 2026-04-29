@@ -45,7 +45,7 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     offline_interest: item.offline_interest ?? '',
     remark: item.remark ?? '',
     admin_note: item.admin_note ?? '',
-    member_role: item.member_role ?? '烟雨行客',
+    member_role: item.member_role ?? '同门',
     generation_name: item.generation_name ?? '云',
     member_code: item.member_code ?? '',
     roster_serial: item.roster_serial ? String(item.roster_serial).padStart(3, '0') : '',
@@ -57,6 +57,8 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     tags: item.tags ?? '',
     companion_expectation: item.companion_expectation ?? '',
     legacy_contact: item.legacy_contact ?? item.wechat_id,
+    requested_nickname: item.requested_nickname ?? '',
+    requested_legacy_contact: item.requested_legacy_contact ?? '',
     joined_at: item.joined_at ?? '',
     status: item.status
   }
@@ -276,6 +278,46 @@ export function AdminApplicationsPage() {
 
                 {expanded ? (
                   <div className="mt-6 border-t border-[#c9a45c]/20 pt-6">
+                    {draft.requested_nickname || draft.requested_legacy_contact ? (
+                      <div className="mb-5 rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4">
+                        <p className="text-sm font-semibold text-[#9e3d32]">用户申请修改</p>
+                        <div className="mt-3 grid gap-3 text-sm leading-7 text-[#526461] md:grid-cols-2">
+                          {draft.requested_nickname ? (
+                            <div>
+                              <p>申请道名：{draft.requested_nickname}</p>
+                              <button
+                                className="mt-2 rounded-full border border-[#9e3d32]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#9e3d32]"
+                                onClick={() => {
+                                  updateDraft(item.id, 'nickname', draft.requested_nickname)
+                                  updateDraft(item.id, 'requested_nickname', '')
+                                }}
+                                type="button"
+                              >
+                                同意并填入道名
+                              </button>
+                            </div>
+                          ) : null}
+                          {draft.requested_legacy_contact ? (
+                            <div>
+                              <p>申请联系方式：{draft.requested_legacy_contact}</p>
+                              <button
+                                className="mt-2 rounded-full border border-[#9e3d32]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#9e3d32]"
+                                onClick={() => {
+                                  updateDraft(item.id, 'legacy_contact', draft.requested_legacy_contact)
+                                  updateDraft(item.id, 'wechat_id', draft.requested_legacy_contact)
+                                  updateDraft(item.id, 'requested_legacy_contact', '')
+                                }}
+                                type="button"
+                              >
+                                同意并填入联系方式
+                              </button>
+                            </div>
+                          ) : null}
+                        </div>
+                        <p className="mt-3 text-xs leading-6 text-[#7a6a48]">同意后请点击底部“保存名帖”才会真正生效；不想同意时，把待审核内容清空后保存即可。</p>
+                      </div>
+                    ) : null}
+
                     <div className="grid gap-4 lg:grid-cols-4">
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">道名</span>
@@ -390,7 +432,7 @@ export function AdminApplicationsPage() {
                         />
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">公开地域</span>
+                        <span className="text-sm font-semibold">所在城市</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'public_region', event.target.value)}
@@ -398,7 +440,7 @@ export function AdminApplicationsPage() {
                         />
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">后台地域原文</span>
+                        <span className="text-sm font-semibold">后台城市原文</span>
                         <input
                           className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'raw_region', event.target.value)}
@@ -420,18 +462,19 @@ export function AdminApplicationsPage() {
                         />
                       </label>
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">公开故事</span>
+                        <span className="text-sm font-semibold">兴趣爱好</span>
                         <textarea
                           className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'public_story', event.target.value)}
-                          value={draft.public_story}
+                          onChange={(event) => updateDraft(item.id, 'tags', event.target.value)}
+                          placeholder="例如：写文、摄影、饮茶"
+                          value={draft.tags}
                         />
                       </label>
                     </div>
 
                     <div className="mt-4 grid gap-4 lg:grid-cols-2">
                       <label className="grid gap-2">
-                        <span className="text-sm font-semibold">后台故事原文</span>
+                        <span className="text-sm font-semibold">旧故事原文</span>
                         <textarea
                           className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'raw_story', event.target.value)}
@@ -450,14 +493,6 @@ export function AdminApplicationsPage() {
                     </div>
 
                     <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                      <label className="grid gap-2">
-                        <span className="text-sm font-semibold">标签</span>
-                        <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'tags', event.target.value)}
-                          value={draft.tags}
-                        />
-                      </label>
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">同行期待</span>
                         <input
