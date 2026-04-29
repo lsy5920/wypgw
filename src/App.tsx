@@ -12,6 +12,7 @@ import { HomePage } from './pages/HomePage'
 import { JoinPage } from './pages/JoinPage'
 import { LoginPage } from './pages/LoginPage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { WenxinQuizPage } from './pages/WenxinQuizPage'
 import { AdminAnnouncementsPage } from './pages/admin/AdminAnnouncementsPage'
 import { AdminApplicationsPage } from './pages/admin/AdminApplicationsPage'
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
@@ -59,6 +60,7 @@ export default function App() {
           <Route index element={passwordRecoveryRoute ? <LoginPage /> : <HomePage />} />
           <Route path="/canon" element={<CanonPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/wenxin-quiz" element={<WenxinQuizPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/cloud-lantern" element={<CloudLanternPage />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />

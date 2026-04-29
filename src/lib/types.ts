@@ -82,6 +82,47 @@ export interface AdminUserAccountUpdateInput {
   password: string
 }
 
+// 这个类型描述问心考核答案，键是题号，值是用户选择的选项编号。
+export type WenxinQuizAnswerMap = Record<string, string[]>
+
+// 这个接口描述问心考核结果，入参来自 Supabase wenxin_quiz_results 表，返回值用于小院、后台和登记门槛判断。
+export interface WenxinQuizResult {
+  // 结果唯一编号，由数据库生成。
+  id: string
+  // 提交考核的用户编号。
+  user_id: string
+  // 本次得分。
+  score: number
+  // 试卷总分，当前固定为 100。
+  total_score: number
+  // 是否达到自动登记门槛。
+  passed: boolean
+  // 单选题答对数量。
+  single_correct: number
+  // 多选题答对数量。
+  multiple_correct: number
+  // 用户每题选择记录，用于后台复核。
+  answers: WenxinQuizAnswerMap
+  // 提交时间。
+  created_at: string
+}
+
+// 这个接口描述提交问心考核时需要传入的数据，入参来自前台考核页，返回值用于服务层保存。
+export interface WenxinQuizSubmitInput {
+  // 本次得分。
+  score: number
+  // 试卷总分。
+  total_score: number
+  // 是否达到通过线。
+  passed: boolean
+  // 单选题答对数量。
+  single_correct: number
+  // 多选题答对数量。
+  multiple_correct: number
+  // 每题选择记录。
+  answers: WenxinQuizAnswerMap
+}
+
 // 这个接口描述用户在问云小院里可以自己编辑的资料字段。
 export interface ProfileUpdateInput {
   // 用户公开昵称，用于小院和公开资料展示。
@@ -516,6 +557,8 @@ export interface YardOverview {
   registrations: EventRegistration[]
   // 当前用户最近提醒。
   notifications: UserNotification[]
+  // 当前用户最新一次问心考核结果，没有考过时为空。
+  quizResult: WenxinQuizResult | null
 }
 
 // 这个接口描述站点设置项，后台可以按键值维护。

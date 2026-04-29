@@ -6,12 +6,13 @@ import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../../data/siteContent'
-import { fetchAdminApplications, updateApplicationDetails } from '../../lib/services'
+import { fetchAdminApplications, fetchAdminLatestWenxinQuizResults, updateApplicationDetails } from '../../lib/services'
 import type {
   JoinApplication,
   JoinApplicationStatus,
   JoinApplicationUpdateInput,
   MemberGender,
+  WenxinQuizResult,
   WenyunMemberRole
 } from '../../lib/types'
 
@@ -113,11 +114,14 @@ export function AdminApplicationsPage() {
   const [savingId, setSavingId] = useState('')
   // 这个状态保存提示信息。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
+  // 这个状态保存每个用户最新问心考核结果，键为用户编号。
+  const [quizResults, setQuizResults] = useState<Record<string, WenxinQuizResult>>({})
 
   // 这个函数读取登记列表，入参为空，返回值为空。
   async function loadApplications() {
-    const result = await fetchAdminApplications()
+    const [result, quizResult] = await Promise.all([fetchAdminApplications(), fetchAdminLatestWenxinQuizResults()])
     const nextDrafts: Record<string, JoinApplicationUpdateInput> = {}
+    const nextQuizResults: Record<string, WenxinQuizResult> = {}
 
     // 这里把每条数据库记录转换成表单草稿，方便管理员展开后直接编辑。
     result.data.forEach((item) => {
@@ -127,8 +131,15 @@ export function AdminApplicationsPage() {
     setApplications(result.data)
     setDrafts(nextDrafts)
 
+    quizResult.data.forEach((item) => {
+      nextQuizResults[item.user_id] = item
+    })
+    setQuizResults(nextQuizResults)
+
     if (!result.ok) {
       setNotice({ type: 'error', title: '读取失败', message: result.message })
+    } else if (!quizResult.ok) {
+      setNotice({ type: 'error', title: '考核读取失败', message: quizResult.message })
     } else if (result.demoMode) {
       setNotice({ type: 'info', title: '演示模式提示', message: result.message })
     }
@@ -252,6 +263,8 @@ export function AdminApplicationsPage() {
             const draft = drafts[item.id] ?? createDraft(item)
             // 这个变量表示当前小卡片是否展开。
             const expanded = expandedId === item.id
+            // 这个变量保存申请人最新问心考核结果。
+            const latestQuiz = item.user_id ? quizResults[item.user_id] : null
 
             return (
               <ScrollPanel key={item.id}>
@@ -266,6 +279,9 @@ export function AdminApplicationsPage() {
                       <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-xs text-[#6f8f8b]">
                         {applicationStatusLabels[draft.status]}
                       </span>
+                      <span className={`rounded-full px-3 py-1 text-xs ${latestQuiz?.passed ? 'bg-[#f1f7e9] text-[#314434]' : 'bg-[#fff1ee] text-[#9e3d32]'}`}>
+                        问心：{latestQuiz ? `${latestQuiz.score} 分` : '未考'}
+                      </span>
                     </div>
                     <p className="mt-2 text-sm text-[#7a6a48]">申请时间：{formatApplicationTime(item.created_at)}</p>
                     <p className="mt-3 line-clamp-2 leading-7 text-[#526461]">宣言：{draft.motto || draft.reason || '未填写'}</p>
@@ -278,6 +294,16 @@ export function AdminApplicationsPage() {
 
                 {expanded ? (
                   <div className="mt-6 border-t border-[#c9a45c]/20 pt-6">
+                    <div className="mb-5 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/65 p-4">
+                      <p className="text-sm font-semibold text-[#143044]">最新问心考核</p>
+                      <div className="mt-2 grid gap-2 text-sm leading-7 text-[#526461] md:grid-cols-4">
+                        <p>分数：{latestQuiz ? `${latestQuiz.score}/${latestQuiz.total_score}` : '未参加'}</p>
+                        <p>结果：{latestQuiz?.passed ? '合格' : '未合格'}</p>
+                        <p>单选答对：{latestQuiz ? `${latestQuiz.single_correct}/25` : '未记录'}</p>
+                        <p>多选答对：{latestQuiz ? `${latestQuiz.multiple_correct}/5` : '未记录'}</p>
+                      </div>
+                    </div>
+
                     {draft.requested_nickname || draft.requested_legacy_contact ? (
                       <div className="mb-5 rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4">
                         <p className="text-sm font-semibold text-[#9e3d32]">用户申请修改</p>

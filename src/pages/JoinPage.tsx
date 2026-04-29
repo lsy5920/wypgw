@@ -1,15 +1,15 @@
 import { ChevronDown, ChevronUp, ClipboardPenLine, Search, Send, Shuffle, SlidersHorizontal, UsersRound } from 'lucide-react'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
+import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../data/siteContent'
 import { useAuth } from '../hooks/useAuth'
-import { fetchPublicRoster, submitJoinApplication } from '../lib/services'
-import type { JoinApplicationInput, MemberGender, RosterEntry } from '../lib/types'
+import { fetchMyLatestWenxinQuizResult, fetchPublicRoster, submitJoinApplication } from '../lib/services'
+import type { JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizResult } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
 
 // 这个常量保存名册登记表单初始值，返回值用于重置表单。
@@ -97,6 +97,8 @@ export function JoinPage() {
   const [roleFilter, setRoleFilter] = useState('')
   // 这个状态保存随机展示种子。
   const [rosterSeed, setRosterSeed] = useState(() => Date.now())
+  // 这个状态保存当前用户最新一次问心考核结果。
+  const [quizResult, setQuizResult] = useState<WenxinQuizResult | null>(null)
   // 这个状态表示表单是否正在提交。
   const [submitting, setSubmitting] = useState(false)
   // 这个状态保存页面提示。
@@ -120,6 +122,25 @@ export function JoinPage() {
   useEffect(() => {
     void loadRoster()
   }, [])
+
+  useEffect(() => {
+    // 这个函数读取最新问心考核，入参为空，返回值为空。
+    async function loadQuizResult() {
+      if (!profile) {
+        setQuizResult(null)
+        return
+      }
+
+      const result = await fetchMyLatestWenxinQuizResult()
+      setQuizResult(result.data)
+
+      if (!result.ok) {
+        setNotice({ type: 'error', title: '考核结果读取失败', message: result.message })
+      }
+    }
+
+    void loadQuizResult()
+  }, [profile])
 
   // 这个变量保存名册中已有的辈分字，返回值用于筛选下拉框。
   const generationOptions = useMemo(() => {
@@ -179,6 +200,12 @@ export function JoinPage() {
     // 这里拦截未登录用户，确保新名帖都能归属到具体登录用户。
     if (!profile) {
       setNotice({ type: 'error', title: '请先进入问云小院', message: '名册登记需要先登录，登录后再递上名帖。' })
+      return
+    }
+
+    // 这里要求最新一次问心考核合格后才能提交名帖。
+    if (!quizResult?.passed) {
+      setNotice({ type: 'error', title: '请先完成问心考核', message: '登记入册前需要先完成问心考核，并且最新成绩达到 80 分以上。' })
       return
     }
 
@@ -254,11 +281,20 @@ export function JoinPage() {
         ) : (
           <div className="mt-6 border-t border-[#c9a45c]/20 pt-6">
             {!profile ? (
-              <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/80 p-4 text-sm leading-7 text-[#526461]">
-                名帖登记需要先进入问云小院，这样执事审核后你能在小院看到状态和提醒。
-                <Link className="ml-2 font-semibold text-[#9e3d32]" to="/login">
-                  去登录或注册
-                </Link>
+              <LoginRequiredNotice
+                title="递交名帖前请先登录"
+                message="名帖登记需要绑定到你的问云小院，执事审核后你才能看到状态和提醒。"
+              />
+            ) : !quizResult?.passed ? (
+              <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
+                <p className="font-semibold text-[#9e3d32]">请先完成问心考核</p>
+                <p className="mt-1">
+                  登记入册需要最新问心考核达到 80 分以上。当前结果：
+                  {quizResult ? `${quizResult.score} 分，尚未达到登记门槛。` : '尚未参加考核。'}
+                </p>
+                <CloudButton className="mt-4 w-full sm:w-auto" to="/wenxin-quiz" variant="seal">
+                  前往问心考核
+                </CloudButton>
               </div>
             ) : null}
 
@@ -405,7 +441,7 @@ export function JoinPage() {
                 </span>
               </label>
 
-              <CloudButton disabled={submitting || authLoading || !profile} type="submit" variant="seal">
+              <CloudButton disabled={submitting || authLoading || !profile || !quizResult?.passed} type="submit" variant="seal">
                 {submitting ? '正在送帖...' : '提交名册登记'}
                 <Send className="h-4 w-4" />
               </CloudButton>

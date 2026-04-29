@@ -8,6 +8,7 @@ import {
   mockLanterns,
   mockNotifications,
   mockProfile,
+  mockQuizResults,
   mockRegistrations,
   mockRosterEntries,
   mockSettings,
@@ -39,6 +40,8 @@ import type {
   SmtpSettingInput,
   UserNotification,
   UserNotificationKind,
+  WenxinQuizResult,
+  WenxinQuizSubmitInput,
   YardEventItem,
   YardOverview,
   EventRegistrationStatus,
@@ -373,6 +376,110 @@ export async function submitCloudLantern(input: CloudLanternInput): Promise<ApiR
   }
 }
 
+// 这个函数读取当前用户最新一次问心考核结果，入参为空，返回值是最新结果或空值。
+export async function fetchMyLatestWenxinQuizResult(): Promise<ApiResult<WenxinQuizResult | null>> {
+  // 这里在演示模式下返回一条合格结果，方便无数据库时体验登记流程。
+  if (!supabase) {
+    return okResult(mockQuizResults[0] ?? null, '当前为演示问心考核结果。')
+  }
+
+  try {
+    // 这里要求先登录，考核结果必须归属到具体账号。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('wenxin_quiz_results')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data as WenxinQuizResult | null) ?? null, data ? '最新问心考核结果已读取。' : '尚未参加问心考核。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '读取问心考核结果失败，请确认已执行最新 Supabase SQL 脚本'))
+  }
+}
+
+// 这个函数提交当前用户问心考核结果，入参是前台计分结果，返回值是保存后的结果。
+export async function submitWenxinQuizResult(input: WenxinQuizSubmitInput): Promise<ApiResult<WenxinQuizResult | null>> {
+  // 这个对象保存要写入数据库的考核结果。
+  const payload = {
+    score: input.score,
+    total_score: input.total_score,
+    passed: input.passed,
+    single_correct: input.single_correct,
+    multiple_correct: input.multiple_correct,
+    answers: input.answers
+  }
+
+  // 这里在演示模式下模拟保存，让页面可以完整预览交卷反馈。
+  if (!supabase) {
+    return okResult(
+      {
+        id: `demo-quiz-${Date.now()}`,
+        user_id: mockProfile.id,
+        ...payload,
+        created_at: new Date().toISOString()
+      },
+      input.passed ? '演示模式下已记录合格考核。' : '演示模式下已记录本次考核。'
+    )
+  }
+
+  try {
+    // 这里要求先登录，避免匿名成绩无法关联后续登记。
+    const user = await requireCurrentUser()
+    const { data, error } = await supabase
+      .from('wenxin_quiz_results')
+      .insert({ ...payload, user_id: user.id })
+      .select('*')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as WenxinQuizResult, input.passed ? '问心考核已合格，现在可以登记入册。' : '问心考核已记录，建议重读金典后再试。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '提交问心考核失败，请确认已执行最新 Supabase SQL 脚本'))
+  }
+}
+
+// 这个函数读取后台全部用户的最新问心考核结果，入参为空，返回值用于名帖审核页面按用户展示。
+export async function fetchAdminLatestWenxinQuizResults(): Promise<ApiResult<WenxinQuizResult[]>> {
+  // 这里在演示模式下返回演示结果。
+  if (!supabase) {
+    return okResult(mockQuizResults, '当前为演示问心考核结果。')
+  }
+
+  try {
+    // 这里读取所有可见考核结果，管理员可见全部，随后在前端按用户保留最新一次。
+    const { data, error } = await supabase
+      .from('wenxin_quiz_results')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    // 这里按用户编号去重，只保留第一条，也就是最新一次考核。
+    const latestResults = new Map<string, WenxinQuizResult>()
+    ;((data ?? []) as WenxinQuizResult[]).forEach((item) => {
+      if (!latestResults.has(item.user_id)) {
+        latestResults.set(item.user_id, item)
+      }
+    })
+
+    return okResult(Array.from(latestResults.values()), '后台问心考核结果已读取。')
+  } catch (error) {
+    return failResult([], getErrorMessage(error, '读取后台问心考核结果失败，请确认已执行最新 Supabase SQL 脚本'))
+  }
+}
+
 // 这个函数提交名册登记，入参是登记表单，返回值是名帖记录。
 export async function submitJoinApplication(input: JoinApplicationInput): Promise<ApiResult<JoinApplication>> {
   // 这个对象是写入数据库的数据，敏感微信号只进入后台表。
@@ -422,6 +529,13 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
   try {
     // 这里要求先登录问云小院，再把名帖归属到当前账号。
     const user = await requireCurrentUser()
+    // 这里再次检查最新问心考核是否合格，防止用户绕过页面直接提交名帖。
+    const quizResult = await fetchMyLatestWenxinQuizResult()
+
+    if (!quizResult.data?.passed) {
+      throw new Error('请先完成问心考核并达到 80 分以上，再登记入册。')
+    }
+
     // 这里写入名册登记表，用户只能新增自己的待审核名帖。
     const { data, error } = await supabase
       .from('join_applications')
@@ -1492,14 +1606,15 @@ export async function fetchMyNotifications(): Promise<ApiResult<UserNotification
   }
 }
 
-// 这个函数读取问云小院总览数据，入参为空，返回值是资料、名帖、云灯、报名和提醒。
+// 这个函数读取问云小院总览数据，入参为空，返回值是资料、名帖、云灯、报名、提醒和问心考核。
 export async function fetchYardOverview(): Promise<ApiResult<YardOverview>> {
-  const [profileResult, applicationResult, lanternResult, registrationResult, notificationResult] = await Promise.all([
+  const [profileResult, applicationResult, lanternResult, registrationResult, notificationResult, quizResult] = await Promise.all([
     fetchMyProfile(),
     fetchMyApplications(),
     fetchMyLanterns(),
     fetchMyRegistrations(),
-    fetchMyNotifications()
+    fetchMyNotifications(),
+    fetchMyLatestWenxinQuizResult()
   ])
 
   return {
@@ -1508,13 +1623,15 @@ export async function fetchYardOverview(): Promise<ApiResult<YardOverview>> {
       applicationResult.ok &&
       lanternResult.ok &&
       registrationResult.ok &&
-      notificationResult.ok,
+      notificationResult.ok &&
+      quizResult.ok,
     data: {
       profile: profileResult.data,
       applications: applicationResult.data,
       lanterns: lanternResult.data,
       registrations: registrationResult.data,
-      notifications: notificationResult.data
+      notifications: notificationResult.data,
+      quizResult: quizResult.data
     },
     message: profileResult.message,
     demoMode: profileResult.demoMode

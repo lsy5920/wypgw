@@ -1,8 +1,8 @@
 import { Lamp } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
+import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -95,12 +95,10 @@ export function CloudLanternPage() {
         <ScrollPanel>
           {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
           {!profile ? (
-            <div className="mt-6 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/80 p-4 text-sm leading-7 text-[#526461]">
-              云灯留言需要先进入问云小院，这样审核结果会回到你自己的消息里。
-              <Link className="ml-2 font-semibold text-[#9e3d32]" to="/login">
-                去登录或注册
-              </Link>
-            </div>
+            <LoginRequiredNotice
+              title="点灯前请先登录"
+              message="云灯留言需要绑定到你的问云小院，审核结果会回到你自己的消息里。"
+            />
           ) : null}
           <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
             <label className="grid gap-2">

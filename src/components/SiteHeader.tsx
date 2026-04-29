@@ -1,5 +1,5 @@
 import { Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { siteNavItems } from '../data/siteContent'
 import { getPublicAsset } from '../lib/assets'
@@ -8,6 +8,25 @@ import { getPublicAsset } from '../lib/assets'
 export function SiteHeader() {
   // 这个状态控制手机菜单是否展开。
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    // 这里在手机端首次打开官网时自动展开菜单，让新用户知道导航入口在哪里。
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches
+
+    if (!isMobile) {
+      return undefined
+    }
+
+    setOpen(true)
+
+    // 这里两秒后自动收回菜单，避免遮挡首屏内容。
+    const timer = window.setTimeout(() => {
+      setOpen(false)
+    }, 2000)
+
+    // 这里清理定时器，避免页面切换时继续执行。
+    return () => window.clearTimeout(timer)
+  }, [])
 
   // 这个函数用于关闭手机菜单，入参为空，返回值为空。
   const closeMenu = () => setOpen(false)

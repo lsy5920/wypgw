@@ -8,6 +8,7 @@ import type {
   SiteSetting,
   SmtpSetting,
   UserNotification,
+  WenxinQuizResult,
   WenyunEvent
 } from '../lib/types'
 
@@ -29,6 +30,25 @@ export const mockProfile: Profile = {
   created_at: demoNow,
   updated_at: demoNow
 }
+
+// 这个数组保存演示问心考核结果，未连接 Supabase 时用于入册门槛和小院展示。
+export const mockQuizResults: WenxinQuizResult[] = [
+  {
+    id: 'quiz-result-1',
+    user_id: mockUserId,
+    score: 92,
+    total_score: 100,
+    passed: true,
+    single_correct: 24,
+    multiple_correct: 4,
+    answers: {
+      '1': ['B'],
+      '2': ['C'],
+      '26': ['A', 'B', 'C', 'D']
+    },
+    created_at: demoNow
+  }
+]
 
 // 这个数组保存首页和云灯页演示留言，未连接 Supabase 时用于兜底展示。
 export const mockLanterns: CloudLantern[] = [

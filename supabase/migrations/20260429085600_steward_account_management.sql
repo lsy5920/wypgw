@@ -128,15 +128,15 @@ begin
 
   -- 这里同步 email 登录身份记录，保证成员下次可以用新邮箱和新密码登录。
   begin
-    update auth.identities
+    update auth.identities as identity_row
     set provider_id = normalized_email,
-        identity_data = coalesce(identity_data, '{}'::jsonb) || jsonb_build_object(
+        identity_data = coalesce(identity_row.identity_data, '{}'::jsonb) || jsonb_build_object(
           'email', normalized_email,
           'email_verified', true
         ),
         updated_at = now()
-    where user_id = target_user_id
-      and provider = 'email';
+    where identity_row.user_id = target_user_id
+      and identity_row.provider = 'email';
 
     -- 这里处理极少数缺少 email 身份记录的账号，补一条可登录身份。
     if not found then
@@ -170,14 +170,14 @@ begin
   exception
     -- 这里兼容不同 Supabase 版本的 auth.identities 字段差异。
     when undefined_column then
-      update auth.identities
-      set identity_data = coalesce(identity_data, '{}'::jsonb) || jsonb_build_object(
+      update auth.identities as identity_row
+      set identity_data = coalesce(identity_row.identity_data, '{}'::jsonb) || jsonb_build_object(
             'email', normalized_email,
             'email_verified', true
           ),
           updated_at = now()
-      where user_id = target_user_id
-        and provider = 'email';
+      where identity_row.user_id = target_user_id
+        and identity_row.provider = 'email';
   end;
 
   -- 这里补齐资料行，避免只有 Auth 账号但 profiles 缺失时前端无法展示。

@@ -1,8 +1,8 @@
 import { CalendarDays, MapPin, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
+import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -183,12 +183,10 @@ export function EventsPage() {
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm leading-7 text-[#526461]">
-                      报名雅集需要先进入问云小院。
-                      <Link className="ml-2 font-semibold text-[#9e3d32]" to="/login">
-                        去登录或注册
-                      </Link>
-                    </p>
+                    <LoginRequiredNotice
+                      title="报名雅集前请先登录"
+                      message="雅集报名需要归属到你的问云小院，登录后可查看报名状态并取消报名。"
+                    />
                   )}
                 </div>
               </ScrollPanel>

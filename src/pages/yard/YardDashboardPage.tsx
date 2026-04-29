@@ -1,4 +1,5 @@
-import { Bell, CalendarDays, Lamp, ScrollText } from 'lucide-react'
+import { Bell, CalendarDays, Lamp, ScrollText, ShieldQuestion } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
@@ -65,6 +66,7 @@ export function YardDashboardPage() {
   const latestLantern = overview.lanterns[0]
   const latestRegistration = overview.registrations[0]
   const latestNotifications = overview.notifications.slice(0, 4)
+  const latestQuiz = overview.quizResult
 
   return (
     <div>
@@ -74,7 +76,7 @@ export function YardDashboardPage() {
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
-      <div className="mt-8 grid gap-4 md:grid-cols-4">
+      <div className="mt-8 grid gap-4 md:grid-cols-5">
         <ScrollPanel>
           <ScrollText className="h-5 w-5 text-[#9e3d32]" />
           <p className="mt-3 text-sm text-[#7a6a48]">我的名帖</p>
@@ -96,6 +98,12 @@ export function YardDashboardPage() {
           <p className="mt-3 text-sm text-[#7a6a48]">雅集报名</p>
           <p className="mt-2 text-3xl font-bold text-[#143044]">{overview.registrations.length}</p>
           <p className="mt-2 text-sm text-[#526461]">{formatRegistrationStatus(latestRegistration?.status ?? null)}</p>
+        </ScrollPanel>
+        <ScrollPanel>
+          <ShieldQuestion className="h-5 w-5 text-[#6f8f8b]" />
+          <p className="mt-3 text-sm text-[#7a6a48]">问心考核</p>
+          <p className="mt-2 text-3xl font-bold text-[#143044]">{latestQuiz ? latestQuiz.score : '未考'}</p>
+          <p className="mt-2 text-sm text-[#526461]">{latestQuiz?.passed ? '已合格，可登记' : '未合格或未参加'}</p>
         </ScrollPanel>
         <ScrollPanel>
           <Bell className="h-5 w-5 text-[#9e3d32]" />
@@ -132,6 +140,13 @@ export function YardDashboardPage() {
             <p>城市：{overview.profile.city ?? '未填写'}</p>
             <p>资料公开：{overview.profile.is_public ? '公开' : '不公开'}</p>
             <p>简介：{overview.profile.bio ?? '尚未写下小院自述。'}</p>
+            <p>
+              问心考核：
+              {latestQuiz ? `${latestQuiz.score}/${latestQuiz.total_score}，${latestQuiz.passed ? '已合格' : '未合格'}` : '尚未参加'}
+              <Link className="ml-2 font-semibold text-[#9e3d32]" to="/wenxin-quiz">
+                去考核
+              </Link>
+            </p>
           </div>
         </ScrollPanel>
       </div>

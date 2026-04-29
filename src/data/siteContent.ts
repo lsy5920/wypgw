@@ -8,6 +8,7 @@ export const siteNavItems = [
   { label: '首页', path: '/' },
   { label: '立派金典', path: '/canon' },
   { label: '山门介绍', path: '/about' },
+  { label: '问心考核', path: '/wenxin-quiz' },
   { label: '问云名册', path: '/join' },
   { label: '云灯留言', path: '/cloud-lantern' },
   { label: '门派公告', path: '/announcements' },
