@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Save, Search } from 'lucide-react'
+import { ChevronDown, ChevronUp, Eye, EyeOff, QrCode, Save, Search, ShieldAlert, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
@@ -6,8 +6,9 @@ import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../../data/siteContent'
-import { fetchAdminApplications, fetchAdminLatestWenxinQuizResults, updateApplicationDetails } from '../../lib/services'
+import { deleteApplicationPermanently, fetchAdminApplications, fetchAdminLatestWenxinQuizResults, fetchGuiyuntangSetting, updateApplicationDetails } from '../../lib/services'
 import type {
+  GuiyuntangSetting,
   JoinApplication,
   JoinApplicationStatus,
   JoinApplicationUpdateInput,
@@ -112,14 +113,20 @@ export function AdminApplicationsPage() {
   const [expandedId, setExpandedId] = useState('')
   // 这个状态保存正在保存的登记编号。
   const [savingId, setSavingId] = useState('')
+  // 这个状态保存正在彻底删除的登记编号。
+  const [deletingId, setDeletingId] = useState('')
   // 这个状态保存提示信息。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
   // 这个状态保存每个用户最新问心考核结果，键为用户编号。
   const [quizResults, setQuizResults] = useState<Record<string, WenxinQuizResult>>({})
+  // 这个状态保存归云堂二维码设置，只在后台审核页使用。
+  const [guiyuntangSetting, setGuiyuntangSetting] = useState<GuiyuntangSetting | null>(null)
+  // 这个状态保存已入群名帖是否展开查看二维码。
+  const [joinedQrVisible, setJoinedQrVisible] = useState<Record<string, boolean>>({})
 
   // 这个函数读取登记列表，入参为空，返回值为空。
   async function loadApplications() {
-    const [result, quizResult] = await Promise.all([fetchAdminApplications(), fetchAdminLatestWenxinQuizResults()])
+    const [result, quizResult, guiyuntangResult] = await Promise.all([fetchAdminApplications(), fetchAdminLatestWenxinQuizResults(), fetchGuiyuntangSetting()])
     const nextDrafts: Record<string, JoinApplicationUpdateInput> = {}
     const nextQuizResults: Record<string, WenxinQuizResult> = {}
 
@@ -130,6 +137,7 @@ export function AdminApplicationsPage() {
 
     setApplications(result.data)
     setDrafts(nextDrafts)
+    setGuiyuntangSetting(guiyuntangResult.data)
 
     quizResult.data.forEach((item) => {
       nextQuizResults[item.user_id] = item
@@ -140,6 +148,8 @@ export function AdminApplicationsPage() {
       setNotice({ type: 'error', title: '读取失败', message: result.message })
     } else if (!quizResult.ok) {
       setNotice({ type: 'error', title: '考核读取失败', message: quizResult.message })
+    } else if (!guiyuntangResult.ok) {
+      setNotice({ type: 'error', title: '归云堂设置读取失败', message: guiyuntangResult.message })
     } else if (result.demoMode) {
       setNotice({ type: 'info', title: '演示模式提示', message: result.message })
     }
@@ -217,6 +227,35 @@ export function AdminApplicationsPage() {
     }
   }
 
+  // 这个函数彻底删除某条名帖，入参是登记编号和道名，返回值为空。
+  async function handleDelete(id: string, nickname: string) {
+    // 这里用浏览器确认框做二次确认，避免管理员误点后无法恢复。
+    const confirmed = window.confirm(`确定要彻底删除“${nickname || '这条名帖'}”吗？删除后不可恢复，也会从公开名册中消失。`)
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setDeletingId(id)
+      const result = await deleteApplicationPermanently(id)
+
+      setNotice({
+        type: result.ok ? 'success' : 'error',
+        title: result.ok ? '名帖已删除' : '删除失败',
+        message: result.message
+      })
+
+      // 这里删除成功后清掉展开状态并重新读取列表，保证后台和公开名册状态同步。
+      if (result.ok) {
+        setExpandedId('')
+        await loadApplications()
+      }
+    } finally {
+      setDeletingId('')
+    }
+  }
+
   return (
     <div>
       <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订">
@@ -265,6 +304,14 @@ export function AdminApplicationsPage() {
             const expanded = expandedId === item.id
             // 这个变量保存申请人最新问心考核结果。
             const latestQuiz = item.user_id ? quizResults[item.user_id] : null
+            // 这个变量表示名帖已审核通过但尚未确认入群，需要醒目展示归云堂二维码。
+            const shouldProminentlyShowGuiyuntang = ['approved', 'contacted'].includes(draft.status)
+            // 这个变量表示同门已确认进群，只保留可查看入口。
+            const shouldCompactlyShowGuiyuntang = draft.status === 'joined'
+            // 这个变量表示当前归云堂二维码是否可用。
+            const guiyuntangQrReady = Boolean(guiyuntangSetting?.enabled && guiyuntangSetting.qr_image_data_url)
+            // 这个变量表示已入群状态下是否展开查看二维码。
+            const joinedQrOpen = Boolean(joinedQrVisible[item.id])
 
             return (
               <ScrollPanel key={item.id}>
@@ -303,6 +350,77 @@ export function AdminApplicationsPage() {
                         <p>多选答对：{latestQuiz ? `${latestQuiz.multiple_correct}/5` : '未记录'}</p>
                       </div>
                     </div>
+
+                    {shouldProminentlyShowGuiyuntang ? (
+                      <div className="mb-5 rounded-3xl border-2 border-[#9e3d32]/35 bg-[#fff1ee]/85 p-5 shadow-xl shadow-[#9e3d32]/10">
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <p className="flex items-center gap-2 text-sm font-semibold text-[#9e3d32]">
+                              <ShieldAlert className="h-4 w-4" />
+                              可加入归云堂
+                            </p>
+                            <h3 className="ink-title mt-2 text-2xl font-bold text-[#143044]">名帖已通过，请引导入群</h3>
+                            <p className="mt-2 text-sm leading-7 text-[#526461]">
+                              {guiyuntangSetting?.instruction ?? '名帖审核通过后，可引导同门扫码加入归云堂；确认进群后将名帖状态改为“已入群”。'}
+                            </p>
+                            <p className="mt-2 text-sm font-semibold leading-7 text-[#9e3d32]">
+                              {guiyuntangSetting?.warning ?? '归云堂入群二维码只供后台审核使用，严禁截图外传、公开发布或转交未审核人员。'}
+                            </p>
+                          </div>
+                          {guiyuntangQrReady ? (
+                            <img
+                              alt="归云堂入群二维码"
+                              className="h-44 w-44 shrink-0 rounded-2xl border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
+                              src={guiyuntangSetting?.qr_image_data_url ?? ''}
+                            />
+                          ) : (
+                            <div className="grid h-44 w-44 shrink-0 place-items-center rounded-2xl border border-[#9e3d32]/25 bg-white/70 p-4 text-center text-sm leading-7 text-[#9e3d32]">
+                              <QrCode className="mb-2 h-8 w-8" />
+                              尚未配置二维码
+                              <CloudButton className="mt-3 w-full" to="/admin/settings" variant="ghost">
+                                去设置
+                              </CloudButton>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {shouldCompactlyShowGuiyuntang ? (
+                      <div className="mb-5 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-semibold text-[#143044]">已确认进群</p>
+                            <p className="mt-1 text-sm leading-7 text-[#526461]">醒目入群提示已收起，管理员仍可按需查看归云堂二维码。</p>
+                          </div>
+                          <CloudButton
+                            disabled={!guiyuntangQrReady}
+                            onClick={() =>
+                              setJoinedQrVisible((current) => ({
+                                ...current,
+                                [item.id]: !current[item.id]
+                              }))
+                            }
+                            variant="ghost"
+                          >
+                            {joinedQrOpen ? '收起二维码' : '查看二维码'}
+                            {joinedQrOpen ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </CloudButton>
+                        </div>
+                        {joinedQrOpen && guiyuntangQrReady ? (
+                          <div className="mt-4 grid gap-4 rounded-2xl border border-[#c9a45c]/25 bg-white/65 p-4 md:grid-cols-[auto_1fr] md:items-center">
+                            <img
+                              alt="归云堂入群二维码"
+                              className="h-40 w-40 rounded-2xl border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
+                              src={guiyuntangSetting?.qr_image_data_url ?? ''}
+                            />
+                            <p className="text-sm font-semibold leading-7 text-[#9e3d32]">
+                              {guiyuntangSetting?.warning ?? '归云堂入群二维码只供后台审核使用，严禁截图外传、公开发布或转交未审核人员。'}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
 
                     {draft.requested_nickname || draft.requested_legacy_contact ? (
                       <div className="mb-5 rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4">
@@ -539,11 +657,26 @@ export function AdminApplicationsPage() {
                       <span className="text-sm leading-7 text-[#526461]">申请人已确认认同问云派门规</span>
                     </label>
 
-                    <div className="mt-5 flex flex-wrap justify-end gap-3">
+                    <div className="mt-5 flex flex-col gap-3 border-t border-[#c9a45c]/20 pt-5 md:flex-row md:items-center md:justify-between">
+                      <div className="rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4 text-sm leading-7 text-[#526461]">
+                        <p className="font-semibold text-[#9e3d32]">危险操作</p>
+                        <p>彻底删除后不可恢复；如只是临时不展示，可把状态改为“暂存”或“已退派”。</p>
+                      </div>
+                      <div className="flex flex-wrap justify-end gap-3">
+                        <CloudButton
+                          className="border-[#9e3d32]/40 text-[#9e3d32] hover:bg-[#fff1ee]"
+                          disabled={deletingId === item.id || savingId === item.id}
+                          onClick={() => void handleDelete(item.id, draft.nickname)}
+                          variant="ghost"
+                        >
+                          {deletingId === item.id ? '正在删除...' : '彻底删除'}
+                          <Trash2 className="h-4 w-4" />
+                        </CloudButton>
                       <CloudButton disabled={savingId === item.id} onClick={() => void handleSave(item.id)} variant="seal">
                         {savingId === item.id ? '正在保存...' : '保存名帖'}
                         <Save className="h-4 w-4" />
                       </CloudButton>
+                      </div>
                     </div>
                   </div>
                 ) : null}

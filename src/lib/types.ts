@@ -611,6 +611,34 @@ export interface SmtpSettingInput {
   from_email: string
 }
 
+// 这个接口描述归云堂入群二维码设置，只允许后台管理员读取和维护。
+export interface GuiyuntangSetting {
+  // 设置编号，固定使用 default。
+  id: string
+  // 是否启用归云堂二维码提示。
+  enabled: boolean
+  // 二维码图片的数据地址，保存在受 RLS 保护的后台设置表中。
+  qr_image_data_url: string | null
+  // 审核通过后给管理员看的操作说明。
+  instruction: string
+  // 保密提醒，防止二维码外传。
+  warning: string
+  // 更新时间。
+  updated_at: string
+}
+
+// 这个接口描述管理员保存归云堂二维码设置时提交的表单。
+export interface GuiyuntangSettingInput {
+  // 是否启用归云堂二维码提示。
+  enabled: boolean
+  // 二维码图片的数据地址，来自后台上传的图片。
+  qr_image_data_url: string
+  // 审核通过后给管理员看的操作说明。
+  instruction: string
+  // 保密提醒。
+  warning: string
+}
+
 // 这个接口描述所有接口函数统一返回的结果。
 export interface ApiResult<T> {
   // 是否执行成功。

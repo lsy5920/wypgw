@@ -8,8 +8,8 @@ import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../data/siteContent'
 import { useAuth } from '../hooks/useAuth'
-import { fetchMyLatestWenxinQuizResult, fetchPublicRoster, submitJoinApplication } from '../lib/services'
-import type { JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizResult } from '../lib/types'
+import { fetchMyApplications, fetchMyLatestWenxinQuizResult, fetchPublicRoster, submitJoinApplication } from '../lib/services'
+import type { JoinApplication, JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizResult } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
 
 // 这个常量保存名册登记表单初始值，返回值用于重置表单。
@@ -99,6 +99,8 @@ export function JoinPage() {
   const [rosterSeed, setRosterSeed] = useState(() => Date.now())
   // 这个状态保存当前用户最新一次问心考核结果。
   const [quizResult, setQuizResult] = useState<WenxinQuizResult | null>(null)
+  // 这个状态保存当前账号已经递交过的名帖，防止重复提交。
+  const [existingApplication, setExistingApplication] = useState<JoinApplication | null>(null)
   // 这个状态表示表单是否正在提交。
   const [submitting, setSubmitting] = useState(false)
   // 这个状态保存页面提示。
@@ -125,21 +127,25 @@ export function JoinPage() {
 
   useEffect(() => {
     // 这个函数读取最新问心考核，入参为空，返回值为空。
-    async function loadQuizResult() {
+    async function loadUserGateInfo() {
       if (!profile) {
         setQuizResult(null)
+        setExistingApplication(null)
         return
       }
 
-      const result = await fetchMyLatestWenxinQuizResult()
-      setQuizResult(result.data)
+      const [quizResultData, applicationResult] = await Promise.all([fetchMyLatestWenxinQuizResult(), fetchMyApplications()])
+      setQuizResult(quizResultData.data)
+      setExistingApplication(applicationResult.data[0] ?? null)
 
-      if (!result.ok) {
-        setNotice({ type: 'error', title: '考核结果读取失败', message: result.message })
+      if (!quizResultData.ok) {
+        setNotice({ type: 'error', title: '考核结果读取失败', message: quizResultData.message })
+      } else if (!applicationResult.ok) {
+        setNotice({ type: 'error', title: '名帖状态读取失败', message: applicationResult.message })
       }
     }
 
-    void loadQuizResult()
+    void loadUserGateInfo()
   }, [profile])
 
   // 这个变量保存名册中已有的辈分字，返回值用于筛选下拉框。
@@ -203,6 +209,12 @@ export function JoinPage() {
       return
     }
 
+    // 这里拦截重复提交，引导用户回到问云小院维护已有资料。
+    if (existingApplication) {
+      setNotice({ type: 'error', title: '你已经递交过名帖', message: '每个账号只能提交一份名帖。请到问云小院的“我的资料”修改资料，或到“我的名帖”查看审核状态。' })
+      return
+    }
+
     // 这里要求最新一次问心考核合格后才能提交名帖。
     if (!quizResult?.passed) {
       setNotice({ type: 'error', title: '请先完成问心考核', message: '登记入册前需要先完成问心考核，并且最新成绩达到 80 分以上。' })
@@ -262,7 +274,13 @@ export function JoinPage() {
                 登记前需先完成问心考核，最新成绩达到 80 分以上后方可递帖；道名需以“云”字开头，身份默认同门。
               </span>
               <span className="mt-3 inline-flex rounded-full bg-[#edf3ef] px-3 py-1 text-xs font-semibold text-[#6f8f8b]">
-                {!profile ? '请先登录问云小院' : quizResult?.passed ? `问心已合格：${quizResult.score} 分` : '待完成问心考核'}
+                {!profile
+                  ? '请先登录问云小院'
+                  : existingApplication
+                    ? `已递交名帖：${applicationStatusLabels[existingApplication.status]}`
+                    : quizResult?.passed
+                      ? `问心已合格：${quizResult.score} 分`
+                      : '待完成问心考核'}
               </span>
             </span>
           </span>
@@ -297,6 +315,22 @@ export function JoinPage() {
                 title="递交名帖前请先登录"
                 message="名帖登记需要绑定到你的问云小院，执事审核后你才能看到状态和提醒。"
               />
+            ) : existingApplication ? (
+              <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
+                <p className="font-semibold text-[#9e3d32]">你已经递交过名帖</p>
+                <p className="mt-1">
+                  每个账号只能提交一份名帖。当前状态为“{applicationStatusLabels[existingApplication.status]}”。
+                  如需修改资料，请到问云小院处理；道名和联系方式会进入管理员审核，其余可直接保存。
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <CloudButton to="/yard/profile" variant="seal">
+                    去小院修改资料
+                  </CloudButton>
+                  <CloudButton to="/yard/applications" variant="ghost">
+                    查看我的名帖
+                  </CloudButton>
+                </div>
+              </div>
             ) : !quizResult?.passed ? (
               <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
                 <p className="font-semibold text-[#9e3d32]">请先完成问心考核</p>
@@ -310,6 +344,7 @@ export function JoinPage() {
               </div>
             ) : null}
 
+            {profile && quizResult?.passed && !existingApplication ? (
             <form className="grid gap-5" onSubmit={handleSubmit}>
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">道名 *</span>
@@ -458,6 +493,7 @@ export function JoinPage() {
                 <Send className="h-4 w-4" />
               </CloudButton>
             </form>
+            ) : null}
           </div>
         )}
       </ScrollPanel>

@@ -5,6 +5,7 @@ import {
   mockAnnouncements,
   mockApplications,
   mockEvents,
+  mockGuiyuntangSetting,
   mockLanterns,
   mockNotifications,
   mockProfile,
@@ -24,6 +25,8 @@ import type {
   CloudLanternInput,
   EmailBindInput,
   EventRegistration,
+  GuiyuntangSetting,
+  GuiyuntangSettingInput,
   JoinApplication,
   JoinApplicationInput,
   JoinApplicationStatus,
@@ -510,6 +513,19 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
 
   // 这里在演示模式下模拟提交成功，方便没有数据库时体验完整流程。
   if (!supabase) {
+    // 这里演示模式也遵守一人一帖规则，避免页面行为和真实环境不一致。
+    const existingApplication = mockApplications.find((item) => item.user_id === mockProfile.id)
+
+    if (existingApplication) {
+      return failResult(
+        {
+          ...createEmptyApplication(),
+          ...payload
+        } as JoinApplication,
+        '每个账号只能提交一份名帖。你已经递交过名帖，请到问云小院的“我的资料”修改资料，或到“我的名帖”查看审核状态。'
+      )
+    }
+
     return okResult(
       {
         id: `demo-application-${Date.now()}`,
@@ -529,6 +545,23 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
   try {
     // 这里要求先登录问云小院，再把名帖归属到当前账号。
     const user = await requireCurrentUser()
+
+    // 这里先检查当前账号是否已有名帖，防止重复递交造成后台混乱。
+    const { data: existingApplication, error: existingError } = await supabase
+      .from('join_applications')
+      .select('id,status')
+      .eq('user_id', user.id)
+      .limit(1)
+      .maybeSingle()
+
+    if (existingError) {
+      throw existingError
+    }
+
+    if (existingApplication) {
+      throw new Error('每个账号只能提交一份名帖。你已经递交过名帖，请到问云小院的“我的资料”修改资料，或到“我的名帖”查看审核状态。')
+    }
+
     // 这里再次检查最新问心考核是否合格，防止用户绕过页面直接提交名帖。
     const quizResult = await fetchMyLatestWenxinQuizResult()
 
@@ -566,6 +599,41 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
       } as JoinApplication,
       getErrorMessage(error, '提交名册登记失败')
     )
+  }
+}
+
+// 这个函数彻底删除后台名帖，入参是名帖编号，返回值表示删除是否成功。
+export async function deleteApplicationPermanently(id: string): Promise<ApiResult<null>> {
+  // 这里演示模式只模拟删除，不会改动本地演示数组。
+  if (!supabase) {
+    return okResult(null, '演示模式下已模拟彻底删除名帖。')
+  }
+
+  try {
+    // 这里先删除这条名帖相关的站内提醒，避免用户小院残留已经不存在的名帖提醒。
+    const { error: notificationError } = await supabase
+      .from('user_notifications')
+      .delete()
+      .eq('target_table', 'join_applications')
+      .eq('target_id', id)
+
+    if (notificationError) {
+      throw notificationError
+    }
+
+    // 这里真正删除名帖记录，删除后公开名册视图也会自动消失对应成员。
+    const { error } = await supabase
+      .from('join_applications')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(null, '名帖已彻底删除。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '彻底删除名帖失败，请确认当前账号是管理员，并已执行最新 Supabase SQL 脚本'))
   }
 }
 
@@ -1910,5 +1978,68 @@ export async function saveSmtpSetting(input: SmtpSettingInput): Promise<ApiResul
     return okResult(data as SmtpSetting, 'SMTP 服务设置已保存。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '保存 SMTP 设置失败。首次配置必须填写授权码'))
+  }
+}
+
+// 这个函数读取归云堂二维码设置，入参为空，返回值只给后台管理员使用。
+export async function fetchGuiyuntangSetting(): Promise<ApiResult<GuiyuntangSetting | null>> {
+  if (!supabase) {
+    return okResult(mockGuiyuntangSetting, '当前为演示归云堂设置。')
+  }
+
+  try {
+    // 这里读取受 RLS 保护的后台设置表，二维码不会进入公开站点设置。
+    const { data, error } = await supabase
+      .from('guiyuntang_settings')
+      .select('id,enabled,qr_image_data_url,instruction,warning,updated_at')
+      .eq('id', 'default')
+      .maybeSingle()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult((data as GuiyuntangSetting | null) ?? null, data ? '归云堂设置已读取。' : '尚未配置归云堂二维码。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '读取归云堂二维码设置失败，请确认已执行最新 Supabase SQL 脚本'))
+  }
+}
+
+// 这个函数保存归云堂二维码设置，入参是后台表单，返回值是不含额外公开入口的设置。
+export async function saveGuiyuntangSetting(input: GuiyuntangSettingInput): Promise<ApiResult<GuiyuntangSetting | null>> {
+  const payload = {
+    id: 'default',
+    enabled: input.enabled,
+    qr_image_data_url: input.qr_image_data_url.trim() || null,
+    instruction: input.instruction.trim() || mockGuiyuntangSetting.instruction,
+    warning: input.warning.trim() || mockGuiyuntangSetting.warning
+  }
+
+  if (!supabase) {
+    return okResult(
+      {
+        ...mockGuiyuntangSetting,
+        ...payload,
+        updated_at: new Date().toISOString()
+      },
+      '演示模式下已模拟保存归云堂设置。'
+    )
+  }
+
+  try {
+    // 这里使用 upsert 保存唯一配置，权限由 RLS 限制为管理员可写。
+    const { data, error } = await supabase
+      .from('guiyuntang_settings')
+      .upsert(payload)
+      .select('id,enabled,qr_image_data_url,instruction,warning,updated_at')
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as GuiyuntangSetting, '归云堂二维码设置已保存。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '保存归云堂二维码设置失败'))
   }
 }

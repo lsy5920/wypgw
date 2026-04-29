@@ -2,6 +2,7 @@ import type {
   Announcement,
   CloudLantern,
   EventRegistration,
+  GuiyuntangSetting,
   JoinApplication,
   Profile,
   RosterEntry,
@@ -434,5 +435,15 @@ export const mockSmtpSetting: SmtpSetting = {
   secure: true,
   username: '',
   from_email: '',
+  updated_at: demoNow
+}
+
+// 这个对象保存演示归云堂设置，演示模式不内置真实二维码，避免误把群二维码放进公开代码。
+export const mockGuiyuntangSetting: GuiyuntangSetting = {
+  id: 'default',
+  enabled: true,
+  qr_image_data_url: null,
+  instruction: '名帖审核通过后，可引导同门扫码加入归云堂；确认进群后将名帖状态改为“已入群”。',
+  warning: '归云堂入群二维码只供后台审核使用，严禁截图外传、公开发布或转交未审核人员。',
   updated_at: demoNow
 }
