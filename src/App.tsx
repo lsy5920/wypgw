@@ -26,15 +26,37 @@ import { YardLanternsPage } from './pages/yard/YardLanternsPage'
 import { YardNotificationsPage } from './pages/yard/YardNotificationsPage'
 import { YardProfilePage } from './pages/yard/YardProfilePage'
 
+// 这个函数判断当前地址是否来自 Supabase 找回密码邮件，入参为空，返回值表示是否应该进入登录页重置密码。
+function isPasswordRecoveryRoute(): boolean {
+  try {
+    // 这里兼容服务端或测试环境，避免没有 window 时出错。
+    if (typeof window === 'undefined') {
+      return false
+    }
+
+    // 这里同时检查普通查询参数和 Supabase 放在哈希里的恢复令牌。
+    const searchText = window.location.search.toLowerCase()
+    const hashText = window.location.hash.toLowerCase()
+
+    return searchText.includes('mode=reset-password') || hashText.includes('type=recovery')
+  } catch {
+    // 这里兜底处理浏览器地址解析异常，异常时不拦截普通 404。
+    return false
+  }
+}
+
 // 这个函数是官网总路由入口，入参为空，返回值是完整的前台与后台页面路由。
 export default function App() {
+  // 这个变量保存当前是否为找回密码回跳地址，用于把根路径也切到重置密码页。
+  const passwordRecoveryRoute = isPasswordRecoveryRoute()
+
   return (
     // 这里使用 HashRouter 管理页面路径，部署到 GitHub Pages 子目录后刷新页面也不会误入 404。
     <HashRouter>
       <Routes>
         {/* 这里放置前台官网页面，共用顶部导航、底部信息和移动端导航。 */}
         <Route element={<SiteLayout />}>
-          <Route index element={<HomePage />} />
+          <Route index element={passwordRecoveryRoute ? <LoginPage /> : <HomePage />} />
           <Route path="/canon" element={<CanonPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/join" element={<JoinPage />} />
@@ -68,7 +90,7 @@ export default function App() {
         </Route>
 
         {/* 这里处理不存在的地址，把访问者带到中文 404 页面。 */}
-        <Route path="*" element={<Navigate to="/404" replace />} />
+        <Route path="*" element={passwordRecoveryRoute ? <LoginPage /> : <Navigate to="/404" replace />} />
       </Routes>
     </HashRouter>
   )

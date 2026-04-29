@@ -71,3 +71,19 @@ export function getAuthRedirectUrl(): string {
     return ''
   }
 }
+
+// 这个函数生成找回密码邮件点击后的回跳地址，入参为空，返回值是当前网站根地址加重置标记。
+export function getPasswordRecoveryRedirectUrl(): string {
+  try {
+    // 这里兼容构建和测试环境，避免没有浏览器窗口对象时报错。
+    if (typeof window === 'undefined') {
+      return ''
+    }
+
+    // 这里不用哈希路径，避免 Supabase 的恢复令牌和 HashRouter 路径抢同一个 # 号。
+    return `${window.location.origin}${window.location.pathname}?mode=reset-password`
+  } catch {
+    // 这里兜底处理极少数浏览器环境异常，返回空值表示使用 Supabase 默认回跳。
+    return ''
+  }
+}

@@ -172,15 +172,21 @@ supabase/fix_steward_management_query_structure.sql
 supabase/migrations/20260429085600_steward_account_management.sql
 ```
 
-29. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
-30. 在项目根目录新建 `.env.local` 文件：
+29. 如果执事管理修改密码时报找不到加密函数，请执行账号维护修复脚本：
+
+```text
+supabase/fix_steward_account_password_hash.sql
+```
+
+30. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
+31. 在项目根目录新建 `.env.local` 文件：
 
 ```env
 VITE_SUPABASE_URL=你的 Supabase 项目地址
 VITE_SUPABASE_ANON_KEY=你的 Supabase 公开匿名密钥
 ```
 
-31. 重新启动本地服务：
+32. 重新启动本地服务：
 
 ```powershell
 npm run dev
@@ -229,15 +235,31 @@ https://你的用户名.github.io/仓库名/
 
 ```text
 https://lsy5920.github.io/*
+https://lsy5920.github.io/?mode=reset-password
 ```
 
 如果你是仓库子路径部署，再额外添加：
 
 ```text
 https://你的用户名.github.io/仓库名/*
+https://你的用户名.github.io/仓库名/?mode=reset-password
 ```
 
-5. 保存设置。虽然当前关闭了邮箱确认，但保留正确回跳地址可以方便后续扩展找回密码、邮箱变更等功能。
+如果你使用自己的域名，也要添加：
+
+```text
+https://你的域名/*
+https://你的域名/?mode=reset-password
+```
+
+本地测试找回密码时可以添加：
+
+```text
+http://localhost:5176/*
+http://localhost:5176/?mode=reset-password
+```
+
+5. 保存设置。找回密码邮件会使用 `?mode=reset-password` 回到网站根地址，再由前端显示新密码设置表单。
 
 ### 五、配置小院邮件提醒
 
@@ -397,9 +419,11 @@ https://你的用户名.github.io/仓库名/#/canon
 7. 江湖名、性别、所在城市、宣言、兴趣爱好和同行期待可以直接保存。
 8. 道名和联系方式可以提交修改申请，管理员审核同意后才会生效。
 9. 旧编号账号绑定邮箱后，可用真实邮箱和当前密码登录；修改密码后，下次登录使用新密码。
-10. 我的名帖、我的云灯只展示状态和备注，不能直接修改审核结果。
-11. 我的雅集可以报名或取消报名。
-12. 消息提醒会展示站内通知和邮件发送状态。
+10. 忘记密码时，在 `/login` 点击“忘记密码，用绑定邮箱找回”，填写已经绑定的真实邮箱，收到邮件后回到网站设置新密码。
+11. 如果旧编号账号还没有绑定真实邮箱，就不能通过邮箱找回密码；可请超级管理员在执事管理里重置密码。
+12. 我的名帖、我的云灯只展示状态和备注，不能直接修改审核结果。
+13. 我的雅集可以报名或取消报名。
+14. 消息提醒会展示站内通知和邮件发送状态。
 
 ### 报名问云雅集
 
@@ -450,6 +474,7 @@ wypgw/
 │  ├─ clear_roster_lantern_test_data.sql # 清空旧测试名册、云灯和相关提醒
 │  ├─ fix_3199912548_founder_access.sql # 修复超级管理员权限不足
 │  ├─ fix_legacy_roster_auth_accounts.sql # 修复旧编号账号认证字段
+│  ├─ fix_steward_account_password_hash.sql # 修复执事管理重置密码时找不到加密函数
 │  ├─ fix_steward_management_query_structure.sql # 修复执事管理函数返回类型不匹配
 │  ├─ remove_roster_cover_bond_and_rename_codes.sql # 移除名册废弃字段并统一问云编号
 │  └─ migrations/                  # Supabase 初始化、升级和导入 SQL
@@ -544,6 +569,38 @@ where email = '你的邮箱@example.com'
 4. 关闭安全邮箱变更。
 5. 执行 `supabase/migrations/20260428230500_bind_legacy_account_email.sql`。
 6. 回到 `/yard/profile` 重新绑定真实邮箱。
+
+### 找回密码邮件收不到或链接打不开
+
+可能原因：
+
+1. 账号还没有绑定真实邮箱，仍然是 `001@wenyun.local` 这类内部邮箱。
+2. Supabase 的 Auth 邮件服务被频率限制。
+3. 邮件进了垃圾箱。
+4. `Authentication` → `URL Configuration` 里没有添加 `?mode=reset-password` 回跳地址。
+5. 线上域名和 Supabase 允许回跳地址不一致。
+
+解决方法：
+
+1. 先确认该成员已经在问云小院绑定真实邮箱，或由超级管理员在执事管理里直接修改绑定邮箱。
+2. 在 `/login` 点击“忘记密码，用绑定邮箱找回”，只填写真实邮箱，不填写旧编号。
+3. 检查邮箱垃圾箱和拦截箱。
+4. 在 Supabase 后台的 `Redirect URLs` 中添加线上地址和重置地址，例如 `https://你的域名/*`、`https://你的域名/?mode=reset-password`。
+5. 本地测试时添加 `http://localhost:5176/*` 和 `http://localhost:5176/?mode=reset-password`。
+6. 如果用户没有绑定邮箱或邮件长期收不到，可由超级管理员进入“执事管理”直接重置密码。
+
+### 执事管理修改密码提示找不到加密函数
+
+报错内容通常包含 `gen_salt` 找不到。
+
+原因：部分 Supabase 项目把加密扩展函数放在 `extensions` 命名空间，旧版账号维护函数没有把这个命名空间加入搜索路径。
+
+解决方法：
+
+1. 执行 `supabase/fix_steward_account_password_hash.sql`。
+2. 刷新 `/admin/stewards`。
+3. 重新展开成员卡片的“账号设置”，再次保存邮箱或密码。
+4. 如果只改邮箱不改密码，也可以把密码输入框留空。
 
 ### 3199912548@qq.com 需要绑定 001 编号
 
@@ -747,3 +804,4 @@ npm run preview
 2026-04-29 00:15 【优化】问云名册登记表单新增出生年份字段，后台名帖审核和本人小院同步展示；出生年份只用于后台核对和本人查看，不进入公开名册，并新增四位年份格式校验。
 2026-04-29 08:45 【优化】优化问云名册交互，登记入口默认折叠为卡片，公开名册改为随机横向滑动资料卡片，筛选条件折叠为按钮；身份默认同门且用户不可改，公开故事和标签合并为兴趣爱好，公开地域改为所在城市；问云小院新增名册资料维护，道名和联系方式需管理员审核，其他资料可直接保存，并新增 Supabase 脚本回填旧成员出生年份和更新名册权限。
 2026-04-29 09:00 【新增】执事管理新增账号维护功能，超级管理员可直接修改普通成员或执事的绑定邮箱，并可重置登录密码；新增 Supabase 账号维护函数、前端账号设置表单和 README 排查说明，密码不回显也不写入审计明文。
+2026-04-29 10:36 【新增】登录页新增绑定邮箱找回密码功能，用户可用已绑定真实邮箱接收重置邮件并设置新密码；同时修复执事管理重置密码时部分 Supabase 项目找不到加密函数的问题，新增账号维护修复脚本并同步 README 排查说明。
