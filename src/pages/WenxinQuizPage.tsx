@@ -171,7 +171,7 @@ export function WenxinQuizPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-14 md:px-6">
+    <main className="mx-auto max-w-6xl overflow-x-hidden px-4 py-14 md:px-6">
       <SectionTitle center eyebrow="问心考核" title="一题一问，照见门风">
         此卷共三十题，皆据《问云派立派金典》而设。逐题作答，答案皆可于金典中查得；最新成绩合格后，方可递交问云名帖。
       </SectionTitle>
@@ -219,8 +219,8 @@ export function WenxinQuizPage() {
         ) : null}
       </div>
 
-      <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
-        <ScrollPanel>
+      <form className="mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
+        <ScrollPanel className="min-w-0 overflow-hidden p-5 md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-semibold text-[#9e3d32]">
               第 {currentQuestion.id} 题 · {currentQuestion.type === 'single' ? '单选题' : '多选题'} · {currentQuestion.score} 分
@@ -241,7 +241,7 @@ export function WenxinQuizPage() {
             </span>
           </div>
 
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+          <div className="mt-4 flex max-w-full gap-2 overflow-x-auto pb-2">
             {wenxinQuizQuestions.map((question, index) => {
               // 这里判断每个题号是否已经作答，用不同颜色帮助用户快速定位漏题。
               const answered = (answers[String(question.id)] ?? []).length > 0
@@ -266,14 +266,14 @@ export function WenxinQuizPage() {
             })}
           </div>
 
-          <h2 className="mt-5 text-xl font-bold leading-9 text-[#143044] md:text-2xl">{currentQuestion.title}</h2>
+          <h2 className="mt-5 break-words text-xl font-bold leading-9 text-[#143044] md:text-2xl">{currentQuestion.title}</h2>
           <div className="mt-5 grid gap-3">
             {currentQuestion.options.map((option) => {
               const selected = currentAnswer.includes(option.key)
 
               return (
                 <button
-                  className={`rounded-2xl border px-4 py-3 text-left text-sm leading-7 transition ${
+                  className={`w-full min-w-0 whitespace-normal break-words rounded-2xl border px-4 py-3 text-left text-sm leading-7 transition ${
                     selected ? 'border-[#6f8f8b] bg-[#edf3ef] text-[#143044]' : 'border-[#6f8f8b]/18 bg-white/70 text-[#526461]'
                   }`}
                   key={option.key}
@@ -288,26 +288,26 @@ export function WenxinQuizPage() {
           </div>
         </ScrollPanel>
 
-        <div className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-3xl border border-[#c9a45c]/35 bg-[#fffaf0]/92 p-4 shadow-2xl shadow-[#263238]/16 backdrop-blur md:flex-row md:items-center md:justify-between">
+        <div className="sticky bottom-4 z-20 grid min-w-0 gap-3 rounded-3xl border border-[#c9a45c]/35 bg-[#fffaf0]/92 p-4 shadow-2xl shadow-[#263238]/16 backdrop-blur md:flex md:flex-row md:items-center md:justify-between">
           <p className="text-sm font-semibold text-[#526461]">
             第 {currentIndex + 1} 题，共 {totalQuestions} 题
           </p>
-          <div className="flex flex-wrap gap-2">
-            <CloudButton onClick={resetAnswers} variant="ghost">
+          <div className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <CloudButton className="w-full px-3 sm:w-auto sm:px-5" onClick={resetAnswers} variant="ghost">
               重新作答
               <RotateCcw className="h-4 w-4" />
             </CloudButton>
-            <CloudButton disabled={currentIndex === 0} onClick={goPrevQuestion} variant="ghost">
+            <CloudButton className="w-full px-3 sm:w-auto sm:px-5" disabled={currentIndex === 0} onClick={goPrevQuestion} variant="ghost">
               上一题
               <ChevronLeft className="h-4 w-4" />
             </CloudButton>
             {currentIndex < totalQuestions - 1 ? (
-              <CloudButton disabled={!currentAnswered} onClick={goNextQuestion} variant="seal">
+              <CloudButton className="col-span-2 w-full px-3 sm:w-auto sm:px-5" disabled={!currentAnswered} onClick={goNextQuestion} variant="seal">
                 下一题
                 <ChevronRight className="h-4 w-4" />
               </CloudButton>
             ) : (
-              <CloudButton disabled={submitting || !profile || answeredCount < totalQuestions} type="submit" variant="seal">
+              <CloudButton className="col-span-2 w-full px-3 sm:w-auto sm:px-5" disabled={submitting || !profile || answeredCount < totalQuestions} type="submit" variant="seal">
                 {submitting ? '正在交卷...' : '交卷并记录成绩'}
                 <Send className="h-4 w-4" />
               </CloudButton>

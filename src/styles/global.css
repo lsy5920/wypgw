@@ -32,6 +32,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  /* 这里禁止页面整体横向滚动，避免手机端按钮或长文本把页面撑出屏幕。 */
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 12% 8%, rgba(201, 164, 92, 0.18), transparent 30%),
     radial-gradient(circle at 90% 16%, rgba(111, 143, 139, 0.2), transparent 28%),
