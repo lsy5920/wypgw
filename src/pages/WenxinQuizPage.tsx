@@ -1,4 +1,4 @@
-import { CheckCircle2, RotateCcw, ScrollText, Send } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, ChevronRight, RotateCcw, ScrollText, Send } from 'lucide-react'
 import { FormEvent, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
@@ -28,7 +28,7 @@ function getScoreAdvice(score: number): string {
   return wenxinScoreLevels.find((item) => score >= item.min && score <= item.max)?.text ?? wenxinScoreLevels[wenxinScoreLevels.length - 1].text
 }
 
-// 这个函数渲染问心考核页面，入参为空，返回值是自动计分试卷。
+// 这个函数渲染问心考核页面，入参为空，返回值是逐题作答的自动计分试卷。
 export function WenxinQuizPage() {
   // 这里读取登录资料，考核结果必须绑定账号。
   const { profile, loading } = useAuth()
@@ -36,6 +36,8 @@ export function WenxinQuizPage() {
   const [answers, setAnswers] = useState<WenxinQuizAnswerMap>({})
   // 这个状态保存提交后的最新结果。
   const [result, setResult] = useState<WenxinQuizResult | null>(null)
+  // 这个状态保存当前正在作答的题目位置，从 0 开始计算。
+  const [currentIndex, setCurrentIndex] = useState(0)
   // 这个状态表示是否正在提交。
   const [submitting, setSubmitting] = useState(false)
   // 这个状态保存页面提示。
@@ -45,6 +47,17 @@ export function WenxinQuizPage() {
   const answeredCount = useMemo(() => {
     return wenxinQuizQuestions.filter((question) => (answers[String(question.id)] ?? []).length > 0).length
   }, [answers])
+
+  // 这个变量保存题目总数，返回值用于进度条和翻题按钮。
+  const totalQuestions = wenxinQuizQuestions.length
+  // 这个变量保存当前题目，返回值用于页面一次只展示一道题。
+  const currentQuestion = wenxinQuizQuestions[currentIndex] ?? wenxinQuizQuestions[0]
+  // 这个变量保存当前题目的作答内容，返回值用于选项高亮和下一题校验。
+  const currentAnswer = answers[String(currentQuestion.id)] ?? []
+  // 这个变量表示当前题目是否已经作答，返回值用于控制下一题按钮。
+  const currentAnswered = currentAnswer.length > 0
+  // 这个变量保存当前进度百分比，返回值用于顶部进度条宽度。
+  const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100)
 
   // 这个函数切换某题答案，入参是题号、题型和选项，返回值为空。
   function toggleAnswer(questionId: number, type: 'single' | 'multiple', optionKey: string) {
@@ -64,6 +77,31 @@ export function WenxinQuizPage() {
 
       return { ...current, [key]: nextValues }
     })
+  }
+
+  // 这个函数跳转到指定题目，入参是题目位置，返回值为空。
+  function goToQuestion(nextIndex: number) {
+    // 这里把题目位置限制在有效范围内，避免越界导致页面没有题目可显示。
+    const safeIndex = Math.min(Math.max(nextIndex, 0), totalQuestions - 1)
+    setCurrentIndex(safeIndex)
+  }
+
+  // 这个函数进入下一题，入参为空，返回值为空。
+  function goNextQuestion() {
+    // 这里要求当前题目先作答，再进入下一题，避免用户不小心漏题。
+    if (!currentAnswered) {
+      setNotice({ type: 'info', title: '先答完这一题', message: '当前题目还没有选择答案，作答后再进入下一题。' })
+      return
+    }
+
+    setNotice(null)
+    goToQuestion(currentIndex + 1)
+  }
+
+  // 这个函数回到上一题，入参为空，返回值为空。
+  function goPrevQuestion() {
+    setNotice(null)
+    goToQuestion(currentIndex - 1)
   }
 
   // 这个函数计算当前答案得分，入参为空，返回值包含分数和答对数量。
@@ -95,8 +133,8 @@ export function WenxinQuizPage() {
     }
 
     // 这里检查是否完成全部题目，避免漏答造成误判。
-    if (answeredCount < wenxinQuizQuestions.length) {
-      setNotice({ type: 'error', title: '还有题未作答', message: `当前已答 ${answeredCount} 题，请完成 30 题后再交卷。` })
+    if (answeredCount < totalQuestions) {
+      setNotice({ type: 'error', title: '还有题未作答', message: `当前已答 ${answeredCount} 题，请完成 ${totalQuestions} 题后再交卷。` })
       return
     }
 
@@ -129,12 +167,13 @@ export function WenxinQuizPage() {
     setAnswers({})
     setResult(null)
     setNotice(null)
+    setCurrentIndex(0)
   }
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-14 md:px-6">
-      <SectionTitle center eyebrow="问心考核" title="先知门风，再递名帖">
-        此卷共三十题，皆据《问云派立派金典》而设。答案皆可于金典中查得。知其义，方可入册；守其规，方可为同门。
+      <SectionTitle center eyebrow="问心考核" title="一题一问，照见门风">
+        此卷共三十题，皆据《问云派立派金典》而设。逐题作答，答案皆可于金典中查得；最新成绩合格后，方可递交问云名帖。
       </SectionTitle>
 
       <div className="grid gap-5 md:grid-cols-4">
@@ -181,54 +220,98 @@ export function WenxinQuizPage() {
       </div>
 
       <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
-        {wenxinQuizQuestions.map((question) => {
-          const currentAnswer = answers[String(question.id)] ?? []
+        <ScrollPanel>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-[#9e3d32]">
+              第 {currentQuestion.id} 题 · {currentQuestion.type === 'single' ? '单选题' : '多选题'} · {currentQuestion.score} 分
+            </p>
+            <p className="text-xs text-[#7a6a48]">{currentQuestion.source}</p>
+          </div>
 
-          return (
-            <ScrollPanel key={question.id}>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-[#9e3d32]">
-                  第 {question.id} 题 · {question.type === 'single' ? '单选题' : '多选题'} · {question.score} 分
-                </p>
-                <p className="text-xs text-[#7a6a48]">{question.source}</p>
-              </div>
-              <h2 className="mt-3 text-xl font-bold leading-9 text-[#143044]">{question.title}</h2>
-              <div className="mt-5 grid gap-3">
-                {question.options.map((option) => {
-                  const selected = currentAnswer.includes(option.key)
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#edf3ef]">
+            <div className="h-full rounded-full bg-[#6f8f8b] transition-all" style={{ width: `${progressPercent}%` }} />
+          </div>
 
-                  return (
-                    <button
-                      className={`rounded-2xl border px-4 py-3 text-left text-sm leading-7 transition ${
-                        selected ? 'border-[#6f8f8b] bg-[#edf3ef] text-[#143044]' : 'border-[#6f8f8b]/18 bg-white/70 text-[#526461]'
-                      }`}
-                      key={option.key}
-                      onClick={() => toggleAnswer(question.id, question.type, option.key)}
-                      type="button"
-                    >
-                      <span className="font-semibold">{option.key}. </span>
-                      {option.text}
-                    </button>
-                  )
-                })}
-              </div>
-            </ScrollPanel>
-          )
-        })}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#526461]">
+            <span>
+              进度 {currentIndex + 1} / {totalQuestions}
+            </span>
+            <span>
+              已答 {answeredCount} / {totalQuestions} 题
+            </span>
+          </div>
+
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+            {wenxinQuizQuestions.map((question, index) => {
+              // 这里判断每个题号是否已经作答，用不同颜色帮助用户快速定位漏题。
+              const answered = (answers[String(question.id)] ?? []).length > 0
+              const current = index === currentIndex
+
+              return (
+                <button
+                  className={`h-9 min-w-9 rounded-full border text-xs font-semibold transition ${
+                    current
+                      ? 'border-[#9e3d32] bg-[#9e3d32] text-white'
+                      : answered
+                        ? 'border-[#6f8f8b] bg-[#edf3ef] text-[#526461]'
+                        : 'border-[#c9a45c]/35 bg-white/70 text-[#7a6a48]'
+                  }`}
+                  key={question.id}
+                  onClick={() => goToQuestion(index)}
+                  type="button"
+                >
+                  {question.id}
+                </button>
+              )
+            })}
+          </div>
+
+          <h2 className="mt-5 text-xl font-bold leading-9 text-[#143044] md:text-2xl">{currentQuestion.title}</h2>
+          <div className="mt-5 grid gap-3">
+            {currentQuestion.options.map((option) => {
+              const selected = currentAnswer.includes(option.key)
+
+              return (
+                <button
+                  className={`rounded-2xl border px-4 py-3 text-left text-sm leading-7 transition ${
+                    selected ? 'border-[#6f8f8b] bg-[#edf3ef] text-[#143044]' : 'border-[#6f8f8b]/18 bg-white/70 text-[#526461]'
+                  }`}
+                  key={option.key}
+                  onClick={() => toggleAnswer(currentQuestion.id, currentQuestion.type, option.key)}
+                  type="button"
+                >
+                  <span className="font-semibold">{option.key}. </span>
+                  {option.text}
+                </button>
+              )
+            })}
+          </div>
+        </ScrollPanel>
 
         <div className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-3xl border border-[#c9a45c]/35 bg-[#fffaf0]/92 p-4 shadow-2xl shadow-[#263238]/16 backdrop-blur md:flex-row md:items-center md:justify-between">
           <p className="text-sm font-semibold text-[#526461]">
-            已答 {answeredCount} / {wenxinQuizQuestions.length} 题
+            第 {currentIndex + 1} 题，共 {totalQuestions} 题
           </p>
           <div className="flex flex-wrap gap-2">
             <CloudButton onClick={resetAnswers} variant="ghost">
               重新作答
               <RotateCcw className="h-4 w-4" />
             </CloudButton>
-            <CloudButton disabled={submitting || !profile || answeredCount < wenxinQuizQuestions.length} type="submit" variant="seal">
-              {submitting ? '正在交卷...' : '交卷并记录成绩'}
-              <Send className="h-4 w-4" />
+            <CloudButton disabled={currentIndex === 0} onClick={goPrevQuestion} variant="ghost">
+              上一题
+              <ChevronLeft className="h-4 w-4" />
             </CloudButton>
+            {currentIndex < totalQuestions - 1 ? (
+              <CloudButton disabled={!currentAnswered} onClick={goNextQuestion} variant="seal">
+                下一题
+                <ChevronRight className="h-4 w-4" />
+              </CloudButton>
+            ) : (
+              <CloudButton disabled={submitting || !profile || answeredCount < totalQuestions} type="submit" variant="seal">
+                {submitting ? '正在交卷...' : '交卷并记录成绩'}
+                <Send className="h-4 w-4" />
+              </CloudButton>
+            )}
           </div>
         </div>
       </form>

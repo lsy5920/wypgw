@@ -240,7 +240,7 @@ export function JoinPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
       <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号">
-        名册公开展示道名、江湖名、编号、性别、身份、所在城市、宣言、兴趣爱好、同行期待和入册时间。
+        先过问心考核，再递问云名帖。名册公开展示道名、江湖名、编号、性别、身份、所在城市、宣言、兴趣爱好、同行期待和入册时间。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -259,7 +259,10 @@ export function JoinPage() {
               <span className="text-sm font-semibold text-[#9e3d32]">登记入口</span>
               <span className="ink-title mt-2 block text-3xl font-bold text-[#143044]">递上问云名帖</span>
               <span className="mt-2 block text-sm leading-7 text-[#526461]">
-                道名需以“云”字开头，身份默认同门。真实姓名、联系方式和出生年份只用于后台核对。
+                登记前需先完成问心考核，最新成绩达到 80 分以上后方可递帖；道名需以“云”字开头，身份默认同门。
+              </span>
+              <span className="mt-3 inline-flex rounded-full bg-[#edf3ef] px-3 py-1 text-xs font-semibold text-[#6f8f8b]">
+                {!profile ? '请先登录问云小院' : quizResult?.passed ? `问心已合格：${quizResult.score} 分` : '待完成问心考核'}
               </span>
             </span>
           </span>
@@ -270,11 +273,20 @@ export function JoinPage() {
         </button>
 
         {!formOpen ? (
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {['填写名帖', '执事审核', '列入名册'].map((item, index) => (
+          <div className="mt-6 grid gap-4 md:grid-cols-4">
+            {['登录小院', '问心合格', '递交名帖', '执事审核'].map((item, index) => (
               <div className="rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4" key={item}>
                 <p className="text-xs font-semibold text-[#9e3d32]">第 {index + 1} 步</p>
                 <p className="ink-title mt-2 text-2xl font-bold text-[#143044]">{item}</p>
+                <p className="mt-2 text-xs leading-6 text-[#526461]">
+                  {index === 0
+                    ? '绑定自己的问云小院账号'
+                    : index === 1
+                      ? '最新成绩达到 80 分'
+                      : index === 2
+                        ? '填写道名与公开资料'
+                        : '通过后列入公开名册'}
+                </p>
               </div>
             ))}
           </div>
