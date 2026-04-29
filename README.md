@@ -136,45 +136,51 @@ supabase/fix_legacy_roster_auth_accounts.sql
 supabase/remove_roster_cover_bond_and_rename_codes.sql
 ```
 
-21. 如果需要修复旧编号账号绑定真实邮箱失败的问题，请执行邮箱直绑函数脚本：
+23. 如果需要修复旧编号账号绑定真实邮箱失败的问题，请执行邮箱直绑函数脚本：
 
 ```text
 supabase/migrations/20260428230500_bind_legacy_account_email.sql
 ```
 
-22. 如果需要启用执事管理，并把 `3199912548@qq.com` 设为超级管理员，请执行执事管理脚本：
+24. 如果需要启用执事管理，并把 `3199912548@qq.com` 设为超级管理员，请执行执事管理脚本：
 
 ```text
 supabase/migrations/20260428231500_steward_management.sql
 ```
 
-23. 如果需要把 `3199912548@qq.com` 绑定到 001 编号，请执行一次性绑定脚本：
+25. 如果需要把 `3199912548@qq.com` 绑定到 001 编号，请执行一次性绑定脚本：
 
 ```text
 supabase/bind_admin_3199912548_to_001.sql
 ```
 
-24. 如果执行后执事管理仍显示权限不足，请执行超级管理员权限修复脚本，然后退出网站账号并重新登录：
+26. 如果执行后执事管理仍显示权限不足，请执行超级管理员权限修复脚本，然后退出网站账号并重新登录：
 
 ```text
 supabase/fix_3199912548_founder_access.sql
 ```
 
-25. 如果执事管理显示 `structure of query does not match function result type`，请执行函数结构修复脚本：
+27. 如果执事管理显示 `structure of query does not match function result type`，请执行函数结构修复脚本：
 
 ```text
 supabase/fix_steward_management_query_structure.sql
 ```
 
-26. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
-27. 在项目根目录新建 `.env.local` 文件：
+28. 如果需要在执事管理里直接修改成员绑定邮箱或重置密码，请执行账号维护脚本：
+
+```text
+supabase/migrations/20260429085600_steward_account_management.sql
+```
+
+29. 在 Supabase 项目设置中找到项目地址和公开匿名密钥。
+30. 在项目根目录新建 `.env.local` 文件：
 
 ```env
 VITE_SUPABASE_URL=你的 Supabase 项目地址
 VITE_SUPABASE_ANON_KEY=你的 Supabase 公开匿名密钥
 ```
 
-23. 重新启动本地服务：
+31. 重新启动本地服务：
 
 ```powershell
 npm run dev
@@ -414,7 +420,7 @@ https://你的用户名.github.io/仓库名/#/canon
 3. 云灯审核：通过或拒绝留言。
 4. 公告管理：创建草稿或发布公告。
 5. 活动管理：创建线上或线下雅集，查看活动报名并调整报名状态。
-6. 执事管理：超级管理员可搜索成员，并将成员设置为执事或撤回普通成员；被设为执事后可以登录管理后台。
+6. 执事管理：超级管理员可搜索成员，将成员设置为执事或撤回普通成员；也可以直接修改普通成员或执事的绑定邮箱，并在需要时重置密码。密码不会在页面回显，超级管理员账号本身请到问云小院修改。
 7. 站点设置：修改联系山门说明文字，维护 SMTP 邮件服务设置。
 
 ## 项目目录结构
@@ -455,7 +461,8 @@ wypgw/
 │     ├─ 20260428173000_import_yunqi_legacy_roster.sql # 导入旧名册并创建编号账号
 │     ├─ 20260428230500_bind_legacy_account_email.sql # 修复旧编号账号绑定真实邮箱
 │     ├─ 20260428231500_steward_management.sql # 新增超级管理员和执事管理函数
-│     └─ 20260429084000_roster_cards_profile_permissions.sql # 升级名册卡片、资料权限和出生年份回填
+│     ├─ 20260429084000_roster_cards_profile_permissions.sql # 升级名册卡片、资料权限和出生年份回填
+│     └─ 20260429085600_steward_account_management.sql # 新增执事管理账号邮箱和密码维护函数
 ├─ supabase/functions/
 │  └─ send-user-notice/             # 发送小院状态提醒邮件的 Edge Function
 ├─ 网站开发资料/
@@ -572,6 +579,24 @@ where email = '你的邮箱@example.com'
 1. 执行 `supabase/fix_steward_management_query_structure.sql`。
 2. 执行完成后刷新 `/admin/stewards`。
 3. 如果仍然提示权限不足，再执行 `supabase/fix_3199912548_founder_access.sql` 并重新登录。
+
+### 执事管理修改邮箱或密码失败
+
+可能原因：
+
+1. 没有执行 `supabase/migrations/20260429085600_steward_account_management.sql`。
+2. 当前登录账号不是 `founder` 超级管理员。
+3. 正在修改超级管理员账号本身。
+4. 新邮箱已经被另一个账号占用。
+5. 新邮箱仍然是 `001@wenyun.local` 这类内部邮箱。
+
+解决方法：
+
+1. 先执行 `supabase/migrations/20260428231500_steward_management.sql`。
+2. 再执行 `supabase/migrations/20260429085600_steward_account_management.sql`。
+3. 退出网站并用超级管理员账号重新登录。
+4. 如果提示邮箱已被占用，先在执事管理里找到占用该邮箱的账号，把它改成另一个真实邮箱，再给当前成员绑定目标邮箱。
+5. 如果要修改超级管理员自己的邮箱或密码，请进入问云小院的“我的资料”操作。
 
 ### 问云小院进不去
 
@@ -721,3 +746,4 @@ npm run preview
 2026-04-28 23:40 【修复】修复执事管理名单函数在部分 Supabase 项目中因 email 字段类型为 varchar 导致返回结构不匹配的问题，新增 fix_steward_management_query_structure.sql 并同步修正执事管理迁移脚本。
 2026-04-29 00:15 【优化】问云名册登记表单新增出生年份字段，后台名帖审核和本人小院同步展示；出生年份只用于后台核对和本人查看，不进入公开名册，并新增四位年份格式校验。
 2026-04-29 08:45 【优化】优化问云名册交互，登记入口默认折叠为卡片，公开名册改为随机横向滑动资料卡片，筛选条件折叠为按钮；身份默认同门且用户不可改，公开故事和标签合并为兴趣爱好，公开地域改为所在城市；问云小院新增名册资料维护，道名和联系方式需管理员审核，其他资料可直接保存，并新增 Supabase 脚本回填旧成员出生年份和更新名册权限。
+2026-04-29 09:00 【新增】执事管理新增账号维护功能，超级管理员可直接修改普通成员或执事的绑定邮箱，并可重置登录密码；新增 Supabase 账号维护函数、前端账号设置表单和 README 排查说明，密码不回显也不写入审计明文。

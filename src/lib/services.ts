@@ -16,6 +16,7 @@ import {
 import type {
   AccountSecurityInfo,
   AdminRoleUser,
+  AdminUserAccountUpdateInput,
   Announcement,
   ApiResult,
   CloudLantern,
@@ -1332,6 +1333,62 @@ export async function updateAdminUserRole(userId: string, role: StewardManageabl
     return okResult(rows[0] ?? null, role === 'admin' ? '已设为执事，可以登录管理后台。' : '已撤回为普通成员。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '设置执事身份失败'))
+  }
+}
+
+// 这个函数让超级管理员修改成员登录邮箱或重置密码，入参是目标用户、邮箱和密码，返回值是更新后的用户行。
+export async function updateAdminUserAccount(input: AdminUserAccountUpdateInput): Promise<ApiResult<AdminRoleUser | null>> {
+  // 这里清理邮箱前后空格并统一小写，避免同一个邮箱因为大小写不同被重复保存。
+  const email = input.email.trim().toLowerCase()
+  // 这里保留用户输入的密码内容，只去掉前后空格；空值表示不改密码。
+  const password = input.password.trim()
+
+  // 这里做基础邮箱格式校验，提前挡住明显填错的内容。
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return failResult(null, '请填写正确的真实邮箱。')
+  }
+
+  // 这里禁止把旧编号内部邮箱继续写回账号，避免再次出现无法收信、无法绑定的问题。
+  if (email.endsWith('@wenyun.local')) {
+    return failResult(null, '请填写真实邮箱，不要使用旧编号内部邮箱。')
+  }
+
+  // 这里在演示模式下模拟成功，方便本地无 Supabase 时预览账号设置流程。
+  if (!supabase) {
+    return okResult(
+      {
+        user_id: input.user_id,
+        email,
+        nickname: mockProfile.nickname,
+        role: 'member',
+        city: mockProfile.city,
+        is_public: mockProfile.is_public,
+        created_at: mockProfile.created_at,
+        member_code: '问云-云-001',
+        dao_name: mockProfile.nickname
+      },
+      password ? '演示模式下已模拟修改邮箱并重置密码。' : '演示模式下已模拟修改邮箱。'
+    )
+  }
+
+  try {
+    // 这里通过数据库安全函数修改认证表，函数内部会再次检查当前账号是不是超级管理员。
+    const { data, error } = await supabase.rpc('update_wenyun_user_account', {
+      target_user_id: input.user_id,
+      new_email: email,
+      new_password: password || null
+    })
+
+    if (error) {
+      throw error
+    }
+
+    // 这里兼容 Supabase 对 returns table 函数返回数组的行为，取第一行作为更新结果。
+    const rows = (data ?? []) as AdminRoleUser[]
+
+    return okResult(rows[0] ?? null, password ? '账号邮箱已更新，密码也已重置。' : '账号邮箱已更新。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '修改用户邮箱或密码失败，请确认当前账号是超级管理员，并已执行最新 Supabase SQL 脚本'))
   }
 }
 

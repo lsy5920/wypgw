@@ -1,4 +1,4 @@
-import { Crown, Search, ShieldCheck, UserRound } from 'lucide-react'
+import { Crown, KeyRound, Mail, Search, ShieldCheck, UserRound } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
@@ -6,11 +6,19 @@ import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { useAuth } from '../../hooks/useAuth'
-import { fetchAdminRoleUsers, updateAdminUserRole } from '../../lib/services'
+import { fetchAdminRoleUsers, updateAdminUserAccount, updateAdminUserRole } from '../../lib/services'
 import type { AdminRoleUser, ProfileRole, StewardManageableRole } from '../../lib/types'
 
 // 这个类型表示执事管理筛选条件，入参来自页面按钮，返回值用于过滤列表。
 type StewardFilter = 'all' | 'founder' | 'admin' | 'member'
+
+// 这个接口描述每个成员账号设置的小表单，入参来自页面输入框，返回值用于提交给服务层。
+interface AccountDraft {
+  // 目标绑定邮箱。
+  email: string
+  // 目标新密码，空值表示不修改密码。
+  password: string
+}
 
 // 这个数组保存筛选按钮配置，返回值用于页面顶部快速切换名单。
 const filterItems: Array<{ label: string; value: StewardFilter }> = [
@@ -57,6 +65,18 @@ function matchesSearch(item: AdminRoleUser, keyword: string): boolean {
     .some((value) => String(value).toLowerCase().includes(normalizedKeyword))
 }
 
+// 这个函数把用户列表转成账号设置表单草稿，入参是用户列表，返回值是按用户编号索引的表单值。
+function createAccountDrafts(items: AdminRoleUser[]): Record<string, AccountDraft> {
+  // 这里逐个建立草稿，密码永远为空，避免把密码显示回页面。
+  return items.reduce<Record<string, AccountDraft>>((drafts, item) => {
+    drafts[item.user_id] = {
+      email: item.email,
+      password: ''
+    }
+    return drafts
+  }, {})
+}
+
 // 这个函数渲染执事管理页面，入参为空，返回值是超级管理员设置执事身份的后台页面。
 export function AdminStewardsPage() {
   // 这里读取当前登录资料，用于判断是否为超级管理员。
@@ -69,6 +89,10 @@ export function AdminStewardsPage() {
   const [filter, setFilter] = useState<StewardFilter>('all')
   // 这个状态保存正在提交的用户编号。
   const [submittingId, setSubmittingId] = useState<string | null>(null)
+  // 这个状态保存正在修改账号邮箱或密码的用户编号。
+  const [accountSubmittingId, setAccountSubmittingId] = useState<string | null>(null)
+  // 这个状态保存每个成员的账号设置草稿，方便在列表里直接编辑。
+  const [accountDrafts, setAccountDrafts] = useState<Record<string, AccountDraft>>({})
   // 这个状态保存页面提示。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
 
@@ -77,6 +101,7 @@ export function AdminStewardsPage() {
     async function loadUsers() {
       const result = await fetchAdminRoleUsers()
       setUsers(result.data)
+      setAccountDrafts(createAccountDrafts(result.data))
 
       if (!result.ok) {
         setNotice({ type: 'error', title: '读取失败', message: result.message })
@@ -113,6 +138,56 @@ export function AdminStewardsPage() {
     } finally {
       // 这里恢复提交状态，保证按钮可继续使用。
       setSubmittingId(null)
+    }
+  }
+
+  // 这个函数更新某个用户的账号设置草稿，入参是用户编号、字段名和值，返回值为空。
+  function handleAccountDraftChange(userId: string, field: keyof AccountDraft, value: string) {
+    // 这里只更新当前用户的草稿，避免影响其他成员卡片。
+    setAccountDrafts((current) => ({
+      ...current,
+      [userId]: {
+        email: current[userId]?.email ?? '',
+        password: current[userId]?.password ?? '',
+        [field]: value
+      }
+    }))
+  }
+
+  // 这个函数保存某个成员的绑定邮箱和密码，入参是用户编号，返回值为空。
+  async function handleAccountUpdate(userId: string) {
+    // 这里读取当前卡片的草稿值，没有草稿时给一个空兜底。
+    const draft = accountDrafts[userId] ?? { email: '', password: '' }
+
+    try {
+      // 这里进入提交状态，避免重复点击造成多次重置密码。
+      setAccountSubmittingId(userId)
+      const result = await updateAdminUserAccount({
+        user_id: userId,
+        email: draft.email,
+        password: draft.password
+      })
+
+      if (result.ok && result.data) {
+        // 这里刷新列表中的邮箱，同时不把密码回显给页面。
+        setUsers((current) => current.map((item) => (item.user_id === userId ? result.data ?? item : item)))
+        setAccountDrafts((current) => ({
+          ...current,
+          [userId]: {
+            email: result.data?.email ?? draft.email,
+            password: ''
+          }
+        }))
+      }
+
+      setNotice({
+        type: result.ok ? 'success' : 'error',
+        title: result.ok ? '账号已更新' : '账号更新失败',
+        message: result.message
+      })
+    } finally {
+      // 这里恢复提交状态，保证后续还能继续管理其他账号。
+      setAccountSubmittingId(null)
     }
   }
 
@@ -172,6 +247,10 @@ export function AdminStewardsPage() {
             const isFounder = item.role === 'founder'
             // 这里判断当前成员是否已经是执事。
             const isAdmin = item.role === 'admin'
+            // 这里读取账号设置草稿，没有草稿时用当前邮箱兜底。
+            const accountDraft = accountDrafts[item.user_id] ?? { email: item.email, password: '' }
+            // 这里判断账号设置是否禁用，超级管理员账号不在本页直接修改。
+            const accountDisabled = isFounder || profile?.role !== 'founder' || accountSubmittingId === item.user_id
 
             return (
               <ScrollPanel className="border-[#c9a45c]/30" key={item.user_id}>
@@ -209,6 +288,53 @@ export function AdminStewardsPage() {
                     </CloudButton>
                   </div>
                 </div>
+
+                <details className="mt-5 rounded-2xl border border-[#6f8f8b]/15 bg-[#f7f2e8]/55 p-4">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#143044]">
+                    <span className="flex items-center gap-2">
+                      <KeyRound className="h-4 w-4 text-[#6f8f8b]" />
+                      账号设置
+                    </span>
+                    <span className="text-xs font-normal text-[#526461]">{isFounder ? '超级管理员账号请在问云小院修改' : '可修改绑定邮箱，也可重置密码'}</span>
+                  </summary>
+
+                  <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
+                    <label className="grid gap-2">
+                      <span className="text-xs font-semibold text-[#526461]">绑定邮箱</span>
+                      <span className="flex items-center gap-2 rounded-xl border border-[#6f8f8b]/20 bg-white/85 px-3 py-2">
+                        <Mail className="h-4 w-4 shrink-0 text-[#6f8f8b]" />
+                        <input
+                          className="min-w-0 flex-1 bg-transparent text-sm outline-none disabled:text-[#526461]/55"
+                          disabled={accountDisabled}
+                          onChange={(event) => handleAccountDraftChange(item.user_id, 'email', event.target.value)}
+                          placeholder="填写真实邮箱"
+                          type="email"
+                          value={accountDraft.email}
+                        />
+                      </span>
+                    </label>
+
+                    <label className="grid gap-2">
+                      <span className="text-xs font-semibold text-[#526461]">重置密码</span>
+                      <span className="flex items-center gap-2 rounded-xl border border-[#6f8f8b]/20 bg-white/85 px-3 py-2">
+                        <KeyRound className="h-4 w-4 shrink-0 text-[#6f8f8b]" />
+                        <input
+                          autoComplete="new-password"
+                          className="min-w-0 flex-1 bg-transparent text-sm outline-none disabled:text-[#526461]/55"
+                          disabled={accountDisabled}
+                          onChange={(event) => handleAccountDraftChange(item.user_id, 'password', event.target.value)}
+                          placeholder="不修改请留空"
+                          type="password"
+                          value={accountDraft.password}
+                        />
+                      </span>
+                    </label>
+
+                    <CloudButton disabled={accountDisabled} onClick={() => void handleAccountUpdate(item.user_id)}>
+                      {accountSubmittingId === item.user_id ? '正在保存...' : '保存账号'}
+                    </CloudButton>
+                  </div>
+                </details>
               </ScrollPanel>
             )
           })

@@ -72,6 +72,16 @@ export interface AdminRoleUser {
   dao_name: string | null
 }
 
+// 这个接口描述超级管理员在执事管理里修改登录账号时提交的字段。
+export interface AdminUserAccountUpdateInput {
+  // 目标用户编号，对应 Supabase Auth 用户编号。
+  user_id: string
+  // 新绑定邮箱，必须是真实邮箱，不能是旧编号内部邮箱。
+  email: string
+  // 新密码，可为空；为空表示只修改邮箱，不重置密码。
+  password: string
+}
+
 // 这个接口描述用户在问云小院里可以自己编辑的资料字段。
 export interface ProfileUpdateInput {
   // 用户公开昵称，用于小院和公开资料展示。
