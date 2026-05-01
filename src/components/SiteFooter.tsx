@@ -3,6 +3,11 @@ import { getPublicAsset } from '../lib/assets'
 
 // 这个函数渲染官网底部信息，入参为空，返回值是页脚内容。
 export function SiteFooter() {
+  // 这个常量保存门派 Logo 路径，避免页脚里重复拼接资源地址。
+  const logoPath = getPublicAsset('wenyun-logo.png')
+  // 这个常量保存二版朱砂印路径，用作页脚插画式识别元素。
+  const sealPath = getPublicAsset('visual-v2/seal-v2.svg')
+
   return (
     <footer className="relative overflow-hidden border-t border-[#d6aa54]/24 bg-[#07171d] pb-12 pt-14 text-[#f6f4ef]">
       {/* 这里用流动雾层连接页面末尾和山门气质。 */}
@@ -11,7 +16,10 @@ export function SiteFooter() {
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-[1.2fr_1fr_1fr] md:px-6">
         {/* 这里展示门派 Logo 和总旨。 */}
         <div>
-          <img className="mb-4 h-16 w-16 rounded-full border border-[#f8df9d]/48 bg-[#fff8e8]/86 object-cover p-0.5 shadow-xl shadow-[#07171d]/20" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <div className="mb-4 flex items-center gap-4">
+            <img className="h-16 w-16 rounded-full border border-[#f8df9d]/48 bg-[#fff8e8]/86 object-cover p-0.5 shadow-xl shadow-[#07171d]/20" src={logoPath} alt="问云派门派 Logo" />
+            <img className="h-14 w-14 rotate-6 rounded-xl shadow-xl shadow-[#07171d]/20" src={sealPath} alt="问云派朱砂印插画" />
+          </div>
           <p className="ink-title text-2xl font-bold text-[#fff8e8]">问云派</p>
           <p className="mt-3 max-w-md leading-8 text-[#f4efe0]">
             问云问心，守真守善。同道相扶，来去自由。名门正派，不在声势，而在门风。

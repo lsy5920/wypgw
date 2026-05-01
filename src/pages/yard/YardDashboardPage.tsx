@@ -6,6 +6,7 @@ import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels, lanternStatusLabels } from '../../data/siteContent'
+import { getPublicAsset } from '../../lib/assets'
 import { confirmMyGuiyuntangJoined, fetchGuiyuntangSetting, fetchYardOverview } from '../../lib/services'
 import type { GuiyuntangSetting, JoinApplication, YardOverview } from '../../lib/types'
 
@@ -49,6 +50,8 @@ function shouldPopupGuiyuntang(application: JoinApplication | undefined): boolea
 
 // 这个函数渲染问云小院总览页，入参为空，返回值是用户后台首页。
 export function YardDashboardPage() {
+  // 这个常量保存问云小院插画路径，用于总览页展示个人小院场景。
+  const courtyardIllustrationPath = getPublicAsset('visual-v2/courtyard-illustration-v2.svg')
   // 这个状态保存小院总览数据。
   const [overview, setOverview] = useState<YardOverview | null>(null)
   // 这个状态保存归云堂二维码设置，只有符合条件的用户才能通过数据库 RLS 读取。
@@ -146,6 +149,11 @@ export function YardDashboardPage() {
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
+
+      <ScrollPanel className="mt-8 overflow-hidden p-0">
+        {/* 这里展示小院插画，让用户后台首页也延续二版插画设计。 */}
+        <img className="max-h-[24rem] w-full object-cover" src={courtyardIllustrationPath} alt="问云派问云小院插画" />
+      </ScrollPanel>
 
       {guiyuntangOpen && canShowGuiyuntang ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143044]/55 px-4 py-8 backdrop-blur-sm">

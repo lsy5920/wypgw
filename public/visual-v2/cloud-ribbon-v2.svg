@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">问云派二版云雾流线</title>
+  <desc id="desc">多层半透明云雾线条，作为页面氛围纹理。</desc>
+  <g fill="none" stroke-linecap="round">
+    <path d="M22 78 C152 -2 246 134 378 64 C488 6 584 42 660 104 C756 184 900 52 1014 118 C1078 156 1124 154 1178 126" stroke="#557f76" stroke-width="10" opacity="0.24"/>
+    <path d="M52 160 C188 88 286 216 438 142 C558 84 650 132 746 184 C872 252 974 150 1162 204" stroke="#d5ae62" stroke-width="7" opacity="0.24"/>
+    <path d="M16 238 C154 188 260 266 414 222 C570 178 692 262 846 218 C962 184 1052 198 1184 236" stroke="#fff8ea" stroke-width="8" opacity="0.36"/>
+  </g>
+</svg>

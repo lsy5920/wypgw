@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">问云后台插画</title>
+  <desc id="desc">深色仪表盘、审核列表、公告卡片和统计灯火组成的后台插画。</desc>
+  <rect width="900" height="620" rx="8" fill="#06171d"/>
+  <rect x="92" y="82" width="716" height="458" rx="8" fill="#fff8ea"/>
+  <rect x="92" y="82" width="180" height="458" rx="8" fill="#122327"/>
+  <text x="132" y="142" font-size="28" font-family="SimSun, serif" font-weight="900" fill="#fff8ea">问云后台</text>
+  <g fill="#ffffff" opacity="0.14">
+    <rect x="126" y="190" width="110" height="34" rx="8"/>
+    <rect x="126" y="240" width="110" height="34" rx="8"/>
+    <rect x="126" y="290" width="110" height="34" rx="8"/>
+  </g>
+  <text x="316" y="152" font-size="38" font-family="SimSun, serif" font-weight="900" fill="#122327">护灯与守门</text>
+  <g>
+    <rect x="318" y="194" width="128" height="92" rx="8" fill="#eef4ef"/>
+    <rect x="468" y="194" width="128" height="92" rx="8" fill="#fff3df"/>
+    <rect x="618" y="194" width="128" height="92" rx="8" fill="#eef4ef"/>
+  </g>
+  <g fill="#557f76" opacity="0.22">
+    <rect x="318" y="334" width="428" height="42" rx="8"/>
+    <rect x="318" y="394" width="428" height="42" rx="8"/>
+    <rect x="318" y="454" width="428" height="42" rx="8"/>
+  </g>
+</svg>

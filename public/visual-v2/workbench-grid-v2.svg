@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" role="img" aria-labelledby="title desc">
+  <title id="title">问云派二版工作台背景</title>
+  <desc id="desc">深色侧栏、宣纸内容区、统计卡片和表单列表组成的工作台设计图。</desc>
+  <rect width="1000" height="700" rx="8" fill="#eef4ef"/>
+  <rect x="0" y="0" width="236" height="700" rx="8" fill="#06171d"/>
+  <rect x="26" y="30" width="52" height="52" rx="8" fill="#fff8ea"/>
+  <text x="96" y="56" font-size="24" fill="#fff8ea" font-family="SimSun, serif" font-weight="900">问云工作台</text>
+  <g fill="#fff8ea" opacity="0.14">
+    <rect x="26" y="118" width="178" height="42" rx="8"/>
+    <rect x="26" y="172" width="178" height="42" rx="8"/>
+    <rect x="26" y="226" width="178" height="42" rx="8"/>
+    <rect x="26" y="280" width="178" height="42" rx="8"/>
+  </g>
+  <rect x="270" y="36" width="684" height="628" rx="8" fill="#fff8ea" stroke="#d5ae62" stroke-opacity="0.32"/>
+  <text x="308" y="96" font-size="34" fill="#122327" font-family="SimSun, serif" font-weight="900">护灯与守门</text>
+  <g>
+    <rect x="308" y="132" width="138" height="108" rx="8" fill="#ffffff" stroke="#d5ae62" stroke-opacity="0.24"/>
+    <rect x="468" y="132" width="138" height="108" rx="8" fill="#ffffff" stroke="#d5ae62" stroke-opacity="0.24"/>
+    <rect x="628" y="132" width="138" height="108" rx="8" fill="#ffffff" stroke="#d5ae62" stroke-opacity="0.24"/>
+    <rect x="788" y="132" width="128" height="108" rx="8" fill="#ffffff" stroke="#d5ae62" stroke-opacity="0.24"/>
+  </g>
+  <g fill="#557f76" opacity="0.18">
+    <rect x="308" y="284" width="608" height="52" rx="8"/>
+    <rect x="308" y="352" width="608" height="52" rx="8"/>
+    <rect x="308" y="420" width="608" height="52" rx="8"/>
+    <rect x="308" y="488" width="608" height="52" rx="8"/>
+  </g>
+  <path d="M300 620 C436 578 596 638 734 596 C812 572 878 580 928 552" fill="none" stroke="#d5ae62" stroke-width="4" stroke-linecap="round" opacity="0.52"/>
+</svg>

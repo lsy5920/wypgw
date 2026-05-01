@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">问云派插画首页主视觉</title>
+  <desc id="desc">问云派山门、远山、云桥、灯火和两位同门组成的插画主视觉。</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f7fbf5"/>
+      <stop offset="50%" stop-color="#dce9e3"/>
+      <stop offset="100%" stop-color="#fff0d3"/>
+    </linearGradient>
+    <linearGradient id="gatePaint" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#122327"/>
+      <stop offset="62%" stop-color="#43635c"/>
+      <stop offset="100%" stop-color="#6f634e"/>
+    </linearGradient>
+    <radialGradient id="warmGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff4bd" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#d5ae62" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1400" height="900" fill="url(#sky)"/>
+  <path d="M0 524 C168 370 340 446 472 506 C606 566 678 260 844 392 C982 502 1112 360 1248 444 C1328 494 1372 486 1400 466 L1400 900 L0 900 Z" fill="#8fb0a8" opacity="0.54"/>
+  <path d="M0 620 C178 492 354 528 510 620 C680 720 762 426 938 560 C1078 666 1210 542 1400 612 L1400 900 L0 900 Z" fill="#557f76" opacity="0.62"/>
+  <path d="M0 704 C210 650 392 690 602 642 C812 596 970 670 1184 632 C1296 612 1358 620 1400 604 L1400 900 L0 900 Z" fill="#fff8ea"/>
+  <g opacity="0.9">
+    <ellipse cx="338" cy="680" rx="260" ry="58" fill="#ffffff" opacity="0.66"/>
+    <ellipse cx="794" cy="634" rx="320" ry="62" fill="#ffffff" opacity="0.58"/>
+    <ellipse cx="1154" cy="704" rx="256" ry="54" fill="#ffffff" opacity="0.62"/>
+  </g>
+  <g transform="translate(485 210)">
+    <path d="M220 18 L508 166 L452 172 L452 226 L394 226 L394 520 L308 520 L308 344 C308 282 152 282 152 344 L152 520 L66 520 L66 226 L14 226 L272 86 Z" fill="url(#gatePaint)"/>
+    <path d="M-12 226 L530 226 L478 158 L40 158 Z" fill="#122327"/>
+    <path d="M76 158 L442 158 L384 96 L134 96 Z" fill="#263b3b"/>
+    <rect x="190" y="254" width="166" height="52" rx="8" fill="#d5ae62"/>
+    <text x="273" y="288" text-anchor="middle" font-size="27" font-family="SimSun, serif" font-weight="900" fill="#122327">问云</text>
+    <path d="M190 342 C190 306 356 306 356 342 L356 520 L190 520 Z" fill="#fff8ea" opacity="0.9"/>
+    <path d="M224 358 C224 340 322 340 322 358 L322 520 L224 520 Z" fill="#557f76" opacity="0.8"/>
+  </g>
+  <g>
+    <circle cx="428" cy="548" r="80" fill="url(#warmGlow)"/>
+    <circle cx="982" cy="548" r="80" fill="url(#warmGlow)"/>
+    <path d="M410 522 C410 492 446 492 446 522 C446 548 428 570 428 570 C428 570 410 548 410 522 Z" fill="#f7df9e"/>
+    <ellipse cx="428" cy="524" rx="12" ry="20" fill="#a83b32"/>
+    <path d="M964 522 C964 492 1000 492 1000 522 C1000 548 982 570 982 570 C982 570 964 548 964 522 Z" fill="#f7df9e"/>
+    <ellipse cx="982" cy="524" rx="12" ry="20" fill="#a83b32"/>
+  </g>
+  <g transform="translate(262 578)">
+    <circle cx="44" cy="35" r="24" fill="#f1c9aa"/>
+    <path d="M22 62 C34 44 56 44 68 62 L92 144 L0 144 Z" fill="#74344a"/>
+    <path d="M26 28 C38 8 56 10 66 28 C56 22 42 22 26 28 Z" fill="#122327"/>
+    <path d="M74 92 C122 80 150 66 184 40" fill="none" stroke="#d5ae62" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(1042 578)">
+    <circle cx="44" cy="35" r="24" fill="#f1c9aa"/>
+    <path d="M22 62 C34 44 56 44 68 62 L92 144 L0 144 Z" fill="#557f76"/>
+    <path d="M24 28 C34 8 58 8 68 28 C54 22 40 22 24 28 Z" fill="#122327"/>
+    <path d="M8 92 C-40 80 -68 66 -102 40" fill="none" stroke="#d5ae62" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <path d="M318 742 C470 688 930 688 1082 742" fill="none" stroke="#d5ae62" stroke-width="8" stroke-linecap="round" opacity="0.62"/>
+</svg>

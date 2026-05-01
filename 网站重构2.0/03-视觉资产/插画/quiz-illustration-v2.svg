@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">问心考核插画</title>
+  <desc id="desc">卷轴、题签、印章和灯火组成的问心考核插画。</desc>
+  <rect width="900" height="620" rx="8" fill="#eef4ef"/>
+  <path d="M0 430 C170 360 292 470 460 396 C608 330 724 420 900 362 L900 620 L0 620 Z" fill="#557f76" opacity="0.2"/>
+  <rect x="188" y="104" width="524" height="346" rx="8" fill="#fff8ea" stroke="#d5ae62" stroke-width="5"/>
+  <rect x="160" y="126" width="70" height="302" rx="35" fill="#d5ae62"/>
+  <rect x="670" y="126" width="70" height="302" rx="35" fill="#d5ae62"/>
+  <text x="450" y="196" text-anchor="middle" font-size="48" font-family="SimSun, serif" font-weight="900" fill="#122327">问心考核</text>
+  <g fill="#557f76" opacity="0.74">
+    <rect x="290" y="246" width="320" height="16" rx="8"/>
+    <rect x="290" y="292" width="250" height="16" rx="8"/>
+    <rect x="290" y="338" width="290" height="16" rx="8"/>
+  </g>
+  <circle cx="642" cy="354" r="54" fill="#a83b32" opacity="0.9"/>
+  <text x="642" y="370" text-anchor="middle" font-size="38" font-family="SimSun, serif" font-weight="900" fill="#fff8ea">合</text>
+</svg>

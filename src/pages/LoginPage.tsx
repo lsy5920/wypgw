@@ -7,6 +7,7 @@ import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { useAuth } from '../hooks/useAuth'
 import { getPasswordRecoveryRedirectUrl, translateSupabaseAuthError } from '../lib/authMessages'
+import { getPublicAsset } from '../lib/assets'
 import { supabase } from '../lib/supabaseClient'
 import type { Profile } from '../lib/types'
 
@@ -111,6 +112,8 @@ async function ensureProfile(userId: string, email: string): Promise<Profile | n
 
 // 这个函数渲染问云小院登录页，入参为空，返回值是登录和注册表单。
 export function LoginPage() {
+  // 这个常量保存问云小院插画路径，用于登录页展示入院场景。
+  const courtyardIllustrationPath = getPublicAsset('visual-v2/courtyard-illustration-v2.svg')
   // 这里读取当前认证状态，用于已登录时自动进入问云小院。
   const { profile, loading, refresh } = useAuth()
   // 这个变量用于页面跳转。
@@ -377,6 +380,8 @@ export function LoginPage() {
       </SectionTitle>
 
       <ScrollPanel className="relative overflow-hidden seal-mark-bg">
+        {/* 这里展示小院插画，让登录入口更像进入自己的院门。 */}
+        <img className="mb-6 max-h-64 w-full rounded-[1.25rem] object-cover" src={courtyardIllustrationPath} alt="问云派问云小院插画" />
         <div className="pointer-events-none absolute right-6 top-6 h-28 w-28 rounded-full border border-[#c9a45c]/30 bg-[#edf3ef]/70" />
         {stateMessage ? <StatusNotice title="访问提示" message={stateMessage} /> : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}

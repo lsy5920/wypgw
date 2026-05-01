@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">问云名册插画</title>
+  <desc id="desc">名册卡片、道名编号和同门头像组成的问云名册插画。</desc>
+  <rect width="900" height="620" rx="8" fill="#fff8ea"/>
+  <path d="M0 444 C172 356 310 486 478 392 C630 308 746 430 900 360 L900 620 L0 620 Z" fill="#dce9e3"/>
+  <rect x="126" y="104" width="648" height="384" rx="8" fill="#ffffff" stroke="#d5ae62" stroke-width="5"/>
+  <text x="190" y="176" font-size="44" font-family="SimSun, serif" font-weight="900" fill="#122327">问云名册</text>
+  <g transform="translate(190 230)">
+    <rect width="160" height="190" rx="8" fill="#eef4ef" stroke="#d5ae62" stroke-opacity="0.32"/>
+    <circle cx="80" cy="58" r="32" fill="#557f76"/>
+    <text x="80" y="124" text-anchor="middle" font-size="28" font-family="SimSun, serif" font-weight="900" fill="#122327">云初</text>
+    <text x="80" y="158" text-anchor="middle" font-size="16" font-family="Microsoft YaHei, sans-serif" fill="#557f76">问云-云-001</text>
+  </g>
+  <g transform="translate(370 230)">
+    <rect width="160" height="190" rx="8" fill="#fff3df" stroke="#d5ae62" stroke-opacity="0.32"/>
+    <circle cx="80" cy="58" r="32" fill="#a83b32"/>
+    <text x="80" y="124" text-anchor="middle" font-size="28" font-family="SimSun, serif" font-weight="900" fill="#122327">云灯</text>
+    <text x="80" y="158" text-anchor="middle" font-size="16" font-family="Microsoft YaHei, sans-serif" fill="#557f76">问云-云-002</text>
+  </g>
+  <g transform="translate(550 230)">
+    <rect width="160" height="190" rx="8" fill="#eef4ef" stroke="#d5ae62" stroke-opacity="0.32"/>
+    <circle cx="80" cy="58" r="32" fill="#74344a"/>
+    <text x="80" y="124" text-anchor="middle" font-size="28" font-family="SimSun, serif" font-weight="900" fill="#122327">云山</text>
+    <text x="80" y="158" text-anchor="middle" font-size="16" font-family="Microsoft YaHei, sans-serif" fill="#557f76">问云-云-003</text>
+  </g>
+</svg>

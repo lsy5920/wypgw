@@ -4,14 +4,26 @@ import { CloudButton } from '../components/CloudButton'
 import { GateHero } from '../components/GateHero'
 import { PageShell } from '../components/PageShell'
 import { RitualCard } from '../components/RitualCard'
+import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { joinSteps, spiritItems } from '../data/siteContent'
+import { getPublicAsset } from '../lib/assets'
 import { fetchApprovedLanterns, fetchPublishedAnnouncements } from '../lib/services'
 import type { Announcement, CloudLantern } from '../lib/types'
 
 // 这个函数渲染官网首页，入参为空，返回值是重构后的名门山门首页。
 export function HomePage() {
+  // 这个常量保存问心考核插画路径，用于首页展示功能入口。
+  const quizIllustrationPath = getPublicAsset('visual-v2/quiz-illustration-v2.svg')
+  // 这个常量保存问云名册插画路径，用于首页展示公开名册气质。
+  const rosterIllustrationPath = getPublicAsset('visual-v2/roster-illustration-v2.svg')
+  // 这个常量保存问云小院插画路径，用于首页展示登录后的个人空间。
+  const courtyardIllustrationPath = getPublicAsset('visual-v2/courtyard-illustration-v2.svg')
+  // 这个常量保存云灯插画路径，用于首页云灯区域的视觉展示。
+  const lanternIllustrationPath = getPublicAsset('visual-v2/lantern-illustration-v2.svg')
+  // 这个常量保存灯火流程插画路径，用于入册流程展示。
+  const lanternMapPath = getPublicAsset('visual-v2/lantern-map-v2.svg')
   // 这个状态保存首页展示的云灯留言。
   const [lanterns, setLanterns] = useState<CloudLantern[]>([])
   // 这个状态保存首页展示的公告。
@@ -96,6 +108,35 @@ export function HomePage() {
           })}
         </section>
 
+        <section className="mt-16 grid gap-5 lg:grid-cols-3">
+          {[
+            {
+              title: '问心先照己',
+              text: '用一张卷轴式考卷，把门风、边界和相处规则先讲清楚。',
+              image: quizIllustrationPath
+            },
+            {
+              title: '名册见同道',
+              text: '用卡片式名册展示公开资料，让同门彼此看见但不过度暴露隐私。',
+              image: rosterIllustrationPath
+            },
+            {
+              title: '小院安归处',
+              text: '登录后看名帖、云灯、雅集和提醒，每个人都有自己的清静角落。',
+              image: courtyardIllustrationPath
+            }
+          ].map((item, index) => (
+            <RitualCard className="p-0" delay={index * 0.06} key={item.title}>
+              {/* 这里展示每个核心功能的插画，让首页二版具备完整插画设计感。 */}
+              <img className="aspect-[1.45] w-full object-cover" src={item.image} alt={`${item.title}插画`} />
+              <div className="p-5 md:p-7">
+                <h2 className="ink-title text-3xl font-bold text-[#122327]">{item.title}</h2>
+                <p className="mt-4 leading-8 text-[#526461]">{item.text}</p>
+              </div>
+            </RitualCard>
+          ))}
+        </section>
+
         <section className="liquid-glass relative mt-16 overflow-hidden rounded-[2rem] px-5 py-14 text-[#f6f4ef] md:px-10">
           {/* 这里给深色精神区增加流动雾气，让区块更像山门内景。 */}
           <div className="hero-cloud-layer mist-flow pointer-events-none absolute inset-x-[-18%] top-10 h-28 opacity-30" />
@@ -113,14 +154,17 @@ export function HomePage() {
         </section>
 
         <section className="mt-16 grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-          <div className="mountain-frame relative overflow-hidden rounded-[2rem] p-7 text-[#fff8e8] shadow-2xl shadow-[#102a31]/18 md:p-10">
-            {/* 这里用流光表现山门开合的仪式感。 */}
-            <div className="hero-light-beam shine-sweep pointer-events-none absolute inset-y-0 left-[-30%] w-[80%] opacity-60" />
-            <p className="text-sm font-semibold text-[#f8df9d]">东方秘境 · 问云有序</p>
-            <h2 className="ink-title mt-3 text-balance text-4xl font-black leading-tight md:text-6xl">云起处见山门，归来时有小院</h2>
-            <p className="mt-5 max-w-2xl leading-8 text-[#f4efe0]">
-              前台负责让来者看见门风，小院负责安放每位同门的状态，后台负责守住审核、公告与雅集秩序。
-            </p>
+          <div className="mountain-frame relative overflow-hidden rounded-[2rem] text-[#fff8e8] shadow-2xl shadow-[#102a31]/18">
+            {/* 这里用云灯插画替代纯色背景，让信息架构更有画面感。 */}
+            <img className="h-full min-h-96 w-full object-cover opacity-90" src={lanternIllustrationPath} alt="问云派云灯插画" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,23,29,0.86),rgba(6,23,29,0.18))]" />
+            <div className="absolute inset-0 p-7 md:p-10">
+              <p className="text-sm font-semibold text-[#f8df9d]">插画山门 · 问云有序</p>
+              <h2 className="ink-title mt-3 text-balance text-4xl font-black leading-tight md:text-6xl">云起处见山门，归来时有小院</h2>
+              <p className="mt-5 max-w-2xl leading-8 text-[#f4efe0]">
+                前台负责让来者看见门风，小院负责安放每位同门的状态，后台负责守住审核、公告与雅集秩序。
+              </p>
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
@@ -142,6 +186,10 @@ export function HomePage() {
           <SectionTitle eyebrow="入册流程" title="问云而来，归心有路">
             申请不是门槛，而是彼此确认边界。愿来者真诚，守门者温和。
           </SectionTitle>
+          <ScrollPanel className="mb-5 p-0">
+            {/* 这里使用灯火流程插画，把文字流程转成更直观的路线图。 */}
+            <img className="w-full object-cover" src={lanternMapPath} alt="问云派入册灯火流程插画" />
+          </ScrollPanel>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {joinSteps.map((step, index) => (
               <RitualCard className="min-h-42" delay={index * 0.05} key={step}>

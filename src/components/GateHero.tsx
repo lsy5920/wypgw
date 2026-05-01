@@ -22,24 +22,21 @@ interface GateHeroProps {
 export function GateHero({ eyebrow, title, children, actions, showLogo = false, className = '' }: GateHeroProps) {
   // 这个常量保存门派 Logo 路径，避免在 JSX 中重复调用资源函数。
   const logoPath = getPublicAsset('wenyun-logo.png')
-  // 这个常量保存首页山门主视觉路径，用作沉浸式首屏背景。
-  const heroPath = getPublicAsset('wenyun-hero.png')
-  // 这个常量保存山门线稿路径，用作右侧视觉层次。
-  const mountainPath = getPublicAsset('visual/mountain-gate.svg')
-  // 这个常量保存云纹纹理路径，用作雾气流动层。
-  const cloudTexturePath = getPublicAsset('visual/cloud-texture.svg')
+  // 这个常量保存插画版山门主视觉路径，用作首页第一眼的核心图像。
+  const heroIllustrationPath = getPublicAsset('visual-v2/home-illustration-v2.svg')
+  // 这个常量保存插画版云纹路径，用作雾气流动层。
+  const cloudTexturePath = getPublicAsset('visual-v2/cloud-ribbon-v2.svg')
+  // 这个常量保存插画版朱砂印路径，用作右侧门派记忆点。
+  const sealPath = getPublicAsset('visual-v2/seal-v2.svg')
 
   return (
     <section
       className={`relative isolate overflow-hidden border-b border-[#d6aa54]/35 bg-[#07171d] text-white shadow-2xl shadow-[#102a31]/18 ${className}`}
     >
-      {/* 这里铺满真实山门图，保证首页第一屏直接有门派对象和视觉记忆点。 */}
-      <div
-        className="absolute inset-0 -z-30 bg-cover bg-center opacity-72"
-        style={{ backgroundImage: `url(${heroPath})` }}
-      />
-      {/* 这里用暗色渐变压住背景，让文字在手机和桌面端都清楚。 */}
-      <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(7,23,29,0.94),rgba(16,42,49,0.68)_46%,rgba(7,23,29,0.42)),linear-gradient(180deg,rgba(7,23,29,0.38),rgba(7,23,29,0.7)_86%,rgba(7,23,29,0.94))]" />
+      {/* 这里用深色插画舞台压住首屏，让文字在手机和桌面端都清楚。 */}
+      <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_72%_34%,rgba(213,174,98,0.26),transparent_28%),linear-gradient(135deg,#06171d,#18333a_58%,#557f76)]" />
+      {/* 这里叠加柔和纸纹与暗色渐变，让插画和文字自然融合。 */}
+      <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(6,23,29,0.94),rgba(18,51,58,0.68)_48%,rgba(6,23,29,0.32)),linear-gradient(180deg,rgba(6,23,29,0.18),rgba(6,23,29,0.74)_88%,rgba(6,23,29,0.96))]" />
       {/* 这里叠加云纹纹理，让首屏动起来但不遮挡正文。 */}
       <div
         className="hero-cloud-layer mist-flow absolute inset-x-[-12%] top-20 -z-10 h-40 opacity-80 md:top-28 md:h-52"
@@ -49,7 +46,7 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
       <div className="hero-light-beam shine-sweep absolute inset-y-0 left-[-20%] -z-10 w-[70%] opacity-70" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-t from-[#07171d] to-transparent" />
 
-      <div className="mx-auto grid max-w-7xl gap-9 px-4 pb-14 pt-32 md:px-6 md:pb-20 md:pt-36 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <div className="mx-auto grid max-w-7xl gap-9 px-4 pb-14 pt-32 md:px-6 md:pb-20 md:pt-36 lg:min-h-[44rem] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 24 }}
@@ -69,9 +66,15 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
             {title}
           </h1>
           <div className="mt-6 max-w-2xl text-lg leading-9 text-[#f3f7ef] drop-shadow md:text-xl">{children}</div>
-          {actions ? <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">{actions}</div> : null}
+          {actions ? <div className="mt-8 grid min-w-0 grid-cols-1 gap-3 sm:flex sm:flex-wrap">{actions}</div> : null}
+          {/* 这里给手机端单独展示插画，避免小屏只有文字而缺少设计记忆点。 */}
+          <img
+            alt="问云派插画山门主视觉"
+            className="mt-8 w-full rounded-[1.5rem] border border-[#f7df9e]/22 bg-[#fff8ea]/8 shadow-2xl shadow-[#06171d]/28 lg:hidden"
+            src={heroIllustrationPath}
+          />
           {/* 这里用三枚短标识补强首屏信息密度，手机端也保持紧凑。 */}
-          <div className="mt-8 grid grid-cols-3 gap-2 text-center text-xs text-[#fff8e8] sm:max-w-xl">
+          <div className="mt-8 grid min-w-0 grid-cols-1 gap-2 text-center text-xs text-[#fff8e8] sm:grid-cols-3 sm:max-w-xl">
             {['清明立愿', '有界相扶', '归心成册'].map((item) => (
               <span className="rounded-full border border-[#f8df9d]/28 bg-[#fff8e8]/10 px-3 py-2 backdrop-blur" key={item}>
                 {item}
@@ -82,34 +85,22 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
 
         <motion.div
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          className="float-y hidden lg:block"
+          className="float-y relative hidden lg:block"
           initial={{ opacity: 0, scale: 0.94, rotate: -1 }}
           transition={{ duration: 0.8, delay: 0.12, ease: 'easeOut' }}
         >
-          <div className="liquid-glass relative overflow-hidden rounded-[2rem] p-8 text-white">
-            {/* 这里放山门线稿，使右侧视觉像一枚半透明门牌。 */}
-            <img
-              alt="问云派山门线稿"
-              className="absolute right-4 top-4 h-44 w-44 opacity-[0.18]"
-              src={mountainPath}
-            />
-            <p className="ink-title relative text-4xl font-bold text-[#fff8e8]">入山先问心</p>
-            <p className="relative mt-5 leading-9 text-[#f4f8f5]">
-              守清明、知边界、重真诚。名门正派不靠声势立门，只靠门风长久。
-            </p>
-            <div className="relative mt-8 grid grid-cols-4 gap-3">
-              {['清', '正', '礼', '界'].map((word) => (
-                <span
-                  className="grid aspect-square place-items-center rounded-2xl border border-[#f8df9d]/42 bg-[#fff8e8]/12 ink-title text-3xl font-bold text-[#f8df9d] shadow-lg shadow-[#07171d]/16"
-                  key={word}
-                >
-                  {word}
-                </span>
-              ))}
-            </div>
-            <div className="gold-thread relative mt-8" />
-            <p className="relative mt-4 text-sm leading-7 text-[#dce9e3]">愿来者不添风浪，只添灯火。</p>
-          </div>
+          {/* 这里展示插画主视觉，让首页第一屏具备明确的山门故事感。 */}
+          <img
+            alt="问云派插画山门主视觉"
+            className="relative z-10 w-full drop-shadow-[0_28px_46px_rgba(6,23,29,0.42)]"
+            src={heroIllustrationPath}
+          />
+          {/* 这里叠加朱砂印作为插画右下角的门派识别符号。 */}
+          <img
+            alt="问云派朱砂印"
+            className="seal-rise absolute bottom-10 right-8 z-20 h-28 w-28 rotate-6 rounded-2xl shadow-2xl shadow-[#06171d]/24"
+            src={sealPath}
+          />
         </motion.div>
       </div>
 

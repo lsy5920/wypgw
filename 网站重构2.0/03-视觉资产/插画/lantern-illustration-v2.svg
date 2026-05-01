@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">云灯留言插画</title>
+  <desc id="desc">夜色云海中多盏云灯升起，象征同门留言与祝福。</desc>
+  <rect width="900" height="620" rx="8" fill="#06171d"/>
+  <path d="M0 450 C166 354 316 474 472 392 C626 312 740 428 900 348 L900 620 L0 620 Z" fill="#557f76" opacity="0.36"/>
+  <path d="M80 480 C226 430 350 508 504 466 C640 428 736 464 850 424" fill="none" stroke="#d5ae62" stroke-width="4" stroke-linecap="round" opacity="0.46"/>
+  <g>
+    <circle cx="212" cy="260" r="86" fill="#d5ae62" opacity="0.2"/>
+    <path d="M174 232 C174 168 250 168 250 232 C250 284 212 326 212 326 C212 326 174 284 174 232 Z" fill="#f7df9e"/>
+    <ellipse cx="212" cy="234" rx="22" ry="34" fill="#a83b32"/>
+    <circle cx="450" cy="204" r="104" fill="#d5ae62" opacity="0.18"/>
+    <path d="M406 170 C406 98 494 98 494 170 C494 230 450 278 450 278 C450 278 406 230 406 170 Z" fill="#f7df9e"/>
+    <ellipse cx="450" cy="172" rx="25" ry="40" fill="#a83b32"/>
+    <circle cx="676" cy="286" r="78" fill="#d5ae62" opacity="0.22"/>
+    <path d="M642 260 C642 204 710 204 710 260 C710 304 676 340 676 340 C676 340 642 304 642 260 Z" fill="#f7df9e"/>
+    <ellipse cx="676" cy="262" rx="19" ry="30" fill="#a83b32"/>
+  </g>
+  <text x="80" y="96" font-size="42" font-family="SimSun, serif" font-weight="900" fill="#fff8ea">一盏云灯，照见同道</text>
+</svg>

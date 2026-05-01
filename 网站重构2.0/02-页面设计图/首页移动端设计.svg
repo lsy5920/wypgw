@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1200" role="img" aria-labelledby="title desc">
+  <title id="title">问云派移动端首页设计图</title>
+  <desc id="desc">问云派二版移动端首页 UI 设计图。</desc>
+  <rect width="720" height="1200" fill="#eef4ef"/>
+  <rect x="70" y="38" width="580" height="1120" rx="44" fill="#10191b"/>
+  <rect x="92" y="70" width="536" height="1056" rx="34" fill="#eef4ef"/>
+  <rect x="116" y="98" width="488" height="74" rx="8" fill="#06171d"/>
+  <text x="150" y="144" font-size="28" font-family="SimSun, serif" font-weight="900" fill="#fff8ea">问云派</text>
+  <rect x="116" y="194" width="488" height="396" rx="8" fill="#06171d"/>
+  <image href="../03-视觉资产/背景/wenyun-hero-v2.svg" x="136" y="344" width="448" height="252" opacity="0.68"/>
+  <text x="148" y="264" font-size="18" fill="#f7df9e" font-family="Microsoft YaHei, sans-serif" font-weight="700">问云山门</text>
+  <text x="146" y="336" font-size="72" font-family="SimSun, serif" font-weight="900" fill="#fff8ea">问云派</text>
+  <text x="148" y="382" font-size="19" fill="#dce9e3" font-family="Microsoft YaHei, sans-serif">乱世问云，心有所栖。</text>
+  <rect x="148" y="626" width="210" height="58" rx="29" fill="#a83b32"/><text x="253" y="662" text-anchor="middle" font-size="20" fill="#fff8ea" font-family="Microsoft YaHei, sans-serif" font-weight="700">登记名册</text>
+  <rect x="374" y="626" width="210" height="58" rx="29" fill="#fff8ea"/><text x="479" y="662" text-anchor="middle" font-size="20" fill="#122327" font-family="Microsoft YaHei, sans-serif" font-weight="700">问心考核</text>
+  <rect x="116" y="724" width="488" height="128" rx="8" fill="#fff8ea" stroke="#d5ae62" stroke-opacity="0.34"/>
+  <rect x="116" y="878" width="488" height="128" rx="8" fill="#fff8ea" stroke="#d5ae62" stroke-opacity="0.34"/>
+  <rect x="116" y="1032" width="488" height="72" rx="8" fill="#122327" opacity="0.94"/>
+  <text x="148" y="780" font-size="30" font-family="SimSun, serif" font-weight="900" fill="#122327">立派有典</text>
+  <text x="148" y="934" font-size="30" font-family="SimSun, serif" font-weight="900" fill="#122327">入册有序</text>
+</svg>

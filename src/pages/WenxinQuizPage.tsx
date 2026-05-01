@@ -8,6 +8,7 @@ import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { wenxinQuizQuestions, wenxinScoreLevels } from '../data/quizContent'
 import { useAuth } from '../hooks/useAuth'
+import { getPublicAsset } from '../lib/assets'
 import { submitWenxinQuizResult } from '../lib/services'
 import type { WenxinQuizAnswerMap, WenxinQuizResult } from '../lib/types'
 
@@ -31,6 +32,8 @@ function getScoreAdvice(score: number): string {
 
 // 这个函数渲染问心考核页面，入参为空，返回值是逐题作答的自动计分试卷。
 export function WenxinQuizPage() {
+  // 这个常量保存问心考核插画路径，用于页面顶部说明区。
+  const quizIllustrationPath = getPublicAsset('visual-v2/quiz-illustration-v2.svg')
   // 这里读取登录资料，考核结果必须绑定账号。
   const { profile, loading } = useAuth()
   // 这个状态保存用户答案，键是题号，值是选择的选项。
@@ -178,6 +181,10 @@ export function WenxinQuizPage() {
       </SectionTitle>
 
       <div className="grid gap-5 md:grid-cols-4">
+        <ScrollPanel className="overflow-hidden p-0 md:col-span-2">
+          {/* 这里展示卷轴考核插画，让规则说明更直观，也降低页面开头的紧张感。 */}
+          <img className="h-full min-h-64 w-full object-cover" src={quizIllustrationPath} alt="问云派问心考核插画" />
+        </ScrollPanel>
         <ScrollPanel className="md:col-span-1">
           <ScrollText className="h-5 w-5 text-[#9e3d32]" />
           <p className="mt-3 text-sm text-[#7a6a48]">题型</p>
@@ -190,7 +197,7 @@ export function WenxinQuizPage() {
           <p className="mt-2 text-2xl font-bold text-[#143044]">80 分</p>
           <p className="mt-2 text-sm leading-7 text-[#526461]">最新一次考核合格后，名册登记入口才会开放。</p>
         </ScrollPanel>
-        <ScrollPanel className="md:col-span-2">
+        <ScrollPanel className="md:col-span-4">
           <p className="text-sm text-[#9e3d32]">考核说明</p>
           <p className="mt-3 text-sm leading-7 text-[#526461]">
             此考非为难新人，乃为使入门者先知问云之愿、问云之风、问云之规、问云之界。愿来者不添风浪，只添灯火。

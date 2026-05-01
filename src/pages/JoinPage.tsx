@@ -10,6 +10,7 @@ import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../data/siteContent'
 import { useAuth } from '../hooks/useAuth'
+import { getPublicAsset } from '../lib/assets'
 import { fetchMyApplications, fetchMyLatestWenxinQuizResult, fetchPublicRoster, submitJoinApplication } from '../lib/services'
 import type { JoinApplication, JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizResult } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
@@ -74,6 +75,8 @@ function createRosterWeight(item: RosterEntry, seed: number): number {
 
 // 这个函数渲染问云名册页，入参为空，返回值是折叠登记入口、折叠筛选和横向滑动资料卡片。
 export function JoinPage() {
+  // 这个常量保存名册插画路径，用于页面顶部展示问云名册气质。
+  const rosterIllustrationPath = getPublicAsset('visual-v2/roster-illustration-v2.svg')
   // 这里读取当前登录资料，名帖登记要求先进入问云小院。
   const { profile, loading: authLoading } = useAuth()
   // 这个状态保存公开名册条目。
@@ -253,6 +256,11 @@ export function JoinPage() {
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
+
+      <ScrollPanel className="mt-8 overflow-hidden p-0">
+        {/* 这里展示名册插画，让登记前先看到二版卡片式名册视觉。 */}
+        <img className="max-h-[26rem] w-full object-cover" src={rosterIllustrationPath} alt="问云派问云名册插画" />
+      </ScrollPanel>
 
       <ScrollPanel className="mt-8 overflow-hidden seal-mark-bg">
         <button
