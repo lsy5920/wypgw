@@ -33,13 +33,13 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-3 top-3 z-40 pointer-events-none md:top-5">
-      <div className="pointer-events-auto mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between rounded-[2rem] border border-[#c9a45c]/28 bg-[#fffaf0]/88 px-4 shadow-2xl shadow-[#143044]/16 backdrop-blur-2xl md:h-20 md:px-6">
+      <div className="pointer-events-auto mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between rounded-[2rem] border border-[#c9a45c]/38 bg-[#0f2531]/68 px-4 shadow-2xl shadow-[#07151d]/22 backdrop-blur-2xl md:h-20 md:px-6">
         {/* 这里展示门派正式 Logo 和站点名称。 */}
         <Link className="flex items-center gap-3" to="/" onClick={closeMenu}>
-          <img className="h-12 w-12 rounded-full border border-[#c9a45c]/35 bg-white object-cover p-0.5 shadow-md md:h-14 md:w-14" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <img className="h-12 w-12 rounded-full border border-[#c9a45c]/45 bg-white/90 object-cover p-0.5 shadow-md shadow-[#07151d]/18 md:h-14 md:w-14" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
           <div>
-            <p className="ink-title text-2xl font-bold leading-none text-[#143044]">问云派</p>
-            <p className="mt-1 text-xs tracking-[0.18em] text-[#7a6a48]">乱世问云 心有所栖</p>
+            <p className="ink-title text-2xl font-bold leading-none text-white drop-shadow">问云派</p>
+            <p className="mt-1 text-xs tracking-[0.18em] text-[#f8e6bd]">乱世问云 心有所栖</p>
           </div>
         </Link>
 
@@ -49,7 +49,7 @@ export function SiteHeader() {
             <NavLink
               className={({ isActive }) =>
                 `rounded-full px-3 py-2 text-sm font-semibold transition ${
-                  isActive ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#263238] hover:bg-white/75'
+                  isActive ? 'bg-[#fffaf0] text-[#143044] shadow-md shadow-[#07151d]/16' : 'text-[#f4f8f5] hover:bg-white/10'
                 }`
               }
               key={item.path}
@@ -62,13 +62,13 @@ export function SiteHeader() {
 
         {/* 这里展示后台入口和手机菜单按钮。 */}
         <div className="flex items-center gap-2">
-          <Link className="hidden items-center gap-2 rounded-full border border-[#c9a45c]/50 bg-white/50 px-4 py-2 text-sm font-semibold text-[#143044] transition hover:-translate-y-0.5 hover:bg-white md:inline-flex" to="/yard">
+          <Link className="hidden items-center gap-2 rounded-full border border-[#c9a45c]/45 bg-[#fffaf0]/12 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#fffaf0]/20 md:inline-flex" to="/yard">
             <UserRound className="h-4 w-4" />
             问云小院
           </Link>
           <button
             aria-label={open ? '关闭菜单' : '打开菜单'}
-            className="focus-ring rounded-full border border-[#6f8f8b]/30 bg-white/75 p-3 shadow-md shadow-[#143044]/8 lg:hidden"
+            className="focus-ring rounded-full border border-[#c9a45c]/35 bg-[#fffaf0]/12 p-3 text-white shadow-md shadow-[#07151d]/18 lg:hidden"
             onClick={() => setOpen((value) => !value)}
             type="button"
           >
@@ -79,13 +79,13 @@ export function SiteHeader() {
 
       {/* 这里展示手机端展开菜单。 */}
       {open ? (
-        <div className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-[1.75rem] border border-[#c9a45c]/28 bg-[#fffaf0]/96 px-4 pb-4 shadow-2xl shadow-[#143044]/18 backdrop-blur-2xl lg:hidden">
+        <div className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-[1.75rem] border border-[#c9a45c]/35 bg-[#0f2531]/92 px-4 pb-4 shadow-2xl shadow-[#07151d]/24 backdrop-blur-2xl lg:hidden">
           <nav className="grid gap-2 pt-3 sm:grid-cols-2">
             {siteNavItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
                   `rounded-2xl px-4 py-3 text-sm font-semibold ${
-                    isActive ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/16' : 'bg-white/80 text-[#263238]'
+                    isActive ? 'bg-[#fffaf0] text-[#143044] shadow-md shadow-[#07151d]/16' : 'bg-white/8 text-[#f4f8f5]'
                   }`
                 }
                 key={item.path}

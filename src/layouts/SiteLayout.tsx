@@ -7,6 +7,8 @@ import { SiteHeader } from '../components/SiteHeader'
 export function SiteLayout() {
   // 这个变量保存当前路径，页面切换时用于触发淡入动效。
   const location = useLocation()
+  // 这个变量判断当前是否为首页，首页需要让山门首屏融入导航背景。
+  const isHomePage = location.pathname === '/'
 
   return (
     <div className="wenyun-shell min-h-screen overflow-x-hidden text-[#263238]">
@@ -14,7 +16,7 @@ export function SiteLayout() {
       {/* 这里给每个页面增加轻微淡入上浮动效，让站点更有层次。 */}
       <motion.main
         animate={{ opacity: 1, y: 0 }}
-        className="pt-[5.5rem] md:pt-[6.5rem]"
+        className={isHomePage ? 'pt-0' : 'pt-[5.5rem] md:pt-[6.5rem]'}
         initial={{ opacity: 0, y: 12 }}
         key={location.pathname}
         transition={{ duration: 0.42, ease: 'easeOut' }}

@@ -32,7 +32,7 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
       {/* 这里保留缓慢云雾动效，但只做细腻氛围，不再占据大块版面。 */}
       <div className="mist-flow absolute inset-x-0 top-8 -z-10 h-28 bg-[radial-gradient(circle_at_24%_45%,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_68%_42%,rgba(255,255,255,0.12),transparent_24%)] blur-sm" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-[#07151d]/60 to-transparent" />
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-10 md:px-6 md:pb-16 md:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-32 md:px-6 md:pb-16 md:pt-36 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 24 }}
@@ -41,7 +41,7 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
           {showLogo ? (
             <img
               alt="问云派门派 Logo"
-              className="mb-5 h-20 w-20 rounded-full border border-white/75 bg-white/80 object-cover p-1 shadow-2xl shadow-[#c9a45c]/35 md:h-28 md:w-28"
+              className="mb-5 hidden h-20 w-20 rounded-full border border-white/75 bg-white/80 object-cover p-1 shadow-2xl shadow-[#c9a45c]/35 md:block md:h-28 md:w-28"
               src={logoPath}
             />
           ) : null}
