@@ -79,13 +79,15 @@ export function SiteHeader() {
 
       {/* 这里展示手机端展开菜单。 */}
       {open ? (
-        <div className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-[1.75rem] border border-[#c9a45c]/35 bg-[#0f2531]/92 px-4 pb-4 shadow-2xl shadow-[#07151d]/24 backdrop-blur-2xl lg:hidden">
-          <nav className="grid gap-2 pt-3 sm:grid-cols-2">
+        <div className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-[1.75rem] border border-[#c9a45c]/35 bg-[#0f2531]/94 px-4 pb-4 shadow-2xl shadow-[#07151d]/24 backdrop-blur-2xl lg:hidden">
+          <nav className="grid grid-cols-2 auto-rows-fr gap-2 pt-3">
             {siteNavItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
-                  `rounded-2xl px-4 py-3 text-sm font-semibold ${
-                    isActive ? 'bg-[#fffaf0] text-[#143044] shadow-md shadow-[#07151d]/16' : 'bg-white/8 text-[#f4f8f5]'
+                  `flex min-h-12 items-center justify-center rounded-2xl border px-3 py-3 text-center text-base font-semibold leading-5 shadow-md shadow-[#07151d]/10 transition ${
+                    isActive
+                      ? 'border-[#c9a45c]/70 bg-[#fffaf0] text-[#143044]'
+                      : 'border-[#c9a45c]/28 bg-[#fffaf0]/96 text-[#143044] hover:bg-[#fffaf0]'
                   }`
                 }
                 key={item.path}
@@ -95,7 +97,17 @@ export function SiteHeader() {
                 {item.label}
               </NavLink>
             ))}
-            <NavLink className="rounded-2xl bg-[#9e3d32] px-4 py-3 text-sm font-semibold text-white sm:col-span-2" onClick={closeMenu} to="/yard">
+            <NavLink
+              className={({ isActive }) =>
+                `flex min-h-12 items-center justify-center rounded-2xl border px-3 py-3 text-center text-base font-semibold leading-5 shadow-md shadow-[#07151d]/10 transition ${
+                  isActive
+                    ? 'border-[#c9a45c]/70 bg-[#fffaf0] text-[#143044]'
+                    : 'border-[#c9a45c]/22 bg-[#9e3d32] text-white hover:bg-[#8e352d]'
+                }`
+              }
+              onClick={closeMenu}
+              to="/yard"
+            >
               问云小院
             </NavLink>
           </nav>
