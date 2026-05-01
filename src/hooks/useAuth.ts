@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabaseClient'
+import { fetchMyProfile } from '../lib/services'
 import type { Profile } from '../lib/types'
 
 // 这个接口描述认证钩子的返回值，页面通过它判断登录、角色和加载状态。
@@ -67,15 +68,15 @@ export function useAuth(): UseAuthResult {
         return
       }
 
-      // 这里读取 profiles 表中的角色，用于后台权限判断。
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle()
+      // 这里读取合并后的用户资料，资料中的道名会优先采用名帖里的正式道名。
+      const profileResult = await fetchMyProfile()
 
-      if (error) {
-        throw error
+      if (!profileResult.ok) {
+        throw new Error(profileResult.message)
       }
 
-      setProfile((data as Profile | null) ?? null)
-      setMessage(data ? '登录状态已读取。' : '已登录，但尚未找到资料，请检查 profiles 表触发器。')
+      setProfile(profileResult.data)
+      setMessage('登录状态已读取。')
     } catch (error) {
       // 这里捕获认证异常，避免后台页面白屏。
       const errorMessage = error instanceof Error ? error.message : '未知错误'

@@ -75,8 +75,6 @@ function createEmptyApplication(): JoinApplication {
     city: null,
     reason: '',
     accept_rules: false,
-    offline_interest: null,
-    remark: null,
     member_role: '同门',
     generation_name: '云',
     member_code: null,
@@ -84,8 +82,6 @@ function createEmptyApplication(): JoinApplication {
     public_region: null,
     raw_region: null,
     motto: null,
-    public_story: null,
-    raw_story: null,
     tags: null,
     companion_expectation: null,
     legacy_contact: null,
@@ -98,6 +94,60 @@ function createEmptyApplication(): JoinApplication {
     reviewed_by: null,
     reviewed_at: null,
     created_at: new Date().toISOString()
+  }
+}
+
+// 这个函数给名帖状态排序，入参是名帖状态，返回值越小表示越适合作为用户资料主来源。
+function getRosterProfilePriority(status: JoinApplicationStatus): number {
+  // 这里优先采用已入群、已联系和已通过的正式资料，避免退派或拒绝资料覆盖当前展示。
+  const priorityMap: Record<JoinApplicationStatus, number> = {
+    joined: 1,
+    contacted: 2,
+    approved: 3,
+    pending: 4,
+    draft: 5,
+    rejected: 6,
+    retired: 7
+  }
+
+  return priorityMap[status] ?? 99
+}
+
+// 这个函数从名帖列表里挑出一条最适合作为用户资料来源的记录，入参是名帖数组，返回值是名帖或空值。
+function pickCanonicalRosterApplication(applications: JoinApplication[]): JoinApplication | null {
+  // 这里没有名帖时直接返回空值，表示继续使用 profiles 表原始资料。
+  if (applications.length === 0) {
+    return null
+  }
+
+  // 这里复制数组后排序，避免修改调用方传入的原始列表。
+  return [...applications].sort((left, right) => {
+    // 这里先按业务状态排序，让正式入册资料优先。
+    const statusDiff = getRosterProfilePriority(left.status) - getRosterProfilePriority(right.status)
+
+    if (statusDiff !== 0) {
+      return statusDiff
+    }
+
+    // 这里同状态时优先使用更新时间更靠后的资料，兼容旧库里可能残留多张名帖的情况。
+    return new Date(right.created_at).getTime() - new Date(left.created_at).getTime()
+  })[0]
+}
+
+// 这个函数把 profiles 资料和名帖资料合并，入参是账号资料和名帖列表，返回值是以名帖为准的用户资料。
+function mergeProfileWithRoster(profile: Profile, applications: JoinApplication[]): Profile {
+  // 这里选出权威名帖；如果没有名帖，就保持 profiles 原值。
+  const canonicalApplication = pickCanonicalRosterApplication(applications)
+
+  if (!canonicalApplication) {
+    return profile
+  }
+
+  // 这里以“名册资料”的道名和所在城市为准，修复用户中心和资料页显示不一致的问题。
+  return {
+    ...profile,
+    nickname: canonicalApplication.nickname.trim() || profile.nickname,
+    city: canonicalApplication.public_region ?? canonicalApplication.city ?? profile.city
   }
 }
 
@@ -496,15 +546,11 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
     city: input.city.trim() || input.public_region.trim() || null,
     reason: input.motto.trim(),
     accept_rules: input.accept_rules,
-    offline_interest: null,
-    remark: input.remark.trim() || null,
     member_role: '同门',
     generation_name: '云',
     public_region: input.public_region.trim() || input.city.trim() || null,
     raw_region: input.public_region.trim() || input.city.trim() || null,
     motto: input.motto.trim(),
-    public_story: null,
-    raw_story: null,
     tags: input.tags.trim() || null,
     companion_expectation: input.companion_expectation.trim() || null,
     legacy_contact: input.legacy_contact.trim(),
@@ -809,16 +855,12 @@ export async function updateApplicationDetails(
     raw_region: input.raw_region.trim() || input.public_region.trim() || input.city.trim() || null,
     reason: input.reason.trim(),
     accept_rules: input.accept_rules,
-    offline_interest: input.offline_interest.trim() || null,
-    remark: input.remark.trim() || null,
     admin_note: input.admin_note.trim() || null,
     member_role: input.member_role,
     generation_name: input.generation_name.trim() || '云',
     member_code: input.member_code.trim(),
     roster_serial: input.roster_serial.trim() ? Number(input.roster_serial.trim()) : null,
     motto: input.motto.trim() || input.reason.trim(),
-    public_story: input.public_story.trim() || null,
-    raw_story: input.raw_story.trim() || input.public_story.trim() || null,
     tags: input.tags.trim() || null,
     companion_expectation: input.companion_expectation.trim() || null,
     legacy_contact: input.legacy_contact.trim() || input.wechat_id.trim(),
@@ -1174,7 +1216,13 @@ export async function createEvent(input: {
 // 这个函数读取当前用户资料，入参为空，返回值是问云小院资料。
 export async function fetchMyProfile(): Promise<ApiResult<Profile>> {
   if (!supabase) {
-    return okResult(mockProfile, '当前为演示小院资料。')
+    return okResult(
+      mergeProfileWithRoster(
+        mockProfile,
+        mockApplications.filter((item) => item.user_id === mockProfile.id)
+      ),
+      '当前为演示小院资料。'
+    )
   }
 
   try {
@@ -1186,7 +1234,18 @@ export async function fetchMyProfile(): Promise<ApiResult<Profile>> {
       throw error
     }
 
-    return okResult(data as Profile)
+    // 这里同时读取本人的名帖，用名帖资料里的道名和城市覆盖 profiles 旧值。
+    const { data: applications, error: applicationError } = await supabase
+      .from('join_applications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (applicationError) {
+      throw applicationError
+    }
+
+    return okResult(mergeProfileWithRoster(data as Profile, (applications ?? []) as JoinApplication[]))
   } catch (error) {
     return failResult(mockProfile, getErrorMessage(error, '读取小院资料失败'))
   }
@@ -1194,20 +1253,25 @@ export async function fetchMyProfile(): Promise<ApiResult<Profile>> {
 
 // 这个函数保存当前用户资料，入参是可编辑资料，返回值是保存后的资料。
 export async function updateMyProfile(input: ProfileUpdateInput): Promise<ApiResult<Profile>> {
+  // 这里不再保存 nickname 和 city，因为道名、所在城市统一以名册资料为主。
   const payload = {
-    nickname: input.nickname.trim() || '问云同门',
     avatar_url: input.avatar_url.trim() || null,
-    city: input.city.trim() || null,
     bio: input.bio.trim() || null,
     is_public: input.is_public
   }
 
   if (!supabase) {
-    return okResult({ ...mockProfile, ...payload, updated_at: new Date().toISOString() }, '演示模式下已模拟保存资料。')
+    return okResult(
+      mergeProfileWithRoster(
+        { ...mockProfile, ...payload, updated_at: new Date().toISOString() },
+        mockApplications.filter((item) => item.user_id === mockProfile.id)
+      ),
+      '演示模式下已模拟保存资料。'
+    )
   }
 
   try {
-    // 这里要求登录后只能更新自己的非角色资料，角色由数据库 RLS 保护。
+    // 这里要求登录后只能更新自己的头像、自述和公开开关，角色和道名由数据库规则保护。
     const user = await requireCurrentUser()
     const { data, error } = await supabase.from('profiles').update(payload).eq('id', user.id).select('*').single()
 
@@ -1215,7 +1279,18 @@ export async function updateMyProfile(input: ProfileUpdateInput): Promise<ApiRes
       throw error
     }
 
-    return okResult(data as Profile, '小院资料已保存。')
+    // 这里重新读取名帖资料后再返回，保证页面保存后仍然以名册道名为准。
+    const { data: applications, error: applicationError } = await supabase
+      .from('join_applications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (applicationError) {
+      throw applicationError
+    }
+
+    return okResult(mergeProfileWithRoster(data as Profile, (applications ?? []) as JoinApplication[]), '小院资料已保存。')
   } catch (error) {
     return failResult(mockProfile, getErrorMessage(error, '保存小院资料失败'))
   }
@@ -1253,8 +1328,6 @@ export async function updateMyRosterProfile(input: RosterProfileUpdateInput): Pr
         public_region: payload.next_city || null,
         motto: payload.next_motto || current.motto,
         reason: payload.next_motto || current.reason,
-        public_story: null,
-        raw_story: null,
         tags: payload.next_hobbies || null,
         companion_expectation: payload.next_companion_expectation || null,
         requested_nickname: payload.requested_dao_name || null,
@@ -1694,7 +1767,7 @@ export async function fetchYardOverview(): Promise<ApiResult<YardOverview>> {
       notificationResult.ok &&
       quizResult.ok,
     data: {
-      profile: profileResult.data,
+      profile: mergeProfileWithRoster(profileResult.data, applicationResult.data),
       applications: applicationResult.data,
       lanterns: lanternResult.data,
       registrations: registrationResult.data,

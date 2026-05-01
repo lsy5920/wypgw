@@ -26,9 +26,7 @@ import { genderOptions } from '../../data/siteContent'
 
 // 这个常量保存资料表单初始值，返回值用于页面加载前兜底。
 const initialForm: ProfileUpdateInput = {
-  nickname: '',
   avatar_url: '',
-  city: '',
   bio: '',
   is_public: false
 }
@@ -92,7 +90,7 @@ function createRosterForm(application: JoinApplication | null): RosterProfileUpd
     gender: application.gender ?? '男',
     city: application.public_region ?? application.city ?? '',
     motto: application.motto ?? application.reason,
-    hobbies: [application.public_story, application.tags].map((value) => value?.trim()).filter(Boolean).join('、'),
+    hobbies: application.tags ?? '',
     companion_expectation: application.companion_expectation ?? '',
     requested_nickname: application.requested_nickname ?? application.nickname,
     requested_legacy_contact: application.requested_legacy_contact ?? application.legacy_contact ?? application.wechat_id
@@ -135,9 +133,7 @@ export function YardProfilePage() {
       const [result, accountResult, applicationResult] = await Promise.all([fetchMyProfile(), fetchMyAccountSecurity(), fetchMyApplications()])
 
       setForm({
-        nickname: result.data.nickname,
         avatar_url: result.data.avatar_url ?? '',
-        city: result.data.city ?? '',
         bio: result.data.bio ?? '',
         is_public: result.data.is_public
       })
@@ -183,11 +179,6 @@ export function YardProfilePage() {
   // 这个函数保存个人资料，入参是表单事件，返回值为空。
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
-    if (!form.nickname.trim()) {
-      setNotice({ type: 'error', title: '资料还不能保存', message: '请填写昵称。' })
-      return
-    }
 
     try {
       setSaving(true)

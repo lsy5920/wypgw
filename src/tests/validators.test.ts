@@ -19,13 +19,10 @@ describe('问云派表单校验', () => {
       member_role: '同门',
       public_region: '',
       motto: '',
-      public_story: '',
       tags: '',
       companion_expectation: '',
       legacy_contact: '',
-      accept_rules: false,
-      offline_interest: '',
-      remark: ''
+      accept_rules: false
     })
 
     expect(errors.length).toBeGreaterThan(0)
@@ -44,13 +41,10 @@ describe('问云派表单校验', () => {
       member_role: '同门',
       public_region: '杭州',
       motto: '愿在清净处同行',
-      public_story: '喜欢写字、饮茶，也愿意与同门温和交流。',
       tags: '写字、饮茶',
       companion_expectation: '温和真诚',
       legacy_contact: 'wenyun_test',
-      accept_rules: true,
-      offline_interest: '愿意参加',
-      remark: ''
+      accept_rules: true
     })
 
     expect(errors).toHaveLength(0)

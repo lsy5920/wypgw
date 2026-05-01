@@ -24,13 +24,10 @@ const initialForm: JoinApplicationInput = {
   member_role: '同门',
   public_region: '',
   motto: '',
-  public_story: '',
   tags: '',
   companion_expectation: '',
   legacy_contact: '',
-  accept_rules: false,
-  offline_interest: '',
-  remark: ''
+  accept_rules: false
 }
 
 // 这个函数格式化登记时间，入参是数据库时间字符串，返回值是中文日期。
@@ -53,12 +50,10 @@ function showText(value: string | null): string {
   return value?.trim() || '未填写'
 }
 
-// 这个函数把旧故事和标签合并成兴趣爱好，入参是旧字段，返回值是统一展示文字。
-function formatHobbies(publicStory: string | null, tags: string | null): string {
-  // 这里过滤空值，避免页面显示多余标点。
-  const parts = [publicStory, tags].map((item) => item?.trim()).filter(Boolean)
-
-  return parts.length > 0 ? parts.join('、') : '未填写'
+// 这个函数格式化兴趣爱好，入参是兴趣爱好文字，返回值是统一展示文字。
+function formatHobbies(tags: string | null): string {
+  // 这里过滤空值，避免页面显示空白卡片。
+  return tags?.trim() || '未填写'
 }
 
 // 这个函数生成稳定的随机排序权重，入参是名册条目和种子，返回值用于横向卡片随机展示。
@@ -636,7 +631,7 @@ export function JoinPage() {
 
                 <p className="mt-4 rounded-2xl border border-[#6f8f8b]/18 bg-[#edf3ef]/55 p-4 text-sm leading-7 text-[#526461]">
                   <span className="font-semibold text-[#143044]">兴趣爱好：</span>
-                  {formatHobbies(item.public_story, item.tags)}
+                  {formatHobbies(item.tags)}
                 </p>
 
                 <p className="mt-4 text-sm leading-7 text-[#526461]">同行期待：{showText(item.companion_expectation)}</p>

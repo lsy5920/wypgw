@@ -125,12 +125,8 @@ export interface WenxinQuizSubmitInput {
 
 // 这个接口描述用户在问云小院里可以自己编辑的资料字段。
 export interface ProfileUpdateInput {
-  // 用户公开昵称，用于小院和公开资料展示。
-  nickname: string
   // 用户头像地址，可为空。
   avatar_url: string
-  // 所在城市，可为空。
-  city: string
   // 个人简介，可为空。
   bio: string
   // 是否公开资料。
@@ -187,10 +183,6 @@ export interface JoinApplication {
   reason: string
   // 是否认同门规，必须为真才允许提交。
   accept_rules: boolean
-  // 是否愿意参加线下活动，用于未来规划。
-  offline_interest: string | null
-  // 备注用于补充说明。
-  remark: string | null
   // 门派身份，只能由管理员在后台编辑。
   member_role: WenyunMemberRole | null
   // 辈分字，只能由管理员在后台编辑，默认是“云”。
@@ -205,10 +197,6 @@ export interface JoinApplication {
   raw_region: string | null
   // 宣言，用于公开名册展示。
   motto: string | null
-  // 公开故事旧字段，现在和兴趣爱好合并展示。
-  public_story: string | null
-  // 后台故事原文，只给管理员校对使用。
-  raw_story: string | null
   // 兴趣爱好，用中文顿号或逗号分隔。
   tags: string | null
   // 同行期待，用于公开名册展示。
@@ -257,8 +245,6 @@ export interface JoinApplicationInput {
   public_region: string
   // 宣言，不能为空，进入公开名册展示。
   motto: string
-  // 公开故事旧字段，仅保留兼容，前台表单不再单独展示。
-  public_story: string
   // 兴趣爱好，可为空，多个内容可用顿号或逗号分隔。
   tags: string
   // 同行期待，可为空。
@@ -267,10 +253,6 @@ export interface JoinApplicationInput {
   legacy_contact: string
   // 是否认同门规，必须勾选。
   accept_rules: boolean
-  // 线下活动意愿旧表没有使用，保留空值用于兼容数据库。
-  offline_interest: string
-  // 备注旧表没有使用，保留空值用于兼容数据库。
-  remark: string
 }
 
 // 这个接口描述公开名册条目，入参来自 Supabase 公开视图，返回给前台展示。
@@ -297,8 +279,6 @@ export interface RosterEntry {
   public_region: string | null
   // 宣言，用于名册展示。
   motto: string | null
-  // 公开故事旧字段，用于兼容旧数据展示。
-  public_story: string | null
   // 兴趣爱好，用中文顿号或逗号分隔。
   tags: string | null
   // 同行期待，用于名册展示。
@@ -335,10 +315,6 @@ export interface JoinApplicationUpdateInput {
   reason: string
   // 是否认同门规。
   accept_rules: boolean
-  // 线下雅集意愿。
-  offline_interest: string
-  // 申请备注。
-  remark: string
   // 管理员备注。
   admin_note: string
   // 门派身份。
@@ -351,10 +327,6 @@ export interface JoinApplicationUpdateInput {
   roster_serial: string
   // 宣言。
   motto: string
-  // 公开故事旧字段，后台保留兼容。
-  public_story: string
-  // 后台故事原文。
-  raw_story: string
   // 兴趣爱好。
   tags: string
   // 同行期待。

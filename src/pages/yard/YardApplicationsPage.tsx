@@ -78,9 +78,7 @@ export function YardApplicationsPage() {
               </div>
               <div className="mt-4 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
                 <p className="text-sm font-semibold text-[#143044]">兴趣爱好</p>
-                <p className="mt-2 text-sm leading-7 text-[#526461]">
-                  {[item.public_story, item.tags].map((value) => value?.trim()).filter(Boolean).join('、') || '未填写'}
-                </p>
+                <p className="mt-2 text-sm leading-7 text-[#526461]">{item.tags?.trim() || '未填写'}</p>
                 <p className="mt-1 text-sm leading-7 text-[#526461]">同行期待：{item.companion_expectation ?? '未填写'}</p>
               </div>
               <div className="mt-4 rounded-2xl border border-[#c9a45c]/20 bg-white/50 p-4">

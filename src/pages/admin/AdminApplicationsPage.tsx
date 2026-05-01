@@ -44,8 +44,6 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     city: item.city ?? '',
     reason: item.reason,
     accept_rules: item.accept_rules,
-    offline_interest: item.offline_interest ?? '',
-    remark: item.remark ?? '',
     admin_note: item.admin_note ?? '',
     member_role: item.member_role ?? '同门',
     generation_name: item.generation_name ?? '云',
@@ -54,8 +52,6 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     public_region: item.public_region ?? item.city ?? '',
     raw_region: item.raw_region ?? item.city ?? '',
     motto: item.motto ?? item.reason,
-    public_story: item.public_story ?? '',
-    raw_story: item.raw_story ?? '',
     tags: item.tags ?? '',
     companion_expectation: item.companion_expectation ?? '',
     legacy_contact: item.legacy_contact ?? item.wechat_id,
@@ -616,15 +612,7 @@ export function AdminApplicationsPage() {
                       </label>
                     </div>
 
-                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                      <label className="grid gap-2">
-                        <span className="text-sm font-semibold">旧故事原文</span>
-                        <textarea
-                          className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                          onChange={(event) => updateDraft(item.id, 'raw_story', event.target.value)}
-                          value={draft.raw_story}
-                        />
-                      </label>
+                    <div className="mt-4 grid gap-4">
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">管理员备注</span>
                         <textarea
