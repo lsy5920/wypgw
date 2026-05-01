@@ -21,7 +21,7 @@ import type {
 type AdminApplicationFilter = 'pending' | 'profile_change' | 'reviewed' | 'all' | 'draft' | 'retired'
 
 // 这个数组保存可选审核状态，返回值用于后台下拉框。
-const statuses: JoinApplicationStatus[] = ['pending', 'approved', 'contacted', 'joined', 'rejected', 'draft', 'retired']
+const statuses: JoinApplicationStatus[] = ['pending', 'approved', 'contacted', 'rejected', 'draft', 'retired']
 
 // 这个数组保存后台筛选项，返回值用于顶部筛选按钮。
 const filterItems: Array<{ label: string; value: AdminApplicationFilter }> = [
@@ -59,6 +59,8 @@ function createDraft(item: JoinApplication): JoinApplicationUpdateInput {
     requested_nickname: item.requested_nickname ?? '',
     requested_legacy_contact: item.requested_legacy_contact ?? '',
     joined_at: item.joined_at ?? '',
+    guiyuntang_joined: item.guiyuntang_joined,
+    guiyuntang_joined_at: item.guiyuntang_joined_at ?? '',
     status: item.status
   }
 }
@@ -83,7 +85,7 @@ function formatApplicationTime(value: string): string {
 // 这个函数判断名帖是否符合当前筛选，入参是名帖和筛选值，返回值表示是否展示。
 function matchesFilter(item: JoinApplication, filter: AdminApplicationFilter): boolean {
   // 这里把已经处理过的状态合并为“已审核”，便于后台快速查看。
-  const reviewedStatuses: JoinApplicationStatus[] = ['approved', 'contacted', 'joined', 'rejected']
+  const reviewedStatuses: JoinApplicationStatus[] = ['approved', 'contacted', 'rejected']
 
   if (filter === 'all') {
     return true
@@ -308,9 +310,9 @@ export function AdminApplicationsPage() {
             // 这个变量保存申请人最新问心考核结果。
             const latestQuiz = item.user_id ? quizResults[item.user_id] : null
             // 这个变量表示名帖已审核通过但尚未确认入群，需要醒目展示归云堂二维码。
-            const shouldProminentlyShowGuiyuntang = ['approved', 'contacted'].includes(draft.status)
+            const shouldProminentlyShowGuiyuntang = ['approved', 'contacted'].includes(draft.status) && !draft.guiyuntang_joined
             // 这个变量表示同门已确认进群，只保留可查看入口。
-            const shouldCompactlyShowGuiyuntang = draft.status === 'joined'
+            const shouldCompactlyShowGuiyuntang = ['approved', 'contacted'].includes(draft.status) && draft.guiyuntang_joined
             // 这个变量表示当前归云堂二维码是否可用。
             const guiyuntangQrReady = Boolean(guiyuntangSetting?.enabled && guiyuntangSetting.qr_image_data_url)
             // 这个变量表示已入群状态下是否展开查看二维码。
@@ -330,6 +332,13 @@ export function AdminApplicationsPage() {
                       <h2 className="ink-title text-2xl font-bold text-[#143044]">{draft.nickname || '未填写道名'}</h2>
                       <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-xs text-[#6f8f8b]">
                         {applicationStatusLabels[draft.status]}
+                      </span>
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs ${
+                          draft.guiyuntang_joined ? 'bg-[#f1f7e9] text-[#314434]' : 'bg-[#fff8e6] text-[#7a6a48]'
+                        }`}
+                      >
+                        {draft.guiyuntang_joined ? '已入归云堂' : '待入归云堂'}
                       </span>
                       <span className={`rounded-full px-3 py-1 text-xs ${latestQuiz?.passed ? 'bg-[#f1f7e9] text-[#314434]' : 'bg-[#fff1ee] text-[#9e3d32]'}`}>
                         问心：{latestQuiz ? `${latestQuiz.score} 分` : '未考'}
@@ -371,7 +380,7 @@ export function AdminApplicationsPage() {
                             </p>
                             <h3 className="ink-title mt-2 text-2xl font-bold text-[#143044]">名帖已通过，请引导入群</h3>
                             <p className="mt-2 text-sm leading-7 text-[#526461]">
-                              {guiyuntangSetting?.instruction ?? '名帖审核通过后，可引导同门扫码加入归云堂；确认进群后将名帖状态改为“已入群”。'}
+                              {guiyuntangSetting?.instruction ?? '名帖审核通过后，可引导同门扫码加入归云堂；用户或管理员确认进群后，会写入独立入群状态。'}
                             </p>
                             <p className="mt-2 text-sm font-semibold leading-7 text-[#9e3d32]">
                               {guiyuntangSetting?.warning ?? '归云堂入群二维码只供后台审核使用，严禁截图外传、公开发布或转交未审核人员。'}
@@ -401,7 +410,7 @@ export function AdminApplicationsPage() {
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
                             <p className="text-sm font-semibold text-[#143044]">已确认进群</p>
-                            <p className="mt-1 text-sm leading-7 text-[#526461]">醒目入群提示已收起，管理员仍可按需查看归云堂二维码。</p>
+                            <p className="mt-1 text-sm leading-7 text-[#526461]">独立入群状态已确认，醒目入群提示已收起，管理员仍可按需查看归云堂二维码。</p>
                           </div>
                           <CloudButton
                             disabled={!guiyuntangQrReady}
@@ -574,6 +583,21 @@ export function AdminApplicationsPage() {
                             </option>
                           ))}
                         </select>
+                      </label>
+                      <label className="flex min-h-[4.8rem] items-center gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 px-4 py-3">
+                        <input
+                          checked={draft.guiyuntang_joined}
+                          className="h-4 w-4"
+                          onChange={(event) => {
+                            updateDraft(item.id, 'guiyuntang_joined', event.target.checked)
+                            updateDraft(item.id, 'guiyuntang_joined_at', event.target.checked ? new Date().toISOString() : '')
+                          }}
+                          type="checkbox"
+                        />
+                        <span className="text-sm leading-6 text-[#526461]">
+                          <span className="block font-semibold text-[#143044]">已入归云堂</span>
+                          与审核状态分开记录
+                        </span>
                       </label>
                     </div>
 

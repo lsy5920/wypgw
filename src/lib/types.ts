@@ -1,5 +1,5 @@
 // 这个类型表示名帖在后台审核时可能出现的状态。
-export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'contacted' | 'joined' | 'draft' | 'retired'
+export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'contacted' | 'draft' | 'retired'
 
 // 这个类型表示名册公开展示的性别选项。
 export type MemberGender = '男' | '女'
@@ -211,6 +211,12 @@ export interface JoinApplication {
   requested_at: string | null
   // 正式入册时间，旧数据导入时使用旧入册时间。
   joined_at: string | null
+  // 是否已经进入归云堂，独立于名帖审核状态。
+  guiyuntang_joined: boolean
+  // 确认进入归云堂的时间，没有确认时为空。
+  guiyuntang_joined_at: string | null
+  // 确认进入归云堂的账号编号，没有确认时为空。
+  guiyuntang_joined_by: string | null
   // 审核状态，用于后台流转。
   status: JoinApplicationStatus
   // 管理员备注，只在后台可见。
@@ -339,6 +345,10 @@ export interface JoinApplicationUpdateInput {
   requested_legacy_contact: string
   // 正式入册时间。
   joined_at: string
+  // 是否已经进入归云堂，独立于审核状态。
+  guiyuntang_joined: boolean
+  // 确认进入归云堂的时间。
+  guiyuntang_joined_at: string
   // 审核状态。
   status: JoinApplicationStatus
 }

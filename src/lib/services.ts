@@ -89,6 +89,9 @@ function createEmptyApplication(): JoinApplication {
     requested_legacy_contact: null,
     requested_at: null,
     joined_at: null,
+    guiyuntang_joined: false,
+    guiyuntang_joined_at: null,
+    guiyuntang_joined_by: null,
     status: 'pending',
     admin_note: null,
     reviewed_by: null,
@@ -99,15 +102,14 @@ function createEmptyApplication(): JoinApplication {
 
 // 这个函数给名帖状态排序，入参是名帖状态，返回值越小表示越适合作为用户资料主来源。
 function getRosterProfilePriority(status: JoinApplicationStatus): number {
-  // 这里优先采用已入群、已联系和已通过的正式资料，避免退派或拒绝资料覆盖当前展示。
+  // 这里优先采用已联系和已通过的正式资料，避免退派或拒绝资料覆盖当前展示。
   const priorityMap: Record<JoinApplicationStatus, number> = {
-    joined: 1,
-    contacted: 2,
-    approved: 3,
-    pending: 4,
-    draft: 5,
-    rejected: 6,
-    retired: 7
+    contacted: 1,
+    approved: 2,
+    pending: 3,
+    draft: 4,
+    rejected: 5,
+    retired: 6
   }
 
   return priorityMap[status] ?? 99
@@ -252,7 +254,6 @@ function getApplicationStatusText(status: JoinApplicationStatus): string {
     approved: '已审核',
     rejected: '未通过',
     contacted: '已联系',
-    joined: '已入群',
     draft: '暂存',
     retired: '已退派'
   }
@@ -582,6 +583,9 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
         admin_note: null,
         reviewed_by: null,
         reviewed_at: null,
+        guiyuntang_joined: false,
+        guiyuntang_joined_at: null,
+        guiyuntang_joined_by: null,
         created_at: new Date().toISOString()
       } as JoinApplication,
       '演示模式下已模拟提交，真实保存需要配置 Supabase。'
@@ -842,6 +846,13 @@ export async function updateApplicationDetails(
   id: string,
   input: JoinApplicationUpdateInput
 ): Promise<ApiResult<JoinApplication | null>> {
+  // 这个变量把独立入群状态转成数据库时间；取消入群时同步清空时间。
+  const guiyuntangJoinedAt = input.guiyuntang_joined
+    ? input.guiyuntang_joined_at
+      ? new Date(input.guiyuntang_joined_at).toISOString()
+      : new Date().toISOString()
+    : null
+
   // 这个对象保存将写入数据库的字段，空字符串会转成空值。
   const payload = {
     nickname: input.nickname.trim(),
@@ -871,6 +882,8 @@ export async function updateApplicationDetails(
         ? new Date().toISOString()
         : null,
     joined_at: input.joined_at ? new Date(input.joined_at).toISOString() : null,
+    guiyuntang_joined: input.guiyuntang_joined,
+    guiyuntang_joined_at: guiyuntangJoinedAt,
     status: input.status,
     reviewed_at: new Date().toISOString()
   }
@@ -885,7 +898,7 @@ export async function updateApplicationDetails(
     // 这里先读取旧状态和用户归属，用于判断是否需要发送小院提醒。
     const { data: before } = await supabase
       .from('join_applications')
-      .select('user_id,status,admin_note')
+      .select('user_id,status,admin_note,guiyuntang_joined')
       .eq('id', id)
       .maybeSingle()
 
@@ -902,17 +915,27 @@ export async function updateApplicationDetails(
     }
 
     const application = data as JoinApplication
-    const oldApplication = before as Pick<JoinApplication, 'status' | 'user_id' | 'admin_note'> | null
+    const oldApplication = before as Pick<JoinApplication, 'status' | 'user_id' | 'admin_note' | 'guiyuntang_joined'> | null
 
-    // 这里在状态或管理员备注变化时给用户写入站内提醒并尝试发送邮件。
-    if (oldApplication?.status !== input.status || oldApplication?.admin_note !== payload.admin_note) {
+    // 这里在状态、管理员备注或入群状态变化时给用户写入站内提醒并尝试发送邮件。
+    if (
+      oldApplication?.status !== input.status ||
+      oldApplication?.admin_note !== payload.admin_note ||
+      oldApplication?.guiyuntang_joined !== payload.guiyuntang_joined
+    ) {
+      // 这里把入群状态补到提醒正文里，避免用户误以为审核状态就是入群状态。
+      const guiyuntangText =
+        oldApplication?.guiyuntang_joined !== payload.guiyuntang_joined
+          ? `归云堂入群状态：${payload.guiyuntang_joined ? '已入群' : '待入群'}。`
+          : ''
+
       await createUserNotification({
         userId: oldApplication?.user_id ?? application.user_id,
         kind: 'application',
         title: '名帖审核有新消息',
         content: `你的问云名帖当前状态为“${getApplicationStatusText(input.status)}”。${
           payload.admin_note ? `备注：${payload.admin_note}` : ''
-        }`,
+        }${guiyuntangText}`,
         targetTable: 'join_applications',
         targetId: id
       })
@@ -1776,6 +1799,43 @@ export async function fetchYardOverview(): Promise<ApiResult<YardOverview>> {
     },
     message: profileResult.message,
     demoMode: profileResult.demoMode
+  }
+}
+
+// 这个函数由用户本人确认已经进入归云堂，入参是名帖编号，返回值是更新后的名帖。
+export async function confirmMyGuiyuntangJoined(id: string): Promise<ApiResult<JoinApplication | null>> {
+  // 这里演示模式只模拟更新，方便没有数据库时也能看到弹窗收起效果。
+  if (!supabase) {
+    const current = mockApplications.find((item) => item.id === id) ?? null
+
+    if (!current) {
+      return failResult(null, '没有找到可确认的名帖。')
+    }
+
+    return okResult(
+      {
+        ...current,
+        guiyuntang_joined: true,
+        guiyuntang_joined_at: new Date().toISOString(),
+        guiyuntang_joined_by: current.user_id
+      },
+      '演示模式下已模拟确认进入归云堂。'
+    )
+  }
+
+  try {
+    // 这里通过数据库安全函数确认入群，函数会限制只能确认自己的已审核名帖。
+    const { data, error } = await supabase.rpc('confirm_my_guiyuntang_joined', {
+      target_application_id: id
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as JoinApplication, '已记录你进入归云堂，之后不会再主动弹出二维码。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '确认入群失败，请确认已执行最新 Supabase SQL 脚本'))
   }
 }
 

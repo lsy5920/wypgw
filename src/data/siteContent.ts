@@ -55,7 +55,6 @@ export const applicationStatusLabels = {
   approved: '已审核',
   rejected: '未通过',
   contacted: '已联系',
-  joined: '已入群',
   draft: '暂存',
   retired: '已退派'
 }

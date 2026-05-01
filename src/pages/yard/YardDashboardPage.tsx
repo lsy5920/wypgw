@@ -6,7 +6,7 @@ import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels, lanternStatusLabels } from '../../data/siteContent'
-import { fetchGuiyuntangSetting, fetchYardOverview } from '../../lib/services'
+import { confirmMyGuiyuntangJoined, fetchGuiyuntangSetting, fetchYardOverview } from '../../lib/services'
 import type { GuiyuntangSetting, JoinApplication, YardOverview } from '../../lib/types'
 
 // 这个函数格式化日期，入参是数据库时间字符串，返回值是中文日期。
@@ -37,14 +37,14 @@ function formatRegistrationStatus(value: string | null): string {
 
 // 这个函数判断名帖是否已经可以查看归云堂二维码，入参是名帖，返回值表示是否允许展示入口。
 function canViewGuiyuntang(application: JoinApplication | undefined): boolean {
-  // 这里只有审核通过、已联系、已入群三种状态能看到二维码，未审核和拒绝都不能看到。
-  return Boolean(application && ['approved', 'contacted', 'joined'].includes(application.status))
+  // 这里只有审核通过和已联系两种审核状态能看到二维码，未审核和拒绝都不能看到。
+  return Boolean(application && ['approved', 'contacted'].includes(application.status))
 }
 
 // 这个函数判断是否需要醒目弹窗提醒入群，入参是名帖，返回值表示是否弹窗。
 function shouldPopupGuiyuntang(application: JoinApplication | undefined): boolean {
-  // 这里已入群表示管理员确认完成，不再弹窗；但仍会保留查看入口。
-  return Boolean(application && ['approved', 'contacted'].includes(application.status))
+  // 这里使用独立入群字段判断是否弹窗，避免把“已入群”混进名帖审核状态。
+  return Boolean(application && canViewGuiyuntang(application) && !application.guiyuntang_joined)
 }
 
 // 这个函数渲染问云小院总览页，入参为空，返回值是用户后台首页。
@@ -55,6 +55,8 @@ export function YardDashboardPage() {
   const [guiyuntangSetting, setGuiyuntangSetting] = useState<GuiyuntangSetting | null>(null)
   // 这个状态控制归云堂二维码弹窗是否打开。
   const [guiyuntangOpen, setGuiyuntangOpen] = useState(false)
+  // 这个状态表示用户正在点击“我已入群”，用于避免重复提交。
+  const [confirmingGuiyuntang, setConfirmingGuiyuntang] = useState(false)
   // 这个状态保存页面提示。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
 
@@ -90,6 +92,43 @@ export function YardDashboardPage() {
 
   if (!overview) {
     return <StatusNotice title="正在整理小院" message="请稍候，正在读取你的名帖、云灯、雅集和提醒。" />
+  }
+
+  // 这个函数确认用户已进入归云堂，入参为空，返回值为空。
+  async function handleConfirmGuiyuntangJoined() {
+    // 这里没有总览或没有可确认名帖时直接提示，避免空数据提交。
+    if (!overview || !guiyuntangApplication) {
+      setNotice({ type: 'error', title: '确认失败', message: '没有找到可确认的名帖，请刷新小院后再试。' })
+      return
+    }
+
+    try {
+      // 这里进入提交状态，防止用户连续点击按钮。
+      setConfirmingGuiyuntang(true)
+      const result = await confirmMyGuiyuntangJoined(guiyuntangApplication.id)
+
+      if (result.ok && result.data) {
+        // 这里把更新后的名帖同步到当前总览，弹窗会立即收起。
+        setOverview((current) =>
+          current
+            ? {
+                ...current,
+                applications: current.applications.map((item) => (item.id === result.data?.id ? result.data : item))
+              }
+            : current
+        )
+        setGuiyuntangOpen(false)
+      }
+
+      setNotice({
+        type: result.ok ? 'success' : 'error',
+        title: result.ok ? '已确认入群' : '确认失败',
+        message: result.message
+      })
+    } finally {
+      // 这里无论成功失败都恢复按钮可点击。
+      setConfirmingGuiyuntang(false)
+    }
   }
 
   const latestApplication = overview.applications[0]
@@ -137,7 +176,15 @@ export function YardDashboardPage() {
               {guiyuntangSetting?.warning}
             </div>
             <button
-              className="mt-5 w-full rounded-full bg-[#9e3d32] px-5 py-3 font-semibold text-white shadow-lg shadow-[#9e3d32]/20"
+              className="mt-5 w-full rounded-full bg-[#9e3d32] px-5 py-3 font-semibold text-white shadow-lg shadow-[#9e3d32]/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={confirmingGuiyuntang}
+              onClick={() => void handleConfirmGuiyuntangJoined()}
+              type="button"
+            >
+              {confirmingGuiyuntang ? '正在确认...' : '我已入群'}
+            </button>
+            <button
+              className="mt-3 w-full rounded-full border border-[#6f8f8b]/25 bg-white/80 px-5 py-3 font-semibold text-[#526461]"
               onClick={() => setGuiyuntangOpen(false)}
               type="button"
             >
@@ -226,7 +273,7 @@ export function YardDashboardPage() {
                 <div className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-[#9e3d32]" />
                   <p className="font-semibold text-[#143044]">
-                    {guiyuntangApplication?.status === 'joined' ? '归云堂二维码' : '待加入归云堂'}
+                    {guiyuntangApplication?.guiyuntang_joined ? '归云堂二维码' : '待加入归云堂'}
                   </p>
                 </div>
                 <button
@@ -238,8 +285,8 @@ export function YardDashboardPage() {
                 </button>
               </div>
               <p className="mt-2 text-sm leading-7 text-[#526461]">
-                {guiyuntangApplication?.status === 'joined'
-                  ? '管理员已确认你进入归云堂，因此不再自动弹窗，但你仍可在此查看。'
+                {guiyuntangApplication?.guiyuntang_joined
+                  ? '你已确认进入归云堂，因此不再自动弹窗，但仍可在此查看。'
                   : '名帖通过后可扫码入群，请勿外传二维码。'}
               </p>
             </div>

@@ -25,7 +25,7 @@ select
   count(*) as 道名不一致数量
 from public.profiles as profile_row
 join public.join_applications as application_row on application_row.user_id = profile_row.id
-where application_row.status in ('approved', 'contacted', 'joined', 'pending')
+where application_row.status in ('approved', 'contacted', 'pending')
   and application_row.nickname is distinct from profile_row.nickname;
 
 -- 这里列出仍不一致的样例，正常情况下应没有结果。
@@ -37,10 +37,24 @@ select
   application_row.status as 名帖状态
 from public.profiles as profile_row
 join public.join_applications as application_row on application_row.user_id = profile_row.id
-where application_row.status in ('approved', 'contacted', 'joined', 'pending')
+where application_row.status in ('approved', 'contacted', 'pending')
   and application_row.nickname is distinct from profile_row.nickname
 order by application_row.created_at desc
 limit 20;
+
+-- 这里检查旧版把“已入群”混在名帖状态里的数据是否已经迁走。
+select
+  count(*) as 旧入群状态剩余数量
+from public.join_applications
+where status = 'joined';
+
+-- 这里检查新版独立入群字段是否已经存在。
+select
+  count(*) as 独立入群字段数量
+from information_schema.columns
+where table_schema = 'public'
+  and table_name = 'join_applications'
+  and column_name in ('guiyuntang_joined', 'guiyuntang_joined_at', 'guiyuntang_joined_by');
 
 -- 这里检查归云堂二维码权限策略是否存在。
 select

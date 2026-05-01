@@ -124,7 +124,7 @@ export function YardProfilePage() {
 
   // 这个变量保存当前优先展示的名帖，返回值用于资料表单。
   const currentApplication = useMemo(() => {
-    return applications.find((item) => ['approved', 'contacted', 'joined'].includes(item.status)) ?? applications[0] ?? null
+    return applications.find((item) => ['approved', 'contacted'].includes(item.status)) ?? applications[0] ?? null
   }, [applications])
 
   useEffect(() => {
@@ -140,7 +140,7 @@ export function YardProfilePage() {
 
       setAccountInfo(accountResult.data)
       setApplications(applicationResult.data)
-      setRosterForm(createRosterForm(applicationResult.data.find((item) => ['approved', 'contacted', 'joined'].includes(item.status)) ?? applicationResult.data[0] ?? null))
+      setRosterForm(createRosterForm(applicationResult.data.find((item) => ['approved', 'contacted'].includes(item.status)) ?? applicationResult.data[0] ?? null))
 
       if (!result.ok) {
         setNotice({ type: 'error', title: '读取失败', message: result.message })

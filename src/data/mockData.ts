@@ -187,7 +187,10 @@ export const mockApplications: JoinApplication[] = [
     requested_legacy_contact: null,
     requested_at: null,
     joined_at: demoNow,
-    status: 'joined',
+    guiyuntang_joined: true,
+    guiyuntang_joined_at: demoNow,
+    guiyuntang_joined_by: mockUserId,
+    status: 'approved',
     admin_note: null,
     reviewed_by: null,
     reviewed_at: null,
@@ -219,6 +222,9 @@ export const mockApplications: JoinApplication[] = [
     requested_legacy_contact: null,
     requested_at: null,
     joined_at: demoNow,
+    guiyuntang_joined: false,
+    guiyuntang_joined_at: null,
+    guiyuntang_joined_by: null,
     status: 'approved',
     admin_note: '演示名册成员。',
     reviewed_by: null,
@@ -251,6 +257,9 @@ export const mockApplications: JoinApplication[] = [
     requested_legacy_contact: null,
     requested_at: null,
     joined_at: null,
+    guiyuntang_joined: false,
+    guiyuntang_joined_at: null,
+    guiyuntang_joined_by: null,
     status: 'pending',
     admin_note: null,
     reviewed_by: null,
@@ -283,6 +292,9 @@ export const mockApplications: JoinApplication[] = [
     requested_legacy_contact: null,
     requested_at: null,
     joined_at: null,
+    guiyuntang_joined: false,
+    guiyuntang_joined_at: null,
+    guiyuntang_joined_by: null,
     status: 'draft',
     admin_note: '资料暂存。',
     reviewed_by: null,
@@ -315,6 +327,9 @@ export const mockApplications: JoinApplication[] = [
     requested_legacy_contact: null,
     requested_at: null,
     joined_at: demoNow,
+    guiyuntang_joined: false,
+    guiyuntang_joined_at: null,
+    guiyuntang_joined_by: null,
     status: 'retired',
     admin_note: '演示退派。',
     reviewed_by: null,
@@ -325,7 +340,7 @@ export const mockApplications: JoinApplication[] = [
 
 // 这个数组保存公开名册演示数据，未连接 Supabase 时用于前台展示。
 export const mockRosterEntries: RosterEntry[] = mockApplications
-  .filter((item) => ['approved', 'contacted', 'joined'].includes(item.status))
+  .filter((item) => ['approved', 'contacted'].includes(item.status))
   .map((item) => ({
     id: item.id,
     dao_name: item.nickname,
@@ -422,7 +437,7 @@ export const mockGuiyuntangSetting: GuiyuntangSetting = {
   id: 'default',
   enabled: true,
   qr_image_data_url: null,
-  instruction: '名帖审核通过后，可引导同门扫码加入归云堂；确认进群后将名帖状态改为“已入群”。',
+  instruction: '名帖审核通过后，可引导同门扫码加入归云堂；用户或管理员确认进群后，会写入独立入群状态。',
   warning: '归云堂入群二维码只供后台审核使用，严禁截图外传、公开发布或转交未审核人员。',
   updated_at: demoNow
 }
