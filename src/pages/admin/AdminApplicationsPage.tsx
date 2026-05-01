@@ -17,8 +17,8 @@ import type {
   WenyunMemberRole
 } from '../../lib/types'
 
-// 这个类型表示后台名帖筛选按钮，返回值用于区分待办、已处理和特殊状态。
-type AdminApplicationFilter = 'pending' | 'reviewed' | 'all' | 'draft' | 'retired'
+// 这个类型表示后台名帖筛选按钮，返回值用于区分待办、已处理、资料修改和特殊状态。
+type AdminApplicationFilter = 'pending' | 'profile_change' | 'reviewed' | 'all' | 'draft' | 'retired'
 
 // 这个数组保存可选审核状态，返回值用于后台下拉框。
 const statuses: JoinApplicationStatus[] = ['pending', 'approved', 'contacted', 'joined', 'rejected', 'draft', 'retired']
@@ -26,6 +26,7 @@ const statuses: JoinApplicationStatus[] = ['pending', 'approved', 'contacted', '
 // 这个数组保存后台筛选项，返回值用于顶部筛选按钮。
 const filterItems: Array<{ label: string; value: AdminApplicationFilter }> = [
   { label: '未审核', value: 'pending' },
+  { label: '资料修改', value: 'profile_change' },
   { label: '已审核', value: 'reviewed' },
   { label: '全部', value: 'all' },
   { label: '暂存', value: 'draft' },
@@ -90,6 +91,10 @@ function matchesFilter(item: JoinApplication, filter: AdminApplicationFilter): b
 
   if (filter === 'reviewed') {
     return reviewedStatuses.includes(item.status)
+  }
+
+  if (filter === 'profile_change') {
+    return Boolean(item.requested_nickname || item.requested_legacy_contact)
   }
 
   return item.status === filter
@@ -167,7 +172,9 @@ export function AdminApplicationsPage() {
         draft.nickname.includes(keyword) ||
         draft.real_name.includes(keyword) ||
         draft.wechat_id.includes(keyword) ||
-        draft.legacy_contact.includes(keyword)
+        draft.legacy_contact.includes(keyword) ||
+        draft.requested_nickname.includes(keyword) ||
+        draft.requested_legacy_contact.includes(keyword)
       const matchesCurrentFilter = matchesFilter(item, filter)
 
       return matchesKeyword && matchesCurrentFilter
@@ -255,7 +262,7 @@ export function AdminApplicationsPage() {
   return (
     <div>
       <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订">
-        默认展示未审核名帖。点击小卡片后，可编辑旧名册字段、身份、编号、状态与备注。
+        默认展示未审核名帖。道名和联系方式的用户申请，请切到“资料修改”筛选后展开审核。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -308,6 +315,8 @@ export function AdminApplicationsPage() {
             const guiyuntangQrReady = Boolean(guiyuntangSetting?.enabled && guiyuntangSetting.qr_image_data_url)
             // 这个变量表示已入群状态下是否展开查看二维码。
             const joinedQrOpen = Boolean(joinedQrVisible[item.id])
+            // 这个变量表示用户是否提交了道名或联系方式修改，便于管理员在收起卡片时也能看到待审事项。
+            const hasProfileChange = Boolean(draft.requested_nickname || draft.requested_legacy_contact)
 
             return (
               <ScrollPanel key={item.id}>
@@ -325,6 +334,11 @@ export function AdminApplicationsPage() {
                       <span className={`rounded-full px-3 py-1 text-xs ${latestQuiz?.passed ? 'bg-[#f1f7e9] text-[#314434]' : 'bg-[#fff1ee] text-[#9e3d32]'}`}>
                         问心：{latestQuiz ? `${latestQuiz.score} 分` : '未考'}
                       </span>
+                      {hasProfileChange ? (
+                        <span className="rounded-full bg-[#fff1ee] px-3 py-1 text-xs font-semibold text-[#9e3d32]">
+                          资料修改待审
+                        </span>
+                      ) : null}
                     </div>
                     <p className="mt-2 text-sm text-[#7a6a48]">申请时间：{formatApplicationTime(item.created_at)}</p>
                     <p className="mt-3 line-clamp-2 leading-7 text-[#526461]">宣言：{draft.motto || draft.reason || '未填写'}</p>
@@ -425,36 +439,54 @@ export function AdminApplicationsPage() {
                           {draft.requested_nickname ? (
                             <div>
                               <p>申请道名：{draft.requested_nickname}</p>
-                              <button
-                                className="mt-2 rounded-full border border-[#9e3d32]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#9e3d32]"
-                                onClick={() => {
-                                  updateDraft(item.id, 'nickname', draft.requested_nickname)
-                                  updateDraft(item.id, 'requested_nickname', '')
-                                }}
-                                type="button"
-                              >
-                                同意并填入道名
-                              </button>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <button
+                                  className="rounded-full border border-[#9e3d32]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#9e3d32]"
+                                  onClick={() => {
+                                    updateDraft(item.id, 'nickname', draft.requested_nickname)
+                                    updateDraft(item.id, 'requested_nickname', '')
+                                  }}
+                                  type="button"
+                                >
+                                  同意并填入道名
+                                </button>
+                                <button
+                                  className="rounded-full border border-[#6f8f8b]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#526461]"
+                                  onClick={() => updateDraft(item.id, 'requested_nickname', '')}
+                                  type="button"
+                                >
+                                  拒绝本次修改
+                                </button>
+                              </div>
                             </div>
                           ) : null}
                           {draft.requested_legacy_contact ? (
                             <div>
                               <p>申请联系方式：{draft.requested_legacy_contact}</p>
-                              <button
-                                className="mt-2 rounded-full border border-[#9e3d32]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#9e3d32]"
-                                onClick={() => {
-                                  updateDraft(item.id, 'legacy_contact', draft.requested_legacy_contact)
-                                  updateDraft(item.id, 'wechat_id', draft.requested_legacy_contact)
-                                  updateDraft(item.id, 'requested_legacy_contact', '')
-                                }}
-                                type="button"
-                              >
-                                同意并填入联系方式
-                              </button>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <button
+                                  className="rounded-full border border-[#9e3d32]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#9e3d32]"
+                                  onClick={() => {
+                                    updateDraft(item.id, 'legacy_contact', draft.requested_legacy_contact)
+                                    updateDraft(item.id, 'wechat_id', draft.requested_legacy_contact)
+                                    updateDraft(item.id, 'requested_legacy_contact', '')
+                                  }}
+                                  type="button"
+                                >
+                                  同意并填入联系方式
+                                </button>
+                                <button
+                                  className="rounded-full border border-[#6f8f8b]/25 bg-white/70 px-3 py-1 text-xs font-semibold text-[#526461]"
+                                  onClick={() => updateDraft(item.id, 'requested_legacy_contact', '')}
+                                  type="button"
+                                >
+                                  拒绝本次修改
+                                </button>
+                              </div>
                             </div>
                           ) : null}
                         </div>
-                        <p className="mt-3 text-xs leading-6 text-[#7a6a48]">同意后请点击底部“保存名帖”才会真正生效；不想同意时，把待审核内容清空后保存即可。</p>
+                        <p className="mt-3 text-xs leading-6 text-[#7a6a48]">同意或拒绝后，请点击底部“保存名帖”才会真正生效。</p>
                       </div>
                     ) : null}
 

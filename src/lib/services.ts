@@ -1298,9 +1298,9 @@ export async function updateMyProfile(input: ProfileUpdateInput): Promise<ApiRes
 
 // 这个函数保存当前用户的名册公开资料，入参是小院名册资料表单，返回值是更新后的名帖。
 export async function updateMyRosterProfile(input: RosterProfileUpdateInput): Promise<ApiResult<JoinApplication | null>> {
-  // 这个对象保存用户可以直接修改或申请修改的名册字段。
+  // 这个对象保存用户可以直接修改或申请修改的名册字段，字段名必须和数据库函数入参完全一致。
   const payload = {
-    application_id: input.application_id,
+    target_application_id: input.application_id,
     next_jianghu_name: input.jianghu_name.trim(),
     next_gender: input.gender,
     next_city: input.city.trim(),

@@ -208,8 +208,19 @@ export function YardProfilePage() {
       const result = await updateMyRosterProfile({ ...rosterForm, application_id: currentApplication.id })
 
       if (result.ok && result.data) {
-        setApplications((current) => current.map((item) => (item.id === result.data?.id ? result.data : item)))
-        setRosterForm(createRosterForm(result.data))
+        // 这里保存成功后重新读取数据库，确保页面展示的是触发器和权限函数真正落库后的结果。
+        const latestApplications = await fetchMyApplications()
+
+        if (latestApplications.ok) {
+          const nextApplication =
+            latestApplications.data.find((item) => item.id === result.data?.id) ?? latestApplications.data[0] ?? result.data
+
+          setApplications(latestApplications.data)
+          setRosterForm(createRosterForm(nextApplication))
+        } else {
+          setApplications((current) => current.map((item) => (item.id === result.data?.id ? result.data : item)))
+          setRosterForm(createRosterForm(result.data))
+        }
       }
 
       setNotice({
