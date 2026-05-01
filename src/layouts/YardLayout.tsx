@@ -1,6 +1,7 @@
 import { Bell, CalendarDays, FileText, Home, Lamp, LogOut, ScrollText, ShieldCheck, UserRound } from 'lucide-react'
 import { Link, Navigate, NavLink, Outlet } from 'react-router-dom'
 import { StatusNotice } from '../components/StatusNotice'
+import { WorkbenchFrame } from '../components/WorkbenchFrame'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
 import { getPublicAsset } from '../lib/assets'
 
@@ -37,8 +38,8 @@ export function YardLayout() {
   const canManageAdmin = isAdminProfile(profile)
 
   return (
-    <div className="min-h-screen bg-[#eef3ef] text-[#263238]">
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#6f8f8b]/20 bg-[#fffaf0]/95 p-5 lg:block">
+    <div className="wenyun-shell min-h-screen bg-[#eef3ef] text-[#263238]">
+      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#c9a45c]/24 bg-[#fffaf0]/92 p-5 shadow-2xl shadow-[#143044]/10 backdrop-blur-xl lg:block">
         <Link className="mb-8 flex items-center gap-3" to="/">
           <img className="h-12 w-12 rounded-full object-cover shadow-md" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
           <div>
@@ -55,7 +56,7 @@ export function YardLayout() {
               <NavLink
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
-                    isActive ? 'bg-[#6f8f8b] text-white' : 'text-[#526461] hover:bg-white'
+                    isActive ? 'bg-[#143044] text-[#fffaf0] shadow-md shadow-[#143044]/12' : 'text-[#526461] hover:bg-white'
                   }`
                 }
                 end={item.path === '/yard'}
@@ -97,7 +98,7 @@ export function YardLayout() {
       </aside>
 
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-30 border-b border-[#6f8f8b]/20 bg-[#fffaf0]/92 px-4 py-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 border-b border-[#c9a45c]/24 bg-[#fffaf0]/94 px-4 py-3 shadow-lg shadow-[#143044]/8 backdrop-blur-xl lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link className="flex items-center gap-2" to="/">
@@ -119,7 +120,7 @@ export function YardLayout() {
             {yardNavItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
-                  `shrink-0 rounded-full px-3 py-2 text-xs ${isActive ? 'bg-[#6f8f8b] text-white' : 'bg-white text-[#526461]'}`
+                    `shrink-0 rounded-full px-3 py-2 text-xs font-semibold ${isActive ? 'bg-[#143044] text-[#fffaf0]' : 'bg-white text-[#526461]'}`
                 }
                 end={item.path === '/yard'}
                 key={item.path}
@@ -136,8 +137,10 @@ export function YardLayout() {
           </nav>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-10">
+        <main className="mx-auto max-w-6xl px-3 py-5 md:px-8 md:py-8">
+          <WorkbenchFrame>
           <Outlet />
+          </WorkbenchFrame>
         </main>
       </div>
     </div>

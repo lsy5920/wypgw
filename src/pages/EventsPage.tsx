@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
 import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
+import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -117,7 +118,7 @@ export function EventsPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-14 md:px-6">
+    <PageShell>
       <SectionTitle center eyebrow="问云雅集" title="线上清谈，线下相逢">
         问云派日常不求繁杂，但求有温度、有秩序、有意义。
       </SectionTitle>
@@ -194,6 +195,6 @@ export function EventsPage() {
           })
         )}
       </div>
-    </main>
+    </PageShell>
   )
 }

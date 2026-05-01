@@ -31,13 +31,13 @@ export function CloudButton({
 }: CloudButtonProps) {
   // 这个常量保存不同按钮风格的颜色，返回值用于 className 拼接。
   const variantClass = {
-    primary: 'bg-[#6f8f8b] text-white shadow-lg shadow-[#6f8f8b]/25 hover:bg-[#5d7d79]',
-    ghost: 'border border-[#c9a45c]/50 bg-white/70 text-[#263238] hover:bg-[#fffaf0]',
+    primary: 'bg-[#143044] text-[#fffaf0] shadow-lg shadow-[#143044]/20 hover:bg-[#0f2531]',
+    ghost: 'border border-[#c9a45c]/55 bg-[#fffaf0]/75 text-[#143044] hover:bg-white',
     seal: 'bg-[#9e3d32] text-white shadow-lg shadow-[#9e3d32]/25 hover:bg-[#873228]'
   }[variant]
 
   // 这个常量保存通用按钮样式，保证所有按钮高度、圆角和动效统一。
-  const baseClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 ${variantClass} ${className}`
+  const baseClass = `focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 ${variantClass} ${className}`
 
   // 这里如果提供跳转地址，就渲染成站内链接，方便前台页面跳转。
   if (to) {

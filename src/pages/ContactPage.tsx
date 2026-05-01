@@ -1,6 +1,7 @@
 import { Mail, ShieldCheck } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
+import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -46,7 +47,7 @@ export function ContactPage() {
   }, [settings])
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-14 md:px-6">
+    <PageShell>
       <SectionTitle center eyebrow="联系山门" title="不公开永久二维码，只留清净入口">
         问云派首版采用名册登记与人工审核，不直接公开永久微信群二维码，避免广告和陌生人直接入群。
       </SectionTitle>
@@ -54,7 +55,7 @@ export function ContactPage() {
       {notice ? <StatusNotice title="演示模式提示" message={notice} /> : null}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <ScrollPanel>
+        <ScrollPanel className="seal-mark-bg">
           <img className="mx-auto h-48 w-48 rounded-full object-cover shadow-xl" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
           <h2 className="ink-title mt-6 text-center text-3xl font-bold">问云派山门</h2>
           <p className="mt-4 text-center leading-8 text-[#526461]">
@@ -90,6 +91,6 @@ export function ContactPage() {
           </ScrollPanel>
         </div>
       </div>
-    </main>
+    </PageShell>
   )
 }

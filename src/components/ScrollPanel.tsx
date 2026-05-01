@@ -10,5 +10,5 @@ interface ScrollPanelProps {
 
 // 这个函数渲染宣纸卷轴面板，入参是内容和样式，返回值是统一视觉容器。
 export function ScrollPanel({ children, className = '' }: ScrollPanelProps) {
-  return <section className={`scroll-panel rounded-2xl p-6 md:p-8 ${className}`}>{children}</section>
+  return <section className={`scroll-panel rounded-[1.35rem] p-5 transition duration-300 hover:-translate-y-0.5 md:p-7 ${className}`}>{children}</section>
 }

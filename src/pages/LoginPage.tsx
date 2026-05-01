@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
+import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -370,12 +371,12 @@ export function LoginPage() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-14 md:px-6">
+    <PageShell size="narrow">
       <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院">
         同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事也有自己的小院，并可从小院进入管理后台。
       </SectionTitle>
 
-      <ScrollPanel className="relative overflow-hidden">
+      <ScrollPanel className="relative overflow-hidden seal-mark-bg">
         <div className="pointer-events-none absolute right-6 top-6 h-28 w-28 rounded-full border border-[#c9a45c]/30 bg-[#edf3ef]/70" />
         {stateMessage ? <StatusNotice title="访问提示" message={stateMessage} /> : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -490,6 +491,6 @@ export function LoginPage() {
           新用户按“邮箱 + 密码”直接注册登录；旧名册同门可用 001 这类短编号登录，密码优先使用出生年份，没有年份时使用短编号本身。001 已绑定超级管理员邮箱，需使用该邮箱账号当前密码。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。
         </div>
       </ScrollPanel>
-    </main>
+    </PageShell>
   )
 }

@@ -1,6 +1,7 @@
 import { Megaphone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { EmptyState } from '../components/EmptyState'
+import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -44,7 +45,7 @@ export function AnnouncementsPage() {
   }, [])
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-14 md:px-6">
+    <PageShell size="narrow">
       <SectionTitle center eyebrow="门派公告" title="山门有讯，灯火相传">
         山门公告、门规更新、活动通知与金典修订都会在这里发布。
       </SectionTitle>
@@ -56,7 +57,7 @@ export function AnnouncementsPage() {
           <EmptyState title="暂无公告" message="待后台发布公告后，这里会展示山门近讯。" />
         ) : (
           announcements.map((item) => (
-            <ScrollPanel key={item.id}>
+          <ScrollPanel className="seal-mark-bg" key={item.id}>
               <div className="flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full bg-[#edf3ef] px-3 py-1 text-sm text-[#6f8f8b]">
                   <Megaphone className="h-4 w-4" />
@@ -72,6 +73,6 @@ export function AnnouncementsPage() {
           ))
         )}
       </div>
-    </main>
+    </PageShell>
   )
 }

@@ -3,6 +3,7 @@
 :root {
   --wenyun-ink: #263238;
   --wenyun-deep: #143044;
+  --wenyun-night: #0f2531;
   --wenyun-cloud: #f6f4ef;
   --wenyun-jade: #6f8f8b;
   --wenyun-bamboo: #7a8b6f;
@@ -10,6 +11,7 @@
   --wenyun-seal: #9e3d32;
   --wenyun-paper: #fffaf0;
   --wenyun-line: rgba(111, 143, 139, 0.28);
+  --wenyun-shadow: rgba(20, 48, 68, 0.16);
   color: var(--wenyun-ink);
   background: var(--wenyun-cloud);
   font-family:
@@ -35,9 +37,9 @@ body {
   /* 这里禁止页面整体横向滚动，避免手机端按钮或长文本把页面撑出屏幕。 */
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 12% 8%, rgba(201, 164, 92, 0.18), transparent 30%),
-    radial-gradient(circle at 90% 16%, rgba(111, 143, 139, 0.2), transparent 28%),
-    linear-gradient(180deg, #f7f4ec 0%, #edf3ef 48%, #f8f1df 100%);
+    radial-gradient(circle at 12% 8%, rgba(201, 164, 92, 0.16), transparent 30%),
+    radial-gradient(circle at 88% 14%, rgba(111, 143, 139, 0.2), transparent 28%),
+    linear-gradient(180deg, #f4f1e8 0%, #e8f0ec 48%, #f7edda 100%);
 }
 
 button,
@@ -63,7 +65,8 @@ a {
 
 .paper-texture {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)),
+    linear-gradient(rgba(255, 250, 240, 0.82), rgba(255, 250, 240, 0.82)),
+    repeating-linear-gradient(115deg, rgba(201, 164, 92, 0.08) 0 1px, transparent 1px 18px),
     radial-gradient(circle at 30% 20%, rgba(201, 164, 92, 0.08), transparent 28%),
     radial-gradient(circle at 78% 68%, rgba(111, 143, 139, 0.1), transparent 24%);
 }
@@ -90,11 +93,100 @@ a {
 }
 
 .scroll-panel {
-  border: 1px solid rgba(201, 164, 92, 0.32);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(201, 164, 92, 0.34);
   background:
-    linear-gradient(135deg, rgba(255, 250, 240, 0.96), rgba(246, 244, 239, 0.9)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.95), rgba(246, 244, 239, 0.88)),
+    repeating-linear-gradient(115deg, rgba(201, 164, 92, 0.06) 0 1px, transparent 1px 18px),
     radial-gradient(circle at 15% 18%, rgba(201, 164, 92, 0.1), transparent 24%);
-  box-shadow: 0 22px 70px rgba(38, 50, 56, 0.11);
+  background-size: auto, 420px 420px, auto;
+  box-shadow: 0 22px 70px rgba(20, 48, 68, 0.11);
+}
+
+.scroll-panel::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(201, 164, 92, 0.16), transparent 18%, transparent 82%, rgba(201, 164, 92, 0.16)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 34%);
+}
+
+.scroll-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.wenyun-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.wenyun-shell::before {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(rgba(246, 244, 239, 0.74), rgba(246, 244, 239, 0.82)),
+    repeating-radial-gradient(circle at 10% 20%, rgba(111, 143, 139, 0.1) 0 1px, transparent 1px 52px),
+    radial-gradient(circle at 15% 10%, rgba(201, 164, 92, 0.12), transparent 30%),
+    radial-gradient(circle at 85% 16%, rgba(111, 143, 139, 0.2), transparent 28%);
+  background-size: auto, 900px 360px, auto, auto;
+}
+
+.wenyun-shell::after {
+  position: fixed;
+  inset: auto -10% 0;
+  z-index: -1;
+  height: 38vh;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(0deg, rgba(111, 143, 139, 0.14), transparent);
+}
+
+.ritual-card {
+  border: 1px solid rgba(201, 164, 92, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 250, 240, 0.94), rgba(255, 255, 255, 0.74)),
+    repeating-linear-gradient(115deg, rgba(201, 164, 92, 0.06) 0 1px, transparent 1px 18px);
+  background-size: auto, 420px 420px;
+  box-shadow: 0 20px 60px rgba(20, 48, 68, 0.12);
+}
+
+.mountain-frame {
+  background:
+    linear-gradient(90deg, rgba(15, 37, 49, 0.72), rgba(15, 37, 49, 0.18)),
+    radial-gradient(circle at 72% 35%, rgba(201, 164, 92, 0.26), transparent 18%),
+    linear-gradient(135deg, #143044, #6f8f8b);
+  background-position: center;
+  background-size: cover;
+}
+
+.seal-mark-bg {
+  background-image: radial-gradient(circle at 78% 18%, rgba(158, 61, 50, 0.14), transparent 12%);
+  background-position: right 1rem top 1rem;
+  background-repeat: no-repeat;
+  background-size: 92px 92px;
+}
+
+.workbench-surface {
+  background:
+    linear-gradient(135deg, rgba(238, 243, 239, 0.96), rgba(255, 250, 240, 0.82)),
+    repeating-radial-gradient(circle at 15% 10%, rgba(111, 143, 139, 0.08) 0 1px, transparent 1px 48px);
+  background-size: auto, 900px 360px;
+}
+
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 3px;
+}
+
+.focus-ring:focus-visible {
+  outline-color: rgba(158, 61, 50, 0.78);
 }
 
 .text-balance {
@@ -120,6 +212,34 @@ a {
     opacity: 1;
     transform: scale(1.06);
   }
+}
+
+@keyframes seal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) rotate(-4deg) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes mist-flow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 900px 0;
+  }
+}
+
+.mist-flow {
+  animation: mist-flow 38s linear infinite;
+}
+
+.seal-rise {
+  animation: seal-rise 0.8s ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {

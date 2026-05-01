@@ -12,13 +12,13 @@ interface StatusNoticeProps {
 export function StatusNotice({ type = 'info', title, message }: StatusNoticeProps) {
   // 这个常量保存不同状态对应的颜色，保证提示清晰但不刺眼。
   const colorClass = {
-    info: 'border-[#6f8f8b]/30 bg-[#edf5f1] text-[#263238]',
-    success: 'border-[#7a8b6f]/35 bg-[#f1f7e9] text-[#314434]',
-    error: 'border-[#9e3d32]/30 bg-[#fff1ee] text-[#6d2a24]'
+    info: 'border-[#6f8f8b]/30 bg-[#edf5f1]/90 text-[#263238]',
+    success: 'border-[#7a8b6f]/35 bg-[#f1f7e9]/90 text-[#314434]',
+    error: 'border-[#9e3d32]/30 bg-[#fff1ee]/92 text-[#6d2a24]'
   }[type]
 
   return (
-    <div className={`rounded-xl border px-4 py-3 ${colorClass}`}>
+    <div className={`rounded-2xl border px-4 py-3 shadow-lg shadow-[#143044]/6 backdrop-blur ${colorClass}`}>
       <p className="font-semibold">{title}</p>
       <p className="mt-1 text-sm leading-6 opacity-85">{message}</p>
     </div>

@@ -9,12 +9,12 @@ export function SiteLayout() {
   const location = useLocation()
 
   return (
-    <div className="min-h-screen overflow-x-hidden text-[#263238]">
+    <div className="wenyun-shell min-h-screen overflow-x-hidden text-[#263238]">
       <SiteHeader />
       {/* 这里给每个页面增加轻微淡入上浮动效，让站点更有层次。 */}
       <motion.main
         animate={{ opacity: 1, y: 0 }}
-        className="pt-24 md:pt-28"
+        className="pt-[5.5rem] md:pt-[6.5rem]"
         initial={{ opacity: 0, y: 12 }}
         key={location.pathname}
         transition={{ duration: 0.42, ease: 'easeOut' }}

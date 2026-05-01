@@ -1,4 +1,6 @@
 import { ArrowUp } from 'lucide-react'
+import { PageShell } from '../components/PageShell'
+import { RitualCard } from '../components/RitualCard'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { canonText } from '../data/siteContent'
@@ -59,7 +61,7 @@ export function CanonPage() {
   const sections = parseCanonSections(canonText)
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <PageShell size="wide">
       <SectionTitle center eyebrow="立派金典" title="问云派立派金典">
         问云而来，栖心于此；乱世暂歇，同归一处。
       </SectionTitle>
@@ -67,12 +69,12 @@ export function CanonPage() {
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         {/* 这里展示金典目录，方便长文快速跳转。 */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <ScrollPanel>
+          <RitualCard className="seal-mark-bg">
             <p className="mb-4 font-semibold text-[#9e3d32]">金典目录</p>
             <nav className="grid max-h-[70vh] gap-2 overflow-y-auto pr-1 text-sm">
               {sections.map((section, index) => (
                 <a
-                  className="rounded-lg px-3 py-2 text-[#526461] hover:bg-[#edf3ef]"
+                  className="rounded-xl px-3 py-2 text-[#526461] transition hover:bg-[#edf3ef]"
                   href={`#canon-${index}`}
                   key={`${section.title}-${index}`}
                 >
@@ -80,7 +82,7 @@ export function CanonPage() {
                 </a>
               ))}
             </nav>
-          </ScrollPanel>
+          </RitualCard>
         </aside>
 
         {/* 这里展示金典正文。 */}
@@ -88,8 +90,8 @@ export function CanonPage() {
           {sections.map((section, index) => (
             <ScrollPanel className="scroll-mt-28" key={`${section.title}-${index}`}>
               <article id={`canon-${index}`}>
-                <h2 className="ink-title mb-6 text-3xl font-bold text-[#143044]">{section.title}</h2>
-                <div className="space-y-3 text-base leading-9 text-[#40524f]">
+                <h2 className="ink-title mb-6 border-b border-[#c9a45c]/25 pb-4 text-3xl font-bold text-[#143044]">{section.title}</h2>
+                <div className="space-y-3 text-base leading-9 text-[#40524f] md:text-lg">
                   {section.lines.map((line, lineIndex) => {
                     // 这里清理每一行，空行保留为段落间距。
                     const cleanLine = cleanMarkdownLine(line)
@@ -109,12 +111,12 @@ export function CanonPage() {
 
       {/* 这里提供返回顶部按钮，方便长文阅读。 */}
       <a
-        className="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#9e3d32] text-white shadow-xl md:bottom-6"
+        className="fixed bottom-6 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#9e3d32] text-white shadow-xl"
         href="#top"
         aria-label="返回顶部"
       >
         <ArrowUp className="h-5 w-5" />
       </a>
-    </main>
+    </PageShell>
   )
 }

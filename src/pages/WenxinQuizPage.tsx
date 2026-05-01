@@ -2,6 +2,7 @@ import { CheckCircle2, ChevronLeft, ChevronRight, RotateCcw, ScrollText, Send } 
 import { FormEvent, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
+import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -171,7 +172,7 @@ export function WenxinQuizPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl overflow-x-hidden px-4 py-14 md:px-6">
+    <PageShell className="overflow-x-hidden" size="normal">
       <SectionTitle center eyebrow="问心考核" title="一题一问，照见门风">
         此卷共三十题，皆据《问云派立派金典》而设。逐题作答，答案皆可于金典中查得；最新成绩合格后，方可递交问云名帖。
       </SectionTitle>
@@ -220,7 +221,7 @@ export function WenxinQuizPage() {
       </div>
 
       <form className="mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
-        <ScrollPanel className="min-w-0 overflow-hidden p-5 md:p-8">
+        <ScrollPanel className="min-w-0 overflow-hidden p-5 md:p-8 seal-mark-bg">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-semibold text-[#9e3d32]">
               第 {currentQuestion.id} 题 · {currentQuestion.type === 'single' ? '单选题' : '多选题'} · {currentQuestion.score} 分
@@ -315,6 +316,6 @@ export function WenxinQuizPage() {
           </div>
         </div>
       </form>
-    </main>
+    </PageShell>
   )
 }

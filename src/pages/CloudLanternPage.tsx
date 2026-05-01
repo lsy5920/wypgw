@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
 import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
+import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -86,13 +87,13 @@ export function CloudLanternPage() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <PageShell size="wide">
       <SectionTitle center eyebrow="云灯留言" title="点一盏云灯，照一段归途">
         留下一句祝福、一段心情、一个问候。云灯默认先由执事审核，避免广告和恶意内容扰乱山门。
       </SectionTitle>
 
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-        <ScrollPanel>
+        <ScrollPanel className="seal-mark-bg">
           {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
           {!profile ? (
             <LoginRequiredNotice
@@ -158,6 +159,6 @@ export function CloudLanternPage() {
           )}
         </div>
       </div>
-    </main>
+    </PageShell>
   )
 }

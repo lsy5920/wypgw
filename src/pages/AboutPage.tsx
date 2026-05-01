@@ -1,4 +1,6 @@
 import { Home, Lamp, Users } from 'lucide-react'
+import { PageShell } from '../components/PageShell'
+import { RitualCard } from '../components/RitualCard'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { sectRoles, spiritItems } from '../data/siteContent'
@@ -6,8 +8,8 @@ import { sectRoles, spiritItems } from '../data/siteContent'
 // 这个函数渲染山门介绍页，入参为空，返回值是门派愿景、门风和架构。
 export function AboutPage() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
-      <SectionTitle center eyebrow="山门介绍" title="问云派，不是冷群，是家">
+    <PageShell size="wide">
+      <SectionTitle center eyebrow="山门介绍" title="问云派，不是冷群，是有规矩的家">
         身处尘世，不失清明；心有疑问，仍向云天；来者可歇，去者自由。
       </SectionTitle>
 
@@ -20,11 +22,11 @@ export function AboutPage() {
           const Icon = item.icon
 
           return (
-            <ScrollPanel key={item.title}>
+            <RitualCard key={item.title}>
               <Icon className="mb-5 h-9 w-9 text-[#6f8f8b]" />
               <h2 className="ink-title text-3xl font-bold">{item.title}</h2>
               <p className="mt-4 leading-8 text-[#526461]">{item.text}</p>
-            </ScrollPanel>
+            </RitualCard>
           )
         })}
       </div>
@@ -56,6 +58,6 @@ export function AboutPage() {
           ))}
         </div>
       </section>
-    </main>
+    </PageShell>
   )
 }

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-labelledby="title desc">
+  <title id="title">问云派朱砂印</title>
+  <desc id="desc">用于强调庄重感的朱砂印章视觉资产。</desc>
+  <rect x="18" y="18" width="184" height="184" rx="28" fill="none" stroke="#9e3d32" stroke-width="12"/>
+  <rect x="38" y="38" width="144" height="144" rx="18" fill="#9e3d32" opacity="0.12"/>
+  <g fill="#9e3d32">
+    <path d="M68 58 H91 V86 H112 V58 H136 V154 H112 V108 H91 V154 H68 Z"/>
+    <path d="M145 64 H164 V92 H184 V112 H164 V156 H145 V112 H126 V92 H145 Z" opacity="0.82"/>
+  </g>
+</svg>

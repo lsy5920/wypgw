@@ -3,6 +3,8 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
 import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
+import { PageShell } from '../components/PageShell'
+import { RitualCard } from '../components/RitualCard'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
@@ -245,14 +247,14 @@ export function JoinPage() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <PageShell size="wide">
       <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号">
         先过问心考核，再递问云名帖。名册公开展示道名、江湖名、编号、性别、身份、所在城市、宣言、兴趣爱好、同行期待和入册时间。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
-      <ScrollPanel className="mt-8 overflow-hidden">
+      <ScrollPanel className="mt-8 overflow-hidden seal-mark-bg">
         <button
           className="flex w-full flex-col gap-5 text-left md:flex-row md:items-center md:justify-between"
           onClick={() => setFormOpen((current) => !current)}
@@ -601,10 +603,10 @@ export function JoinPage() {
         ) : randomizedRoster.length === 0 ? (
           <EmptyState title="暂无匹配同门" message="可以换一个道名、江湖名、编号或筛选条件再试。" />
         ) : (
-          <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4">
+          <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:thin]">
             {randomizedRoster.map((item) => (
-              <article
-                className="min-w-[min(86vw,26rem)] snap-start rounded-3xl border border-[#c9a45c]/25 bg-white/70 p-5 shadow-sm md:min-w-[25rem]"
+              <RitualCard
+                className="min-w-[min(86vw,26rem)] snap-start p-5 md:min-w-[25rem]"
                 key={item.id}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -636,11 +638,11 @@ export function JoinPage() {
 
                 <p className="mt-4 text-sm leading-7 text-[#526461]">同行期待：{showText(item.companion_expectation)}</p>
                 <p className="mt-2 text-xs text-[#7a6a48]">状态：{applicationStatusLabels[item.status]}</p>
-              </article>
+              </RitualCard>
             ))}
           </div>
         )}
       </ScrollPanel>
-    </main>
+    </PageShell>
   )
 }

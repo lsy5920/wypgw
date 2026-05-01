@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
+  <title id="title">问云派云雾纹理</title>
+  <desc id="desc">半透明云雾线条纹理，用于页面背景和卡片层次。</desc>
+  <g fill="none" stroke="#6f8f8b" stroke-linecap="round" opacity="0.24">
+    <path d="M42 96 C148 18 237 153 339 82 C430 19 517 61 572 122 C647 205 771 73 858 145" stroke-width="9"/>
+    <path d="M76 199 C170 130 252 244 359 182 C459 125 520 170 596 218 C690 278 756 190 849 237" stroke-width="7"/>
+    <path d="M24 291 C146 240 230 323 342 270 C472 208 583 310 706 260 C778 231 823 248 876 280" stroke-width="6"/>
+  </g>
+</svg>

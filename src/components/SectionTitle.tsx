@@ -28,9 +28,14 @@ export function SectionTitle({ eyebrow, title, children, center = false, tone = 
   return (
     <div className={center ? 'mx-auto mb-10 max-w-3xl text-center' : 'mb-10 max-w-3xl'}>
       {/* 这里展示短小的金色说明，用来建立国风层级。 */}
-      {eyebrow ? <p className={`mb-3 text-sm font-semibold ${eyebrowClassName}`}>{eyebrow}</p> : null}
+      {eyebrow ? (
+        <p className={`mb-3 inline-flex items-center gap-2 rounded-full border border-current/20 px-3 py-1 text-sm font-semibold ${eyebrowClassName}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current" />
+          {eyebrow}
+        </p>
+      ) : null}
       {/* 这里展示主标题，使用偏宋体的标题风格增加江湖卷轴感。 */}
-      <h2 className={`ink-title text-3xl font-bold ${titleClassName} md:text-5xl`}>{title}</h2>
+      <h2 className={`ink-title text-balance text-3xl font-bold leading-tight ${titleClassName} md:text-5xl`}>{title}</h2>
       {/* 这里展示说明文字，没有内容时不占位。 */}
       {children ? <div className={`mt-4 text-base leading-8 ${contentClassName} md:text-lg`}>{children}</div> : null}
     </div>

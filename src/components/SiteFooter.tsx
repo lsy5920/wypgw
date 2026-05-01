@@ -4,14 +4,15 @@ import { getPublicAsset } from '../lib/assets'
 // 这个函数渲染官网底部信息，入参为空，返回值是页脚内容。
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[#6f8f8b]/20 bg-[#263238] pb-24 pt-12 text-[#f6f4ef] md:pb-12">
+    <footer className="relative overflow-hidden border-t border-[#c9a45c]/20 bg-[#0f2531] pb-12 pt-14 text-[#f6f4ef]">
+      <div className="cloud-drift pointer-events-none absolute left-8 top-10 h-24 w-80 rounded-full bg-white/8 blur-3xl" />
       <div className="mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-[1.2fr_1fr_1fr] md:px-6">
         {/* 这里展示门派 Logo 和总旨。 */}
         <div>
-          <img className="mb-4 h-16 w-16 rounded-full object-cover" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <img className="mb-4 h-16 w-16 rounded-full border border-[#c9a45c]/45 bg-white/80 object-cover p-0.5" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
           <p className="ink-title text-2xl font-bold">问云派</p>
           <p className="mt-3 max-w-md leading-8 text-[#d8d7ca]">
-            问云问心，守真守善。同道相扶，来去自由。
+            问云问心，守真守善。同道相扶，来去自由。名门正派，不在声势，而在门风。
           </p>
         </div>
 
