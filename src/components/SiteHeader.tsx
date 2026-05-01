@@ -49,7 +49,7 @@ export function SiteHeader() {
             <NavLink
               className={({ isActive }) =>
                 `rounded-full px-3 py-2 text-sm font-semibold transition ${
-                  isActive ? 'bg-[#143044] text-[#fffaf0] shadow-md shadow-[#143044]/12' : 'text-[#263238] hover:bg-white/75'
+                  isActive ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#263238] hover:bg-white/75'
                 }`
               }
               key={item.path}
@@ -85,7 +85,7 @@ export function SiteHeader() {
               <NavLink
                 className={({ isActive }) =>
                   `rounded-2xl px-4 py-3 text-sm font-semibold ${
-                    isActive ? 'bg-[#143044] text-[#fffaf0]' : 'bg-white/70 text-[#263238]'
+                    isActive ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/16' : 'bg-white/80 text-[#263238]'
                   }`
                 }
                 key={item.path}

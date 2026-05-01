@@ -225,7 +225,7 @@ export function AdminStewardsPage() {
             {filterItems.map((item) => (
               <button
                 className={`rounded-full px-4 py-2 text-sm transition ${
-                  filter === item.value ? 'bg-[#6f8f8b] text-white' : 'border border-[#6f8f8b]/25 bg-white/70 text-[#526461]'
+                  filter === item.value ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'border border-[#6f8f8b]/25 bg-white/80 text-[#263238]'
                 }`}
                 key={item.value}
                 onClick={() => setFilter(item.value)}

@@ -175,8 +175,8 @@ a {
 
 .workbench-surface {
   background:
-    linear-gradient(135deg, rgba(238, 243, 239, 0.96), rgba(255, 250, 240, 0.82)),
-    repeating-radial-gradient(circle at 15% 10%, rgba(111, 143, 139, 0.08) 0 1px, transparent 1px 48px);
+    linear-gradient(135deg, rgba(244, 248, 245, 0.98), rgba(255, 250, 240, 0.94)),
+    repeating-radial-gradient(circle at 15% 10%, rgba(111, 143, 139, 0.06) 0 1px, transparent 1px 48px);
   background-size: auto, 900px 360px;
 }
 

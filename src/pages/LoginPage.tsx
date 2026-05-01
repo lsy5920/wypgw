@@ -383,14 +383,14 @@ export function LoginPage() {
 
         <div className="mt-6 grid grid-cols-2 rounded-full bg-[#edf3ef] p-1">
           <button
-            className={`rounded-full px-4 py-2 text-sm ${mode === 'login' ? 'bg-[#6f8f8b] text-white' : 'text-[#526461]'}`}
+            className={`rounded-full px-4 py-2 text-sm ${mode === 'login' ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#263238]'}`}
             onClick={() => setMode('login')}
             type="button"
           >
             登录
           </button>
           <button
-            className={`rounded-full px-4 py-2 text-sm ${mode === 'signup' ? 'bg-[#6f8f8b] text-white' : 'text-[#526461]'}`}
+            className={`rounded-full px-4 py-2 text-sm ${mode === 'signup' ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#263238]'}`}
             onClick={() => setMode('signup')}
             type="button"
           >

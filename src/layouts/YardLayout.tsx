@@ -56,7 +56,7 @@ export function YardLayout() {
               <NavLink
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
-                    isActive ? 'bg-[#143044] text-[#fffaf0] shadow-md shadow-[#143044]/12' : 'text-[#526461] hover:bg-white'
+                    isActive ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#344844] hover:bg-white'
                   }`
                 }
                 end={item.path === '/yard'}
@@ -120,7 +120,7 @@ export function YardLayout() {
             {yardNavItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
-                    `shrink-0 rounded-full px-3 py-2 text-xs font-semibold ${isActive ? 'bg-[#143044] text-[#fffaf0]' : 'bg-white text-[#526461]'}`
+                    `shrink-0 rounded-full px-3 py-2 text-xs font-semibold shadow-sm ${isActive ? 'bg-[#143044] !text-white shadow-[#143044]/18' : 'bg-white text-[#263238]'}`
                 }
                 end={item.path === '/yard'}
                 key={item.path}

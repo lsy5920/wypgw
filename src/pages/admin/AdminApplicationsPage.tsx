@@ -284,7 +284,7 @@ export function AdminApplicationsPage() {
           {filterItems.map((item) => (
             <button
               className={`min-h-11 rounded-full px-4 text-sm font-semibold transition ${
-                filter === item.value ? 'bg-[#6f8f8b] text-white' : 'border border-[#6f8f8b]/25 bg-white text-[#526461]'
+                filter === item.value ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'border border-[#6f8f8b]/25 bg-white text-[#263238]'
               }`}
               key={item.value}
               onClick={() => setFilter(item.value)}

@@ -20,7 +20,7 @@ export function StatusNotice({ type = 'info', title, message }: StatusNoticeProp
   return (
     <div className={`rounded-2xl border px-4 py-3 shadow-lg shadow-[#143044]/6 backdrop-blur ${colorClass}`}>
       <p className="font-semibold">{title}</p>
-      <p className="mt-1 text-sm leading-6 opacity-85">{message}</p>
+      <p className="mt-1 text-sm leading-6">{message}</p>
     </div>
   )
 }

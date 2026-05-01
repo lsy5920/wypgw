@@ -90,13 +90,13 @@ export function HomePage() {
 
         <section className="mt-16 rounded-[2rem] bg-[#0f2531] px-5 py-14 text-[#f6f4ef] shadow-2xl shadow-[#143044]/18 md:px-10">
           <SectionTitle center eyebrow="门派精神" title="正派之正，在于有愿、有规、有界" tone="dark">
-            <span className="text-[#d8d7ca]">每一句话，都在共同塑造这个家。</span>
+            <span className="text-[#f4efe0]">每一句话，都在共同塑造这个家。</span>
           </SectionTitle>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {spiritItems.map((item, index) => (
               <RitualCard className="border-white/10 bg-white/8" dark delay={index * 0.04} key={item.title}>
                 <p className="ink-title text-3xl font-bold text-[#c9a45c]">{item.title}</p>
-                <p className="mt-4 leading-8 text-[#d8d7ca]">{item.text}</p>
+                <p className="mt-4 leading-8 text-[#f4efe0]">{item.text}</p>
               </RitualCard>
             ))}
           </div>

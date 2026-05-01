@@ -31,7 +31,7 @@ export function CloudButton({
 }: CloudButtonProps) {
   // 这个常量保存不同按钮风格的颜色，返回值用于 className 拼接。
   const variantClass = {
-    primary: 'bg-[#143044] text-[#fffaf0] shadow-lg shadow-[#143044]/20 hover:bg-[#0f2531]',
+    primary: 'bg-[#143044] !text-white shadow-lg shadow-[#143044]/20 hover:bg-[#0f2531]',
     ghost: 'border border-[#c9a45c]/55 bg-[#fffaf0]/75 text-[#143044] hover:bg-white',
     seal: 'bg-[#9e3d32] text-white shadow-lg shadow-[#9e3d32]/25 hover:bg-[#873228]'
   }[variant]

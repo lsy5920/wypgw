@@ -18,18 +18,21 @@ interface GateHeroProps {
   className?: string
 }
 
-// 这个函数渲染山门首屏，入参是标题、说明和操作区，返回值是有远山、云雾、灯火动效的首屏。
+// 这个函数渲染山门首屏，入参是标题、说明和操作区，返回值是紧凑、清晰、不遮挡内容的首屏。
 export function GateHero({ eyebrow, title, children, actions, showLogo = false, className = '' }: GateHeroProps) {
+  // 这个常量保存门派 Logo 路径，避免在 JSX 中重复调用资源函数。
+  const logoPath = getPublicAsset('wenyun-logo.png')
+
   return (
-    <section className={`relative isolate overflow-hidden rounded-b-[2.5rem] border-b border-[#c9a45c]/30 ${className}`}>
-      <img
-        alt="问云派山门远景"
-        className="absolute inset-0 -z-20 h-full w-full object-cover"
-        src={getPublicAsset('visual/mountain-gate.svg')}
-      />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0f2531]/88 via-[#143044]/50 to-[#f6f4ef]/24" />
-      <div className="mist-flow absolute inset-x-0 bottom-0 -z-10 h-44 bg-[radial-gradient(circle_at_30%_70%,rgba(255,255,255,0.62),transparent_28%),radial-gradient(circle_at_72%_58%,rgba(255,255,255,0.5),transparent_24%)] blur-sm" />
-      <div className="mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl items-center gap-10 px-4 py-16 md:px-6 lg:grid-cols-[1.08fr_0.92fr]">
+    <section
+      className={`relative isolate overflow-hidden border-b border-[#c9a45c]/35 bg-[#0f2531] text-white shadow-2xl shadow-[#143044]/18 ${className}`}
+    >
+      {/* 这里用深色渐变代替整屏大背景图，避免手机端导航下方出现空白。 */}
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_18%_16%,rgba(201,164,92,0.22),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(111,143,139,0.3),transparent_24%),linear-gradient(135deg,#0f2531_0%,#143044_48%,#263238_100%)]" />
+      {/* 这里保留缓慢云雾动效，但只做细腻氛围，不再占据大块版面。 */}
+      <div className="mist-flow absolute inset-x-0 top-8 -z-10 h-28 bg-[radial-gradient(circle_at_24%_45%,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_68%_42%,rgba(255,255,255,0.12),transparent_24%)] blur-sm" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-[#07151d]/60 to-transparent" />
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-10 md:px-6 md:pb-16 md:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 24 }}
@@ -38,17 +41,17 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
           {showLogo ? (
             <img
               alt="问云派门派 Logo"
-              className="mb-6 h-24 w-24 rounded-full border border-white/70 bg-white/70 object-cover p-1 shadow-2xl shadow-[#c9a45c]/35 md:h-32 md:w-32"
-              src={getPublicAsset('wenyun-logo.png')}
+              className="mb-5 h-20 w-20 rounded-full border border-white/75 bg-white/80 object-cover p-1 shadow-2xl shadow-[#c9a45c]/35 md:h-28 md:w-28"
+              src={logoPath}
             />
           ) : null}
-          <p className="mb-4 inline-flex rounded-full border border-[#c9a45c]/45 bg-[#fffaf0]/12 px-4 py-2 text-sm font-semibold text-[#f8e6bd] backdrop-blur">
+          <p className="mb-4 inline-flex rounded-full border border-[#c9a45c]/55 bg-[#fffaf0]/14 px-4 py-2 text-sm font-semibold text-[#ffe7b3] shadow-md shadow-[#07151d]/20 backdrop-blur">
             {eyebrow}
           </p>
-          <h1 className="ink-title text-balance text-5xl font-black leading-tight text-[#fffaf0] drop-shadow-xl md:text-7xl lg:text-8xl">
+          <h1 className="ink-title text-balance text-5xl font-black leading-tight text-white drop-shadow-xl md:text-7xl lg:text-8xl">
             {title}
           </h1>
-          <div className="mt-6 max-w-2xl text-lg leading-9 text-[#edf3ef] md:text-xl">{children}</div>
+          <div className="mt-6 max-w-2xl text-lg leading-9 text-[#f4f8f5] md:text-xl">{children}</div>
           {actions ? <div className="mt-8 flex flex-wrap gap-3">{actions}</div> : null}
         </motion.div>
 
@@ -58,9 +61,9 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
           initial={{ opacity: 0, scale: 0.94, rotate: -1 }}
           transition={{ duration: 0.8, delay: 0.12, ease: 'easeOut' }}
         >
-          <div className="seal-mark-bg rounded-[2rem] border border-white/18 bg-[#fffaf0]/12 p-8 text-[#fffaf0] shadow-2xl shadow-[#0f2531]/28 backdrop-blur-xl">
+          <div className="seal-mark-bg rounded-[2rem] border border-white/20 bg-[#fffaf0]/12 p-8 text-white shadow-2xl shadow-[#07151d]/30 backdrop-blur-xl">
             <p className="ink-title text-4xl font-bold">入山先问心</p>
-            <p className="mt-5 leading-9 text-[#edf3ef]">
+            <p className="mt-5 leading-9 text-[#f4f8f5]">
               守清明、知边界、重真诚。名门正派不靠声势立门，只靠门风长久。
             </p>
             <div className="mt-8 grid grid-cols-4 gap-3">
