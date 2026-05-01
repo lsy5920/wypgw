@@ -52,7 +52,7 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
             {title}
           </h1>
           <div className="mt-6 max-w-2xl text-lg leading-9 text-[#f4f8f5] md:text-xl">{children}</div>
-          {actions ? <div className="mt-8 flex flex-wrap gap-3">{actions}</div> : null}
+          {actions ? <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">{actions}</div> : null}
         </motion.div>
 
         <motion.div

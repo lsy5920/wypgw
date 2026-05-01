@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Cloud, Lamp, ScrollText, ShieldCheck, Sparkles, UsersRound } from 'lucide-react'
+import { ArrowRight, BookOpen, Lamp, ScrollText, ShieldCheck, Sparkles, UserRound, UsersRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { GateHero } from '../components/GateHero'
@@ -47,11 +47,19 @@ export function HomePage() {
       <GateHero
         actions={
           <>
-            <CloudButton to="/join" variant="seal">
+            <CloudButton className="w-full sm:w-auto" to="/join" variant="seal">
               登记名册
               <ArrowRight className="h-4 w-4" />
             </CloudButton>
-            <CloudButton to="/canon" variant="ghost">
+            <CloudButton className="w-full sm:w-auto" to="/wenxin-quiz" variant="ghost">
+              问心考核
+              <ShieldCheck className="h-4 w-4" />
+            </CloudButton>
+            <CloudButton className="w-full sm:w-auto" to="/yard" variant="ghost">
+              问云小院
+              <UserRound className="h-4 w-4" />
+            </CloudButton>
+            <CloudButton className="w-full sm:w-auto" to="/canon" variant="ghost">
               阅读金典
               <BookOpen className="h-4 w-4" />
             </CloudButton>
@@ -106,7 +114,7 @@ export function HomePage() {
           <SectionTitle eyebrow="入册流程" title="问云而来，归心有路">
             申请不是门槛，而是彼此确认边界。愿来者真诚，守门者温和。
           </SectionTitle>
-          <div className="grid gap-4 lg:grid-cols-5">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {joinSteps.map((step, index) => (
               <RitualCard className="min-h-42" delay={index * 0.05} key={step}>
                 <p className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#9e3d32] text-white shadow-lg shadow-[#9e3d32]/22">
@@ -114,7 +122,7 @@ export function HomePage() {
                 </p>
                 <p className="ink-title text-2xl font-bold text-[#143044]">{step}</p>
                 {index < joinSteps.length - 1 ? (
-                  <ArrowRight className="absolute right-5 top-8 hidden h-5 w-5 text-[#c9a45c] lg:block" />
+                  <ArrowRight className="absolute right-5 top-8 hidden h-5 w-5 text-[#c9a45c] xl:block" />
                 ) : null}
               </RitualCard>
             ))}
