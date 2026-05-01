@@ -74,7 +74,7 @@ export function SiteHeader() {
             <NavLink
               className={({ isActive }) =>
                 `rounded-full px-3 py-2 text-sm font-semibold transition ${
-                  isActive ? 'bg-[#fff8e8] text-[#102a31] shadow-md shadow-[#07171d]/16' : 'text-[#f4f8f5] hover:bg-white/12'
+                  isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : '!text-[#f6f4ef] hover:bg-white/12'
                 }`
               }
               key={item.path}
@@ -87,7 +87,7 @@ export function SiteHeader() {
 
         {/* 这里展示后台入口和手机菜单按钮。 */}
         <div className="flex items-center gap-2">
-          <Link className="cloud-button hidden items-center gap-2 rounded-full border border-[#f8df9d]/42 bg-[#fff8e8]/12 px-4 py-2 text-sm font-semibold text-[#fff8e8] transition hover:-translate-y-0.5 hover:bg-[#fff8e8]/20 md:inline-flex" to="/yard">
+          <Link className="cloud-button hidden items-center gap-2 rounded-full border border-[#f8df9d]/42 bg-[#fff8e8]/12 px-4 py-2 text-sm font-semibold !text-[#fff8e8] transition hover:-translate-y-0.5 hover:bg-[#fff8e8]/20 md:inline-flex" to="/yard">
             <UserRound className="h-4 w-4" />
             问云小院
           </Link>

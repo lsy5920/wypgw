@@ -34,7 +34,7 @@ export function CloudButton({
     primary:
       'border border-[#f8df9d]/22 bg-[linear-gradient(135deg,#102a31,#1f4b52)] !text-[#fff8e8] shadow-xl shadow-[#102a31]/24 hover:shadow-[#102a31]/34',
     ghost:
-      'border border-[#d6aa54]/55 bg-[#fff8e8]/82 text-[#102a31] shadow-lg shadow-[#102a31]/8 backdrop-blur hover:bg-white hover:text-[#07171d]',
+      'border border-[#d6aa54]/55 bg-[#fff8e8]/88 !text-[#102a31] shadow-lg shadow-[#102a31]/8 backdrop-blur hover:bg-white hover:!text-[#07171d]',
     seal:
       'border border-[#f8df9d]/28 bg-[linear-gradient(135deg,#a83b32,#7c3544)] text-white shadow-xl shadow-[#a83b32]/26 hover:shadow-[#a83b32]/36'
   }[variant]
