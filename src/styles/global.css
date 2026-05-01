@@ -1,17 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --wenyun-ink: #263238;
-  --wenyun-deep: #143044;
-  --wenyun-night: #0f2531;
-  --wenyun-cloud: #f6f4ef;
-  --wenyun-jade: #6f8f8b;
-  --wenyun-bamboo: #7a8b6f;
-  --wenyun-gold: #c9a45c;
-  --wenyun-seal: #9e3d32;
-  --wenyun-paper: #fffaf0;
-  --wenyun-line: rgba(111, 143, 139, 0.28);
-  --wenyun-shadow: rgba(20, 48, 68, 0.16);
+  /* 这里统一全站主色，后续换主题只需要从这里调整。 */
+  --wenyun-ink: #172b2c;
+  --wenyun-deep: #102a31;
+  --wenyun-night: #07171d;
+  --wenyun-jade: #5f8f83;
+  --wenyun-bamboo: #7e9368;
+  --wenyun-gold: #d6aa54;
+  --wenyun-light-gold: #f8df9d;
+  --wenyun-seal: #a83b32;
+  --wenyun-plum: #7c3544;
+  --wenyun-paper: #fff8e8;
+  --wenyun-cloud: #f4efe4;
+  --wenyun-porcelain: #e9f2ed;
+  --wenyun-line: rgba(214, 170, 84, 0.32);
+  --wenyun-shadow: rgba(16, 42, 49, 0.2);
+  --wenyun-heavy-shadow: rgba(7, 23, 29, 0.34);
   color: var(--wenyun-ink);
   background: var(--wenyun-cloud);
   font-family:
@@ -34,12 +39,28 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  /* 这里禁止页面整体横向滚动，避免手机端按钮或长文本把页面撑出屏幕。 */
+  /* 这里禁止页面整体横向滚动，避免手机端被长按钮或长文字撑出屏幕。 */
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 12% 8%, rgba(201, 164, 92, 0.16), transparent 30%),
-    radial-gradient(circle at 88% 14%, rgba(111, 143, 139, 0.2), transparent 28%),
-    linear-gradient(180deg, #f4f1e8 0%, #e8f0ec 48%, #f7edda 100%);
+    linear-gradient(135deg, rgba(255, 248, 232, 0.94) 0%, rgba(233, 242, 237, 0.94) 42%, rgba(248, 233, 208, 0.96) 100%),
+    repeating-linear-gradient(112deg, rgba(214, 170, 84, 0.06) 0 1px, transparent 1px 22px),
+    linear-gradient(180deg, #fffaf0 0%, #e6f0eb 54%, #f7ead4 100%);
+  background-attachment: fixed;
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -5;
+  pointer-events: none;
+  content: "";
+  opacity: 0.62;
+  background:
+    linear-gradient(90deg, transparent 0 9%, rgba(95, 143, 131, 0.08) 9.2% 9.4%, transparent 9.6% 100%),
+    repeating-linear-gradient(0deg, rgba(16, 42, 49, 0.035) 0 1px, transparent 1px 46px);
+  background-size:
+    360px 100%,
+    100% 260px;
 }
 
 button,
@@ -53,22 +74,44 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-::selection {
-  color: #fffaf0;
-  background: var(--wenyun-seal);
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
-.paper-texture {
-  background-image:
-    linear-gradient(rgba(255, 250, 240, 0.82), rgba(255, 250, 240, 0.82)),
-    repeating-linear-gradient(115deg, rgba(201, 164, 92, 0.08) 0 1px, transparent 1px 18px),
-    radial-gradient(circle at 30% 20%, rgba(201, 164, 92, 0.08), transparent 28%),
-    radial-gradient(circle at 78% 68%, rgba(111, 143, 139, 0.1), transparent 24%);
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  /* 这里保证表单控件在手机端不会超出父容器。 */
+  width: 100%;
+  max-width: 100%;
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  /* 这里给表单聚焦状态增加柔和光晕，方便键盘和手机用户确认当前位置。 */
+  box-shadow: 0 0 0 4px rgba(214, 170, 84, 0.16);
+}
+
+::selection {
+  color: var(--wenyun-paper);
+  background: var(--wenyun-seal);
 }
 
 .ink-title {
@@ -80,43 +123,17 @@ a {
   letter-spacing: 0;
 }
 
-.cloud-drift {
-  animation: cloud-drift 18s ease-in-out infinite alternate;
+.text-balance {
+  text-wrap: balance;
 }
 
-.lantern-breathe {
-  animation: lantern-breathe 2.8s ease-in-out infinite;
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 3px;
 }
 
-.seal-shadow {
-  box-shadow: 0 18px 40px rgba(158, 61, 50, 0.18);
-}
-
-.scroll-panel {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(201, 164, 92, 0.34);
-  background:
-    linear-gradient(135deg, rgba(255, 250, 240, 0.95), rgba(246, 244, 239, 0.88)),
-    repeating-linear-gradient(115deg, rgba(201, 164, 92, 0.06) 0 1px, transparent 1px 18px),
-    radial-gradient(circle at 15% 18%, rgba(201, 164, 92, 0.1), transparent 24%);
-  background-size: auto, 420px 420px, auto;
-  box-shadow: 0 22px 70px rgba(20, 48, 68, 0.11);
-}
-
-.scroll-panel::before {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-  background:
-    linear-gradient(90deg, rgba(201, 164, 92, 0.16), transparent 18%, transparent 82%, rgba(201, 164, 92, 0.16)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 34%);
-}
-
-.scroll-panel > * {
-  position: relative;
-  z-index: 1;
+.focus-ring:focus-visible {
+  outline-color: rgba(168, 59, 50, 0.82);
 }
 
 .wenyun-shell {
@@ -127,78 +144,257 @@ a {
 .wenyun-shell::before {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: -3;
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(rgba(246, 244, 239, 0.74), rgba(246, 244, 239, 0.82)),
-    repeating-radial-gradient(circle at 10% 20%, rgba(111, 143, 139, 0.1) 0 1px, transparent 1px 52px),
-    radial-gradient(circle at 15% 10%, rgba(201, 164, 92, 0.12), transparent 30%),
-    radial-gradient(circle at 85% 16%, rgba(111, 143, 139, 0.2), transparent 28%);
-  background-size: auto, 900px 360px, auto, auto;
+    linear-gradient(180deg, rgba(255, 248, 232, 0.24), rgba(233, 242, 237, 0.58) 48%, rgba(255, 248, 232, 0.66)),
+    repeating-linear-gradient(128deg, rgba(214, 170, 84, 0.08) 0 1px, transparent 1px 34px),
+    linear-gradient(90deg, rgba(255, 248, 232, 0.84), rgba(233, 242, 237, 0.62), rgba(255, 248, 232, 0.82));
 }
 
 .wenyun-shell::after {
   position: fixed;
-  inset: auto -10% 0;
-  z-index: -1;
-  height: 38vh;
+  inset: auto 0 0;
+  z-index: -2;
+  height: 46vh;
   pointer-events: none;
   content: "";
-  background: linear-gradient(0deg, rgba(111, 143, 139, 0.14), transparent);
+  background:
+    linear-gradient(0deg, rgba(95, 143, 131, 0.2), rgba(95, 143, 131, 0.04) 54%, transparent),
+    linear-gradient(90deg, rgba(168, 59, 50, 0.1), transparent 42%, rgba(214, 170, 84, 0.12));
+}
+
+.liquid-glass {
+  border: 1px solid rgba(255, 248, 232, 0.28);
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.18), rgba(255, 255, 255, 0.08)),
+    linear-gradient(180deg, rgba(16, 42, 49, 0.72), rgba(7, 23, 29, 0.58));
+  box-shadow:
+    0 24px 70px rgba(7, 23, 29, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(22px);
+}
+
+.paper-texture {
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.96), rgba(246, 240, 224, 0.9)),
+    repeating-linear-gradient(118deg, rgba(214, 170, 84, 0.08) 0 1px, transparent 1px 18px),
+    linear-gradient(90deg, rgba(95, 143, 131, 0.08), transparent 44%, rgba(168, 59, 50, 0.08));
+}
+
+.surface-grid {
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.82), rgba(233, 242, 237, 0.8)),
+    repeating-linear-gradient(90deg, rgba(16, 42, 49, 0.05) 0 1px, transparent 1px 54px),
+    repeating-linear-gradient(0deg, rgba(16, 42, 49, 0.04) 0 1px, transparent 1px 54px);
+}
+
+.scroll-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(214, 170, 84, 0.36);
+  background:
+    linear-gradient(145deg, rgba(255, 248, 232, 0.95), rgba(255, 255, 255, 0.78) 46%, rgba(233, 242, 237, 0.86)),
+    repeating-linear-gradient(116deg, rgba(214, 170, 84, 0.07) 0 1px, transparent 1px 20px);
+  background-size: auto, 460px 460px;
+  box-shadow:
+    0 26px 76px rgba(16, 42, 49, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.scroll-panel::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(214, 170, 84, 0.18), transparent 16%, transparent 84%, rgba(214, 170, 84, 0.16)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.54), transparent 34%);
+  opacity: 0.82;
+}
+
+.scroll-panel::after {
+  position: absolute;
+  inset: 1px;
+  pointer-events: none;
+  content: "";
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.scroll-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .ritual-card {
-  border: 1px solid rgba(201, 164, 92, 0.34);
+  border: 1px solid rgba(214, 170, 84, 0.36);
   background:
-    linear-gradient(135deg, rgba(255, 250, 240, 0.94), rgba(255, 255, 255, 0.74)),
-    repeating-linear-gradient(115deg, rgba(201, 164, 92, 0.06) 0 1px, transparent 1px 18px);
+    linear-gradient(145deg, rgba(255, 248, 232, 0.94), rgba(255, 255, 255, 0.78) 50%, rgba(233, 242, 237, 0.8)),
+    repeating-linear-gradient(118deg, rgba(214, 170, 84, 0.07) 0 1px, transparent 1px 18px);
   background-size: auto, 420px 420px;
-  box-shadow: 0 20px 60px rgba(20, 48, 68, 0.12);
+  box-shadow:
+    0 22px 64px rgba(16, 42, 49, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.ritual-card::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.5) 42%, transparent 68%),
+    linear-gradient(180deg, rgba(214, 170, 84, 0.12), transparent 42%);
+  opacity: 0;
+  transform: translateX(-36%);
+  transition:
+    opacity 0.32s ease,
+    transform 0.56s ease;
+}
+
+.ritual-card:hover::before {
+  opacity: 1;
+  transform: translateX(24%);
+}
+
+.cloud-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.cloud-button::before {
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  content: "";
+  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+  opacity: 0;
+  transform: translateX(-80%);
+  transition:
+    opacity 0.28s ease,
+    transform 0.5s ease;
+}
+
+.cloud-button:hover::before {
+  opacity: 1;
+  transform: translateX(62%);
+}
+
+.hero-cloud-layer {
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255, 248, 232, 0.16) 34%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 248, 232, 0.12) 66%, transparent 100%),
+    repeating-linear-gradient(100deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 36px);
+  filter: blur(10px);
+}
+
+.hero-light-beam {
+  background:
+    linear-gradient(112deg, transparent 0%, rgba(248, 223, 157, 0.22) 44%, rgba(255, 255, 255, 0.28) 50%, rgba(248, 223, 157, 0.14) 56%, transparent 100%);
+  mix-blend-mode: screen;
 }
 
 .mountain-frame {
   background:
-    linear-gradient(90deg, rgba(15, 37, 49, 0.72), rgba(15, 37, 49, 0.18)),
-    radial-gradient(circle at 72% 35%, rgba(201, 164, 92, 0.26), transparent 18%),
-    linear-gradient(135deg, #143044, #6f8f8b);
+    linear-gradient(90deg, rgba(7, 23, 29, 0.78), rgba(16, 42, 49, 0.34)),
+    linear-gradient(135deg, #102a31, #5f8f83 56%, #d6aa54 140%);
   background-position: center;
   background-size: cover;
 }
 
 .seal-mark-bg {
-  background-image: radial-gradient(circle at 78% 18%, rgba(158, 61, 50, 0.14), transparent 12%);
-  background-position: right 1rem top 1rem;
+  background-image:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.94), rgba(255, 255, 255, 0.72)),
+    linear-gradient(120deg, transparent, rgba(168, 59, 50, 0.08) 78%, rgba(168, 59, 50, 0.16));
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: 92px 92px;
 }
 
 .workbench-surface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(214, 170, 84, 0.3);
   background:
-    linear-gradient(135deg, rgba(244, 248, 245, 0.98), rgba(255, 250, 240, 0.94)),
-    repeating-radial-gradient(circle at 15% 10%, rgba(111, 143, 139, 0.06) 0 1px, transparent 1px 48px);
-  background-size: auto, 900px 360px;
+    linear-gradient(145deg, rgba(255, 248, 232, 0.96), rgba(237, 246, 241, 0.92) 52%, rgba(255, 248, 232, 0.94)),
+    repeating-linear-gradient(112deg, rgba(214, 170, 84, 0.07) 0 1px, transparent 1px 24px);
+  box-shadow:
+    0 28px 86px rgba(16, 42, 49, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.focus-ring {
-  outline: 2px solid transparent;
-  outline-offset: 3px;
+.workbench-surface::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(95, 143, 131, 0.1), transparent 38%, rgba(214, 170, 84, 0.12)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), transparent 30%);
 }
 
-.focus-ring:focus-visible {
-  outline-color: rgba(158, 61, 50, 0.78);
+.workbench-surface > * {
+  position: relative;
+  z-index: 1;
 }
 
-.text-balance {
-  text-wrap: balance;
+.workbench-sidebar {
+  border-right: 1px solid rgba(214, 170, 84, 0.28);
+  background:
+    linear-gradient(180deg, rgba(7, 23, 29, 0.96), rgba(16, 42, 49, 0.92) 56%, rgba(95, 143, 131, 0.86)),
+    repeating-linear-gradient(128deg, rgba(248, 223, 157, 0.08) 0 1px, transparent 1px 30px);
+  box-shadow: 24px 0 70px rgba(7, 23, 29, 0.22);
+}
+
+.workbench-topbar {
+  border-bottom: 1px solid rgba(214, 170, 84, 0.28);
+  background:
+    linear-gradient(135deg, rgba(7, 23, 29, 0.94), rgba(16, 42, 49, 0.88)),
+    linear-gradient(90deg, rgba(214, 170, 84, 0.16), transparent 48%, rgba(95, 143, 131, 0.2));
+  box-shadow: 0 18px 46px rgba(7, 23, 29, 0.16);
+  backdrop-filter: blur(20px);
+}
+
+.gold-thread {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(214, 170, 84, 0.72), rgba(255, 248, 232, 0.74), rgba(214, 170, 84, 0.72), transparent);
+}
+
+.cloud-drift {
+  animation: cloud-drift 18s ease-in-out infinite alternate;
+}
+
+.lantern-breathe {
+  animation: lantern-breathe 2.8s ease-in-out infinite;
+}
+
+.seal-rise {
+  animation: seal-rise 0.8s ease-out both;
+}
+
+.mist-flow {
+  animation: mist-flow 36s linear infinite;
+}
+
+.float-y {
+  animation: float-y 5.6s ease-in-out infinite;
+}
+
+.shine-sweep {
+  animation: shine-sweep 4.8s ease-in-out infinite;
+}
+
+.seal-shadow {
+  box-shadow: 0 20px 54px rgba(168, 59, 50, 0.2);
 }
 
 @keyframes cloud-drift {
   from {
-    transform: translate3d(-16px, 0, 0);
+    transform: translate3d(-18px, 0, 0);
   }
   to {
-    transform: translate3d(24px, -10px, 0);
+    transform: translate3d(28px, -12px, 0);
   }
 }
 
@@ -210,14 +406,14 @@ a {
   }
   50% {
     opacity: 1;
-    transform: scale(1.06);
+    transform: scale(1.07);
   }
 }
 
 @keyframes seal-rise {
   from {
     opacity: 0;
-    transform: translateY(14px) rotate(-4deg) scale(0.92);
+    transform: translateY(16px) rotate(-4deg) scale(0.92);
   }
   to {
     opacity: 1;
@@ -230,16 +426,44 @@ a {
     background-position: 0 0;
   }
   to {
-    background-position: 900px 0;
+    background-position: 920px 0;
   }
 }
 
-.mist-flow {
-  animation: mist-flow 38s linear infinite;
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
 }
 
-.seal-rise {
-  animation: seal-rise 0.8s ease-out both;
+@keyframes shine-sweep {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: translateX(-22%) skewX(-12deg);
+  }
+  50% {
+    opacity: 0.72;
+    transform: translateX(22%) skewX(-12deg);
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .scroll-panel,
+  .ritual-card,
+  .workbench-surface {
+    box-shadow:
+      0 18px 48px rgba(16, 42, 49, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

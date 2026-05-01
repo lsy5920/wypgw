@@ -31,13 +31,16 @@ export function CloudButton({
 }: CloudButtonProps) {
   // 这个常量保存不同按钮风格的颜色，返回值用于 className 拼接。
   const variantClass = {
-    primary: 'bg-[#143044] !text-white shadow-lg shadow-[#143044]/20 hover:bg-[#0f2531]',
-    ghost: 'border border-[#c9a45c]/55 bg-[#fffaf0]/75 text-[#143044] hover:bg-white',
-    seal: 'bg-[#9e3d32] text-white shadow-lg shadow-[#9e3d32]/25 hover:bg-[#873228]'
+    primary:
+      'border border-[#f8df9d]/22 bg-[linear-gradient(135deg,#102a31,#1f4b52)] !text-[#fff8e8] shadow-xl shadow-[#102a31]/24 hover:shadow-[#102a31]/34',
+    ghost:
+      'border border-[#d6aa54]/55 bg-[#fff8e8]/82 text-[#102a31] shadow-lg shadow-[#102a31]/8 backdrop-blur hover:bg-white hover:text-[#07171d]',
+    seal:
+      'border border-[#f8df9d]/28 bg-[linear-gradient(135deg,#a83b32,#7c3544)] text-white shadow-xl shadow-[#a83b32]/26 hover:shadow-[#a83b32]/36'
   }[variant]
 
-  // 这个常量保存通用按钮样式，保证所有按钮高度、圆角和动效统一。
-  const baseClass = `focus-ring inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 ${variantClass} ${className}`
+  // 这个常量保存通用按钮样式，保证所有按钮高度、圆角、换行和动效统一。
+  const baseClass = `cloud-button focus-ring inline-flex min-h-11 max-w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-center text-sm font-semibold leading-5 transition duration-300 hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 ${variantClass} ${className}`
 
   // 这里如果提供跳转地址，就渲染成站内链接，方便前台页面跳转。
   if (to) {

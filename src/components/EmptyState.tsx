@@ -11,11 +11,11 @@ interface EmptyStateProps {
 // 这个函数渲染空状态，入参是标题和说明，返回值是柔和的占位内容。
 export function EmptyState({ title, message }: EmptyStateProps) {
   return (
-    <div className="rounded-[1.35rem] border border-dashed border-[#c9a45c]/45 bg-[#fffaf0]/70 p-8 text-center shadow-lg shadow-[#143044]/6">
+    <div className="scroll-panel rounded-[1.35rem] border-dashed p-8 text-center shadow-lg shadow-[#102a31]/8">
       {/* 这里用云图标说明当前只是暂时无内容，不是页面出错。 */}
-      <Cloud className="mx-auto mb-3 h-9 w-9 text-[#6f8f8b]" />
-      <p className="font-semibold text-[#263238]">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-[#687773]">{message}</p>
+      <Cloud className="cloud-drift mx-auto mb-3 h-9 w-9 text-[#5f8f83]" />
+      <p className="font-semibold text-[#172b2c]">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-[#5c6f6a]">{message}</p>
     </div>
   )
 }

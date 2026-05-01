@@ -15,11 +15,11 @@ export function SiteLayout() {
       <SiteHeader />
       {/* 这里给每个页面增加轻微淡入上浮动效，让站点更有层次。 */}
       <motion.main
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         className={isHomePage ? 'pt-0' : 'pt-[5.5rem] md:pt-[6.5rem]'}
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
         key={location.pathname}
-        transition={{ duration: 0.42, ease: 'easeOut' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <Outlet />
       </motion.main>

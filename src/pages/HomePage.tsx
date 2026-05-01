@@ -88,15 +88,17 @@ export function HomePage() {
 
             return (
               <RitualCard className="min-h-52" delay={index * 0.06} key={item.title}>
-                <Icon className="mb-5 h-8 w-8 text-[#9e3d32]" />
-                <h2 className="ink-title text-3xl font-bold text-[#143044]">{item.title}</h2>
+                <Icon className="mb-5 h-8 w-8 text-[#a83b32]" />
+                <h2 className="ink-title text-3xl font-bold text-[#102a31]">{item.title}</h2>
                 <p className="mt-4 leading-8 text-[#526461]">{item.text}</p>
               </RitualCard>
             )
           })}
         </section>
 
-        <section className="mt-16 rounded-[2rem] bg-[#0f2531] px-5 py-14 text-[#f6f4ef] shadow-2xl shadow-[#143044]/18 md:px-10">
+        <section className="liquid-glass relative mt-16 overflow-hidden rounded-[2rem] px-5 py-14 text-[#f6f4ef] md:px-10">
+          {/* 这里给深色精神区增加流动雾气，让区块更像山门内景。 */}
+          <div className="hero-cloud-layer mist-flow pointer-events-none absolute inset-x-[-18%] top-10 h-28 opacity-30" />
           <SectionTitle center eyebrow="门派精神" title="正派之正，在于有愿、有规、有界" tone="dark">
             <span className="text-[#f4efe0]">每一句话，都在共同塑造这个家。</span>
           </SectionTitle>
@@ -105,6 +107,32 @@ export function HomePage() {
               <RitualCard className="border-white/10 bg-white/8" dark delay={index * 0.04} key={item.title}>
                 <p className="ink-title text-3xl font-bold text-[#c9a45c]">{item.title}</p>
                 <p className="mt-4 leading-8 text-[#f4efe0]">{item.text}</p>
+              </RitualCard>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-16 grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
+          <div className="mountain-frame relative overflow-hidden rounded-[2rem] p-7 text-[#fff8e8] shadow-2xl shadow-[#102a31]/18 md:p-10">
+            {/* 这里用流光表现山门开合的仪式感。 */}
+            <div className="hero-light-beam shine-sweep pointer-events-none absolute inset-y-0 left-[-30%] w-[80%] opacity-60" />
+            <p className="text-sm font-semibold text-[#f8df9d]">东方秘境 · 问云有序</p>
+            <h2 className="ink-title mt-3 text-balance text-4xl font-black leading-tight md:text-6xl">云起处见山门，归来时有小院</h2>
+            <p className="mt-5 max-w-2xl leading-8 text-[#f4efe0]">
+              前台负责让来者看见门风，小院负责安放每位同门的状态，后台负责守住审核、公告与雅集秩序。
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              { value: '01', label: '先读金典' },
+              { value: '02', label: '再问本心' },
+              { value: '03', label: '递交名帖' },
+              { value: '04', label: '归入小院' }
+            ].map((item, index) => (
+              <RitualCard delay={index * 0.05} key={item.label}>
+                <p className="ink-title text-4xl font-black text-[#d6aa54]">{item.value}</p>
+                <p className="mt-4 text-lg font-semibold text-[#102a31]">{item.label}</p>
+                <p className="mt-2 text-sm leading-7 text-[#526461]">每一步都有回应，每一次申请都有边界。</p>
               </RitualCard>
             ))}
           </div>
@@ -168,9 +196,11 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mountain-frame mt-16 overflow-hidden rounded-[2.25rem] p-7 text-[#fffaf0] shadow-2xl shadow-[#143044]/20 md:p-12">
-          <p className="ink-title text-balance text-4xl font-bold md:text-6xl">若你也在人间风雨中，想寻一处有规矩的温暖之地。</p>
-          <p className="mt-5 max-w-3xl leading-8 text-[#edf3ef]">问云派山门已开。愿你此来，不添风浪，只添灯火。</p>
+        <section className="mountain-frame relative mt-16 overflow-hidden rounded-[2.25rem] p-7 text-[#fff8e8] shadow-2xl shadow-[#102a31]/20 md:p-12">
+          {/* 这里用微动效光带强化最终行动区的仪式感。 */}
+          <div className="hero-light-beam shine-sweep pointer-events-none absolute inset-y-0 left-[-26%] w-[78%] opacity-60" />
+          <p className="ink-title relative text-balance text-4xl font-bold md:text-6xl">若你也在人间风雨中，想寻一处有规矩的温暖之地。</p>
+          <p className="relative mt-5 max-w-3xl leading-8 text-[#edf3ef]">问云派山门已开。愿你此来，不添风浪，只添灯火。</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <CloudButton to="/wenxin-quiz" variant="seal">
               先过问心

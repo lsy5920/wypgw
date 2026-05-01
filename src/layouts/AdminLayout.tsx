@@ -41,14 +41,14 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="wenyun-shell min-h-screen bg-[#eef3ef] text-[#263238]">
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#c9a45c]/24 bg-[#fffaf0]/92 p-5 shadow-2xl shadow-[#143044]/10 backdrop-blur-xl lg:block">
+    <div className="wenyun-shell min-h-screen bg-[#eef3ef] text-[#172b2c]">
+      <aside className="workbench-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#f6f4ef] backdrop-blur-xl lg:block">
         {/* 这里展示后台品牌信息。 */}
         <Link className="mb-8 flex items-center gap-3" to="/">
-          <img className="h-12 w-12 rounded-full object-cover" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <img className="h-12 w-12 rounded-full border border-[#f8df9d]/45 bg-[#fff8e8]/88 object-cover p-0.5 shadow-lg shadow-[#07171d]/20" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
           <div>
-            <p className="ink-title text-xl font-bold">问云后台</p>
-            <p className="text-xs text-[#7a6a48]">护灯、守门、安放归心</p>
+            <p className="ink-title text-xl font-bold text-[#fff8e8]">问云后台</p>
+            <p className="text-xs text-[#f8df9d]">护灯、守门、安放归心</p>
           </div>
         </Link>
 
@@ -61,7 +61,7 @@ export function AdminLayout() {
               <NavLink
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
-                    isActive ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#344844] hover:bg-white'
+                    isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : 'text-[#f4efe0] hover:bg-white/10'
                   }`
                 }
                 end={item.path === '/admin'}
@@ -77,12 +77,12 @@ export function AdminLayout() {
 
         {/* 这里展示问云小院入口和退出登录按钮，管理员也可以回到自己的用户后台。 */}
         <div className="absolute bottom-5 left-5 right-5 grid gap-3">
-          <Link className="flex items-center justify-center gap-2 rounded-xl border border-[#6f8f8b]/25 px-4 py-3 text-sm text-[#526461]" to="/yard">
+          <Link className="flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/28 bg-white/8 px-4 py-3 text-sm text-[#fff8e8]" to="/yard">
             <UserRound className="h-4 w-4" />
             返回问云小院
           </Link>
           <button
-            className="flex items-center justify-center gap-2 rounded-xl border border-[#9e3d32]/30 px-4 py-3 text-sm text-[#9e3d32]"
+            className="flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/24 bg-[#a83b32]/86 px-4 py-3 text-sm text-white"
             onClick={() => void signOut()}
             type="button"
           >
@@ -94,19 +94,19 @@ export function AdminLayout() {
 
       <div className="lg:pl-72">
         {/* 这里展示移动端后台顶部导航。 */}
-        <header className="sticky top-0 z-30 border-b border-[#c9a45c]/24 bg-[#fffaf0]/94 px-4 py-3 shadow-lg shadow-[#143044]/8 backdrop-blur-xl lg:hidden">
-          <div className="flex items-center justify-between">
+        <header className="workbench-topbar sticky top-0 z-30 px-4 py-3 text-[#fff8e8] lg:hidden">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Link className="flex items-center gap-2" to="/">
                 <Home className="h-4 w-4" />
                 返回官网
               </Link>
-              <Link className="flex items-center gap-1 text-sm text-[#6f8f8b]" to="/yard">
+              <Link className="flex items-center gap-1 text-sm text-[#f8df9d]" to="/yard">
                 <UserRound className="h-4 w-4" />
                 小院
               </Link>
             </div>
-            <button className="text-sm text-[#9e3d32]" onClick={() => void signOut()} type="button">
+            <button className="text-sm text-[#f8df9d]" onClick={() => void signOut()} type="button">
               退出
             </button>
           </div>
@@ -114,7 +114,7 @@ export function AdminLayout() {
             {adminNavItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
-                  `shrink-0 rounded-full px-3 py-2 text-xs font-semibold shadow-sm ${isActive ? 'bg-[#143044] !text-white shadow-[#143044]/18' : 'bg-white text-[#263238]'}`
+                  `shrink-0 rounded-full px-3 py-2 text-xs font-semibold shadow-sm ${isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-[#07171d]/18' : 'bg-white/12 text-[#fff8e8]'}`
                 }
                 end={item.path === '/admin'}
                 key={item.path}
