@@ -1,7 +1,6 @@
 ﻿import { useEffect, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
-import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels } from '../../data/siteContent'
@@ -42,13 +41,11 @@ export function YardApplicationsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的名帖" title="名帖已递，静候山门">
+      <SectionTitle eyebrow="我的名帖" title="名帖已递，静候山门" visual="scroll">
         这里展示你提交过的名帖、当前状态和管理员备注。名帖内容由后台审核维护，普通同门不可自行改状态。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <SceneBanner light label="问云小院我的名帖纯代码场景" variant="scroll" />
 
       <div className="mt-8 grid gap-5">
         {applications.length === 0 ? (

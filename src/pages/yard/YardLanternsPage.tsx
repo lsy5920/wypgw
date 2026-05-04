@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { CodeScene } from '../../components/CodeScene'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
@@ -42,16 +41,11 @@ export function YardLanternsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的云灯" title="灯火已寄，静候清风">
+      <SectionTitle eyebrow="我的云灯" title="灯火已寄，静候清风" visual="lantern">
         这里展示你提交过的云灯和审核状态。公开后的云灯会出现在前台云灯留言页。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <ScrollPanel className="mt-8 overflow-hidden p-0">
-        {/* 这里展示我的云灯纯代码场景，让个人记录页和视觉稿里的小院灯火一致。 */}
-        <CodeScene className="code-scene-light min-h-[18rem] rounded-none" label="问云小院我的云灯纯代码场景" variant="lantern" />
-      </ScrollPanel>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {lanterns.length === 0 ? (

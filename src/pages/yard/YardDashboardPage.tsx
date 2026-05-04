@@ -1,7 +1,6 @@
 ﻿import { Bell, CalendarDays, Lamp, QrCode, ScrollText, ShieldQuestion, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { CodeScene } from '../../components/CodeScene'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
@@ -142,16 +141,11 @@ export function YardDashboardPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="问云小院" title={`${overview.profile.nickname}，欢迎回院`}>
+      <SectionTitle eyebrow="问云小院" title={`${overview.profile.nickname}，欢迎回院`} visual="courtyard">
         这里收着你的名帖、云灯、雅集报名和状态提醒。愿小院清静，也愿来路从容。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <ScrollPanel className="mt-8 overflow-hidden p-0">
-        {/* 这里展示纯代码小院场景，让用户后台首页也延续视觉稿设计。 */}
-        <CodeScene className="min-h-[22rem] rounded-none" label="问云派问云小院纯代码场景" variant="courtyard" />
-      </ScrollPanel>
 
       {guiyuntangOpen && canShowGuiyuntang ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143044]/55 px-4 py-8 backdrop-blur-sm">

@@ -11,8 +11,8 @@
 1. 全站视觉系统集中在 `src/styles/global.css`，统一维护色彩、背景、光影、云雾、卡片、工作台、按钮、动效和移动端基础规则。
 2. 首页首屏按视觉稿还原为浅色书院山门：内置生图模型生成的山门背景图、纯代码“云”字印记、主要行动按钮和右侧抽象山门场景，第一眼就能看到问云派和入册入口。
 3. 首页重新拆成“核心承诺、系统分工、主要入口、门派精神、入册流程、云灯留言、山门近讯、最终行动”八类模块，手机端按单列阅读，桌面端按网格浏览。
-4. 每一个前台页面、问云小院页面和后台管理页面都接入 `CodeScene` 或 `SceneBanner` 纯代码场景；场景内新增页面缩略卡、纸签和台账线框，用来承接整站视觉总稿中的多页面产品感。
-5. 前台页面统一使用 `PageShell`、`SectionTitle`、`ScrollPanel`、`RitualCard`、`CloudButton`、`BrandMark`、`CodeScene` 和 `SceneBanner`，页面外壳新增书册网格、标题折角和卡片亮线，更利于长期维护和移动端排版。
+4. 每一个前台页面、问云小院页面和后台管理页面都通过 `SectionTitle` 的 `visual` 配置接入内置生图模型生成的标题背景图，标题、说明、金线和朱印悬浮在图片表层，避免独立插画卡片打断阅读。
+5. 前台页面统一使用 `PageShell`、`SectionTitle`、`ScrollPanel`、`RitualCard`、`CloudButton`、`BrandMark`、`CodeScene` 和 `GeneratedIcon`，页面外壳新增书册网格、标题折角、卡片亮线和生成图标入口，更利于长期维护和移动端排版。
 6. 问云小院采用浅色书册侧栏和移动端横向导航，管理后台采用深色执事堂侧栏和 `WorkbenchFrame` 工作台外壳；工作台新增台账地图底纹，重点保证长期使用时清晰、耐看、好操作。
 7. 动效优先使用位移、透明度和缩放，减少卡顿风险；如果用户系统开启“减少动态效果”，页面会自动降低动画强度。
 8. 移动端重点适配 320、375、430、768、1024 和 1440 宽度，按钮、表单、弹窗和导航都按小屏优先检查；前台手机端新增底部四入口导航，常用页面可以一只手快速切换。
@@ -529,9 +529,9 @@ https://你的用户名.github.io/仓库名/#/canon
 1. 前台官网采用“书院式线上山门”视觉方向，首页首屏必须第一眼看到问云派、纯代码山门、纯代码品牌印记和入册入口。
 2. 问云小院采用温暖但严整的浅色书册工作台风格，重点展示个人名帖、云灯、雅集、消息和问心考核状态。
 3. 管理后台采用深色“执事堂”风格，强调审核、秩序和危险操作分层，避免后台页面杂乱。
-4. 旧版公共视觉资产放在 `public/visual/`，二版插画资产放在 `public/visual-v2/`，仅作为历史资产保留；当前页面代码不再引用这些旧素材，首页首屏只使用本次内置生图模型生成的 `public/visual-generated/wenyun-hero-watercolor-20260504.png`。
-5. 公共视觉组件放在 `src/components/`，后续新增页面应优先复用 `PageShell`、`GateHero`、`RitualCard`、`WorkbenchFrame`、`BrandMark`、`CodeScene` 和 `SceneBanner`。
-6. 新视觉稿放在 `design-drafts/`，当前保留 `wenyun-all-pages-redesign-20260504.png` 作为本次重新设计所有页面的整站总稿，并保留 `runtime-redesign-mobile-home-20260504.png` 作为手机端首页运行截图，后续如果继续拆分前台、小院或后台单独视觉稿，也统一放到这个目录。
+4. 旧版公共视觉资产放在 `public/visual/`，二版插画资产放在 `public/visual-v2/`，仅作为历史资产保留；当前页面主要使用本次内置生图模型生成的 `public/visual-generated/` 图片，包括山门背景、小院背景、云灯台账背景和九宫格图标板。
+5. 公共视觉组件放在 `src/components/`，后续新增页面应优先复用 `PageShell`、`GateHero`、`RitualCard`、`WorkbenchFrame`、`BrandMark`、`SectionTitle` 和 `GeneratedIcon`；需要标题背景图时优先使用 `SectionTitle` 的 `visual` 入参。
+6. 新视觉稿和运行截图放在 `design-drafts/`，当前保留 `wenyun-all-pages-redesign-20260504.png` 作为本次重新设计所有页面的整站总稿，并保留 `runtime-redesign-mobile-home-20260504.png`、`runtime-cloud-lantern-floating-bg-ready-20260505.png` 作为运行截图，后续如果继续拆分前台、小院或后台单独视觉稿，也统一放到这个目录。
 7. 动画以轻量、克制、可持续为原则：页面淡入、云雾慢漂、灯火呼吸、卡片微浮和面板展开；系统已尊重浏览器的减少动态偏好。
 
 ## 项目目录结构
@@ -557,7 +557,11 @@ wypgw/
 │     ├─ lantern-map-v2.svg        # 入册流程灯火图
 │     └─ seal-v2.svg               # 二版朱砂印
 │  └─ visual-generated/            # 内置生图模型生成的当前页面资产
-│     └─ wenyun-hero-watercolor-20260504.png # 首页首屏水墨山门背景图
+│     ├─ wenyun-hero-watercolor-20260504.png # 首页首屏水墨山门历史背景图
+│     ├─ wenyun-gate-reference-20260504.png # 标题区和首页使用的山门背景图
+│     ├─ wenyun-courtyard-reference-20260504.png # 小院、雅集和资料页背景图
+│     ├─ wenyun-lantern-ledger-reference-20260504.png # 云灯、流程和后台台账背景图
+│     └─ wenyun-icon-board-20260504.png # 首页入口使用的九宫格生成图标板
 ├─ scripts/
 │  └─ generate-v2-assets.mjs       # 生成网站重构 2.0 插画、设计图和归档目录
 ├─ design-drafts/
@@ -567,6 +571,7 @@ wypgw/
 │  ├─ components/                  # 通用组件，如按钮、标题、导航、提示条
 │  │  ├─ BrandMark.tsx             # 纯代码“云”字品牌印记
 │  │  ├─ CodeScene.tsx             # 纯代码山门、卷轴、云灯、小院和工作台场景
+│  │  ├─ GeneratedIcon.tsx          # 从内置生图图标板裁出单个功能图标
 │  │  ├─ GateHero.tsx              # 按视觉稿还原的纯代码首页首屏组件
 │  │  ├─ LoginRequiredNotice.tsx   # 需要登录时的统一提醒和登录入口
 │  │  ├─ PageShell.tsx             # 前台页面统一外壳
@@ -1086,3 +1091,4 @@ npm run preview
 2026-05-04 13:17 【优化】严格按 draw-ui 流程追加前台、小院、后台三组内置生图模型视觉稿，新增 `SceneBanner` 统一页面场景横幅，并让所有前台页面、问云小院页面和后台管理页面都接入纯代码场景；同步区分小院浅色书册侧栏与后台深色执事堂侧栏，更新 README 视觉说明和目录结构。
 2026-05-04 13:47 【优化】按 draw-ui 思路重新整理所有页面视觉母版，使用内置生图模型新增整站页面总稿和首页水墨山门背景图；同步优化首页首屏、前台手机底部四入口导航、全站标题卡、内容卡片、工作台、表单控件和移动端适配，并完成构建与桌面、手机首页截图验证。
 2026-05-04 22:45 【优化】继续按 draw-ui 整站视觉总稿统一所有页面母版，新增页面书册网格、标题折角、卡片亮线、场景页面缩略卡、工作台台账底纹和手机底部导航质感；同步归档内置生图模型整站总稿与手机端首页运行截图，更新 README 视觉说明和目录结构，并通过自动测试与生产构建验证。
+2026-05-05 01:08 【优化】按用户标注继续整改全站标题视觉，移除生成图上方的旧线框、斜线和卡片蒙版，把山门、小院、云灯台账等内置生图素材改为 `SectionTitle` 标题区背景图，让标题和说明悬浮在图片表层；同步新增生成图标板和云灯页运行截图，更新 README 视觉说明与目录结构，并通过自动测试和生产构建验证。

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
-import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { cancelEventRegistration, fetchYardEvents, registerForEvent } from '../../lib/services'
@@ -113,13 +112,11 @@ export function YardEventsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的雅集" title="清谈可赴，山水可约">
+      <SectionTitle eyebrow="我的雅集" title="清谈可赴，山水可约" visual="map">
         这里展示已发布雅集，并记录你的报名状态。报名变化会写入小院提醒。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <SceneBanner light label="问云小院我的雅集纯代码场景" variant="map" />
 
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {items.length === 0 ? (

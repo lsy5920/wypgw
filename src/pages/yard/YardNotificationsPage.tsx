@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
-import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { fetchMyNotifications, markNotificationRead } from '../../lib/services'
@@ -82,13 +81,11 @@ export function YardNotificationsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="消息提醒" title="小院来信，灯火有回音">
+      <SectionTitle eyebrow="消息提醒" title="小院来信，灯火有回音" visual="lantern">
         名帖、云灯和雅集状态变化会写入这里。若 SMTP 已配置，也会同步尝试发送邮件。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <SceneBanner light label="问云小院消息提醒纯代码场景" variant="lantern" />
 
       <div className="mt-8 grid gap-5">
         {notifications.length === 0 ? (

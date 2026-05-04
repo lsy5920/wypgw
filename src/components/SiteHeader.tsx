@@ -1,17 +1,9 @@
-import { BookOpen, Home, Menu, ScrollText, UserRound, X } from 'lucide-react'
+import { Menu, UserRound, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { siteNavItems } from '../data/siteContent'
 import { BrandMark } from './BrandMark'
-
-// 这个数组保存手机端底部常用入口，返回值用于让小屏用户一只手也能快速切换核心页面。
-const mobileDockItems = [
-  { label: '首页', path: '/', icon: Home },
-  { label: '金典', path: '/canon', icon: BookOpen },
-  { label: '名册', path: '/join', icon: ScrollText },
-  { label: '小院', path: '/yard', icon: UserRound }
-]
 
 // 这个函数渲染官网顶部导航，入参为空，返回值是桌面和手机共用的导航栏。
 export function SiteHeader() {
@@ -63,11 +55,11 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        {/* 这里把手机菜单按钮放在品牌旁边，避免窄屏被右侧边界挤出视口。 */}
+        {/* 这里把手机菜单按钮固定推到右侧，避免 785 宽度下按钮偏向中间。 */}
         <button
           aria-expanded={open}
           aria-label={open ? '关闭菜单' : '打开菜单'}
-          className="mobile-menu-button-inline focus-ring items-center justify-center rounded-lg border border-[#0f3d3e]/16 bg-white/84 p-3 text-[#173332] shadow-md shadow-[#173332]/10"
+          className="mobile-menu-button-inline focus-ring ml-auto items-center justify-center rounded-lg border border-[#0f3d3e]/16 bg-white/84 p-3 text-[#173332] shadow-md shadow-[#173332]/10"
           onClick={() => setOpen((value) => !value)}
           type="button"
         >
@@ -145,31 +137,6 @@ export function SiteHeader() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-
-      {/* 这里渲染手机端底部常用导航，完整页面列表仍放在顶部展开菜单里。 */}
-      <nav className="site-mobile-dock site-mobile-dock-shell pointer-events-auto fixed bottom-3 left-2 right-2 z-40 grid grid-cols-4 gap-1 overflow-hidden rounded-lg border border-[#173332]/12 bg-[#fffaf0]/94 p-1 shadow-2xl shadow-[#173332]/18 backdrop-blur-2xl md:hidden">
-        {mobileDockItems.map((item) => {
-          // 这个变量保存当前入口的图标组件，避免在 JSX 里重复查找。
-          const Icon = item.icon
-
-          return (
-            <NavLink
-              className={({ isActive }) =>
-                `flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-0.5 text-[0.68rem] font-semibold leading-none transition ${
-                  isActive ? 'bg-[#173332] text-white shadow-md shadow-[#173332]/14' : 'text-[#40524f] hover:bg-[#e4f0eb]'
-                }`
-              }
-              end={item.path === '/'}
-              key={item.path}
-              onClick={closeMenu}
-              to={item.path}
-            >
-              <Icon className="h-4 w-4" />
-              <span className="max-w-full truncate">{item.label}</span>
-            </NavLink>
-          )
-        })}
-      </nav>
     </header>
   )
 }

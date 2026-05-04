@@ -4,9 +4,7 @@ import {
   CheckCircle2,
   Lamp,
   MessageCircle,
-  ShieldCheck,
   Sparkles,
-  UserRound,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
@@ -80,22 +78,6 @@ export function HomePage() {
   return (
     <>
       <GateHero
-        actions={
-          <>
-            <CloudButton className="w-full sm:w-auto" to="/join" variant="seal">
-              登记名册
-              <ArrowRight className="h-4 w-4" />
-            </CloudButton>
-            <CloudButton className="w-full sm:w-auto" to="/wenxin-quiz" variant="ghost">
-              问心考核
-              <ShieldCheck className="h-4 w-4" />
-            </CloudButton>
-            <CloudButton className="w-full sm:w-auto" to="/yard" variant="ghost">
-              问云小院
-              <UserRound className="h-4 w-4" />
-            </CloudButton>
-          </>
-        }
         eyebrow="问云山门 · 清明立愿 · 有界相扶"
         showLogo
         title="问云派"

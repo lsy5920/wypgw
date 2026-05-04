@@ -2,7 +2,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { ScrollPanel } from '../../components/ScrollPanel'
-import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import {
@@ -286,13 +285,11 @@ export function YardProfilePage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的资料" title="小院名片，自己掌灯">
+      <SectionTitle eyebrow="我的资料" title="小院名片，自己掌灯" visual="courtyard">
         这里可维护登录安全、小院展示资料和名册资料。名册中的道名与联系方式改动需管理员审核。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <SceneBanner light label="问云小院我的资料纯代码场景" variant="courtyard" />
 
       <div className="mt-8 grid gap-5 lg:grid-cols-2">
         <ScrollPanel>
