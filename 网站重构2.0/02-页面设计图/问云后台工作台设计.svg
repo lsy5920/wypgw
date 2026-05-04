@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" role="img" aria-labelledby="title desc">
-  <title id="title">问云后台工作台设计图</title>
-  <desc id="desc">问云后台二版管理工作台 UI 设计图。</desc>
-  <rect width="1440" height="960" fill="#eef4ef"/>
-  <image href="../03-视觉资产/组件/workbench-grid-v2.svg" x="120" y="80" width="1200" height="840"/>
-  <text x="452" y="200" font-size="42" font-family="SimSun, serif" font-weight="900" fill="#122327">护灯与守门</text>
-  <text x="454" y="246" font-size="20" font-family="Microsoft YaHei, sans-serif" fill="#557f76">名册、云灯、公告、雅集与执事权限集中管理。</text>
-</svg>
