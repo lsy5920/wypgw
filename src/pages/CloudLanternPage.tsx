@@ -1,4 +1,4 @@
-import { Lamp } from 'lucide-react'
+﻿import { Lamp } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
@@ -8,7 +8,6 @@ import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { useAuth } from '../hooks/useAuth'
-import { getPublicAsset } from '../lib/assets'
 import { fetchApprovedLanterns, submitCloudLantern } from '../lib/services'
 import type { CloudLantern, CloudLanternInput } from '../lib/types'
 import { validateCloudLantern } from '../lib/validators'
@@ -23,8 +22,6 @@ const initialForm: CloudLanternInput = {
 
 // 这个函数渲染云灯留言页，入参为空，返回值是留言表单和公开云灯列表。
 export function CloudLanternPage() {
-  // 这个常量保存云灯插画路径，用于页面顶部建立温暖氛围。
-  const lanternIllustrationPath = getPublicAsset('visual-v2/lantern-illustration-v2.svg')
   // 这里读取当前登录资料，云灯提交要求先进入问云小院。
   const { profile, loading: authLoading } = useAuth()
   // 这个状态保存公开云灯。
@@ -91,14 +88,9 @@ export function CloudLanternPage() {
 
   return (
     <PageShell size="wide">
-      <SectionTitle center eyebrow="云灯留言" title="点一盏云灯，照一段归途">
+      <SectionTitle center eyebrow="云灯留言" title="点一盏云灯，照一段归途" visual="lantern">
         留下一句祝福、一段心情、一个问候。云灯默认先由执事审核，避免广告和恶意内容扰乱山门。
       </SectionTitle>
-
-      <ScrollPanel className="mb-8 overflow-hidden p-0">
-        {/* 这里展示云灯插画，让留言页不只是表单，也有可感知的灯火场景。 */}
-        <img className="max-h-[26rem] w-full object-cover" src={lanternIllustrationPath} alt="问云派云灯留言插画" />
-      </ScrollPanel>
 
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <ScrollPanel className="seal-mark-bg">
@@ -113,7 +105,7 @@ export function CloudLanternPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">署名</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 disabled={form.is_anonymous}
                 onChange={(event) => updateField('author_name', event.target.value)}
                 placeholder="匿名时不用填写"
@@ -123,7 +115,7 @@ export function CloudLanternPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">心情标签</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('mood', event.target.value)}
                 placeholder="例如：温暖、清明、安静"
                 value={form.mood}
@@ -132,13 +124,13 @@ export function CloudLanternPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">云灯内容 *</span>
               <textarea
-                className="min-h-36 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                className="min-h-36 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('content', event.target.value)}
                 placeholder="写给疲惫的人，也写给此刻的自己。"
                 value={form.content}
               />
             </label>
-            <label className="flex items-center gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
+            <label className="flex items-center gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
               <input
                 checked={form.is_anonymous}
                 onChange={(event) => updateField('is_anonymous', event.target.checked)}

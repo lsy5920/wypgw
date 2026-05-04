@@ -1,7 +1,8 @@
-import { KeyRound, Mail, Save, ShieldCheck, UserRound } from 'lucide-react'
+﻿import { KeyRound, Mail, Save, ShieldCheck, UserRound } from 'lucide-react'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { ScrollPanel } from '../../components/ScrollPanel'
+import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import {
@@ -291,6 +292,8 @@ export function YardProfilePage() {
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
+      <SceneBanner light label="问云小院我的资料纯代码场景" variant="courtyard" />
+
       <div className="mt-8 grid gap-5 lg:grid-cols-2">
         <ScrollPanel>
           <div className="flex items-start gap-3">
@@ -303,7 +306,7 @@ export function YardProfilePage() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[#c9a45c]/30 bg-white/65 p-4 text-sm leading-7 text-[#526461]">
+          <div className="mt-5 rounded-lg border border-[#c9a45c]/30 bg-white/65 p-4 text-sm leading-7 text-[#526461]">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-semibold text-[#263238]">当前登录邮箱</span>
               <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-xs text-[#526461]">
@@ -318,7 +321,7 @@ export function YardProfilePage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">真实邮箱</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateEmailField(event.target.value)}
                 placeholder="例如：name@qq.com"
                 type="email"
@@ -346,7 +349,7 @@ export function YardProfilePage() {
             </div>
           </div>
 
-          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/70 p-4 text-sm leading-7 text-[#526461]">
+          <div className="mt-5 flex items-start gap-3 rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/70 p-4 text-sm leading-7 text-[#526461]">
             <ShieldCheck className="mt-1 h-4 w-4 shrink-0 text-[#6f8f8b]" />
             <p>请设置新的登录密码。旧编号账号修改后，原来的生日或编号密码将不再作为主要登录密码。</p>
           </div>
@@ -355,7 +358,7 @@ export function YardProfilePage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">新密码</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updatePasswordField('new_password', event.target.value)}
                 placeholder="输入新密码"
                 type="password"
@@ -365,7 +368,7 @@ export function YardProfilePage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">确认新密码</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updatePasswordField('confirm_password', event.target.value)}
                 placeholder="再输入一次新密码"
                 type="password"
@@ -392,7 +395,7 @@ export function YardProfilePage() {
         </div>
 
         {!currentApplication ? (
-          <div className="mt-5 rounded-2xl border border-[#c9a45c]/30 bg-white/65 p-4 text-sm leading-7 text-[#526461]">
+          <div className="mt-5 rounded-lg border border-[#c9a45c]/30 bg-white/65 p-4 text-sm leading-7 text-[#526461]">
             你还没有名帖。请先到问云名册递交登记，通过后会在这里维护公开资料。
           </div>
         ) : (
@@ -401,7 +404,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">真实姓名</span>
                 <input
-                  className="rounded-xl border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
+                  className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
                   disabled
                   value={currentApplication.real_name ?? '未填写'}
                 />
@@ -409,7 +412,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">出生年份</span>
                 <input
-                  className="rounded-xl border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
+                  className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
                   disabled
                   value={currentApplication.age_range ?? '未填写'}
                 />
@@ -417,7 +420,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">身份</span>
                 <input
-                  className="rounded-xl border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
+                  className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
                   disabled
                   value={currentApplication.member_role ?? '同门'}
                 />
@@ -428,7 +431,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">道名</span>
                 <input
-                  className="rounded-xl border border-[#c9a45c]/35 bg-white/80 px-4 py-3 outline-none focus:border-[#c9a45c]"
+                  className="rounded-lg border border-[#c9a45c]/35 bg-white/80 px-4 py-3 outline-none focus:border-[#c9a45c]"
                   onChange={(event) => updateRosterField('requested_nickname', event.target.value)}
                   value={rosterForm.requested_nickname}
                 />
@@ -439,7 +442,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">联系方式</span>
                 <input
-                  className="rounded-xl border border-[#c9a45c]/35 bg-white/80 px-4 py-3 outline-none focus:border-[#c9a45c]"
+                  className="rounded-lg border border-[#c9a45c]/35 bg-white/80 px-4 py-3 outline-none focus:border-[#c9a45c]"
                   onChange={(event) => updateRosterField('requested_legacy_contact', event.target.value)}
                   value={rosterForm.requested_legacy_contact}
                 />
@@ -453,7 +456,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">江湖名</span>
                 <input
-                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateRosterField('jianghu_name', event.target.value)}
                   value={rosterForm.jianghu_name}
                 />
@@ -461,7 +464,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">性别</span>
                 <select
-                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateRosterField('gender', event.target.value as MemberGender)}
                   value={rosterForm.gender}
                 >
@@ -475,7 +478,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">所在城市</span>
                 <input
-                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateRosterField('city', event.target.value)}
                   value={rosterForm.city}
                 />
@@ -485,7 +488,7 @@ export function YardProfilePage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">宣言</span>
               <textarea
-                className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateRosterField('motto', event.target.value)}
                 value={rosterForm.motto}
               />
@@ -495,7 +498,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">兴趣爱好</span>
                 <textarea
-                  className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                  className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateRosterField('hobbies', event.target.value)}
                   placeholder="例如：写文、摄影、饮茶"
                   value={rosterForm.hobbies}
@@ -504,7 +507,7 @@ export function YardProfilePage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">同行期待</span>
                 <textarea
-                  className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                  className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateRosterField('companion_expectation', event.target.value)}
                   value={rosterForm.companion_expectation}
                 />
@@ -512,7 +515,7 @@ export function YardProfilePage() {
             </div>
 
             {(currentApplication.requested_nickname || currentApplication.requested_legacy_contact) && currentApplication.requested_at ? (
-              <div className="rounded-2xl border border-[#9e3d32]/20 bg-[#fff1ee]/70 p-4 text-sm leading-7 text-[#526461]">
+              <div className="rounded-lg border border-[#9e3d32]/20 bg-[#fff1ee]/70 p-4 text-sm leading-7 text-[#526461]">
                 已有待审核修改，提交时间：{new Date(currentApplication.requested_at).toLocaleString('zh-CN', { hour12: false })}。
               </div>
             ) : null}
@@ -535,7 +538,7 @@ export function YardProfilePage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">头像地址</span>
             <input
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('avatar_url', event.target.value)}
               placeholder="可填写图片链接"
               value={form.avatar_url}
@@ -545,14 +548,14 @@ export function YardProfilePage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">小院自述</span>
             <textarea
-              className="min-h-32 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+              className="min-h-32 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('bio', event.target.value)}
               placeholder="写一点你想让同门知道的话。"
               value={form.bio}
             />
           </label>
 
-          <label className="flex items-start gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
+          <label className="flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
             <input
               checked={form.is_public}
               className="mt-1 h-4 w-4"

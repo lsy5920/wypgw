@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, ClipboardPenLine, Search, Send, Shuffle, SlidersHorizontal, UsersRound } from 'lucide-react'
+﻿import { ChevronDown, ChevronUp, ClipboardPenLine, Search, Send, Shuffle, SlidersHorizontal, UsersRound } from 'lucide-react'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
@@ -10,7 +10,6 @@ import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../data/siteContent'
 import { useAuth } from '../hooks/useAuth'
-import { getPublicAsset } from '../lib/assets'
 import { fetchMyApplications, fetchMyLatestWenxinQuizResult, fetchPublicRoster, submitJoinApplication } from '../lib/services'
 import type { JoinApplication, JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizResult } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
@@ -75,8 +74,6 @@ function createRosterWeight(item: RosterEntry, seed: number): number {
 
 // 这个函数渲染问云名册页，入参为空，返回值是折叠登记入口、折叠筛选和横向滑动资料卡片。
 export function JoinPage() {
-  // 这个常量保存名册插画路径，用于页面顶部展示问云名册气质。
-  const rosterIllustrationPath = getPublicAsset('visual-v2/roster-illustration-v2.svg')
   // 这里读取当前登录资料，名帖登记要求先进入问云小院。
   const { profile, loading: authLoading } = useAuth()
   // 这个状态保存公开名册条目。
@@ -251,16 +248,11 @@ export function JoinPage() {
 
   return (
     <PageShell size="wide">
-      <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号">
+      <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号" visual="workbench">
         先过问心考核，再递问云名帖。名册公开展示道名、江湖名、编号、性别、身份、所在城市、宣言、兴趣爱好、同行期待和入册时间。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <ScrollPanel className="mt-8 overflow-hidden p-0">
-        {/* 这里展示名册插画，让登记前先看到二版卡片式名册视觉。 */}
-        <img className="max-h-[26rem] w-full object-cover" src={rosterIllustrationPath} alt="问云派问云名册插画" />
-      </ScrollPanel>
 
       <ScrollPanel className="mt-8 overflow-hidden seal-mark-bg">
         <button
@@ -269,7 +261,7 @@ export function JoinPage() {
           type="button"
         >
           <span className="flex items-start gap-4">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#9e3d32]/10 text-[#9e3d32]">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[#9e3d32]/10 text-[#9e3d32]">
               <ClipboardPenLine className="h-6 w-6" />
             </span>
             <span>
@@ -298,7 +290,7 @@ export function JoinPage() {
         {!formOpen ? (
           <div className="mt-6 grid gap-4 md:grid-cols-4">
             {['登录小院', '问心合格', '递交名帖', '执事审核'].map((item, index) => (
-              <div className="rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4" key={item}>
+              <div className="rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4" key={item}>
                 <p className="text-xs font-semibold text-[#9e3d32]">第 {index + 1} 步</p>
                 <p className="ink-title mt-2 text-2xl font-bold text-[#143044]">{item}</p>
                 <p className="mt-2 text-xs leading-6 text-[#526461]">
@@ -321,7 +313,7 @@ export function JoinPage() {
                 message="名帖登记需要绑定到你的问云小院，执事审核后你才能看到状态和提醒。"
               />
             ) : existingApplication ? (
-              <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
+              <div className="mb-5 rounded-lg border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
                 <p className="font-semibold text-[#9e3d32]">你已经递交过名帖</p>
                 <p className="mt-1">
                   每个账号只能提交一份名帖。当前状态为“{applicationStatusLabels[existingApplication.status]}”。
@@ -337,7 +329,7 @@ export function JoinPage() {
                 </div>
               </div>
             ) : !quizResult?.passed ? (
-              <div className="mb-5 rounded-2xl border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
+              <div className="mb-5 rounded-lg border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
                 <p className="font-semibold text-[#9e3d32]">请先完成问心考核</p>
                 <p className="mt-1">
                   登记入册需要最新问心考核达到 80 分以上。当前结果：
@@ -354,7 +346,7 @@ export function JoinPage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">道名 *</span>
                 <input
-                  className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateField('nickname', event.target.value)}
                   placeholder="例如：云山、云灯、云初"
                   value={form.nickname}
@@ -365,7 +357,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">江湖名</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => updateField('jianghu_name', event.target.value)}
                     placeholder="例如：山月客、归舟"
                     value={form.jianghu_name}
@@ -375,7 +367,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">真实姓名 *</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => updateField('real_name', event.target.value)}
                     placeholder="仅后台可见"
                     value={form.real_name}
@@ -387,7 +379,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">联系方式 *</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => {
                       updateField('legacy_contact', event.target.value)
                       updateField('wechat_id', event.target.value)
@@ -400,7 +392,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">所在城市</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => {
                       updateField('public_region', event.target.value)
                       updateField('city', event.target.value)
@@ -415,7 +407,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">性别 *</span>
                   <select
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => updateGender(event.target.value as MemberGender)}
                     value={form.gender}
                   >
@@ -430,7 +422,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">出生年份</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     inputMode="numeric"
                     maxLength={4}
                     onChange={(event) => updateField('age_range', event.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -442,7 +434,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">身份</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
+                    className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
                     disabled
                     value="同门"
                   />
@@ -452,7 +444,7 @@ export function JoinPage() {
               <label className="grid gap-2">
                 <span className="text-sm font-semibold">宣言 *</span>
                 <textarea
-                  className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                  className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => updateField('motto', event.target.value)}
                   placeholder="写一句你想留在名册上的话。"
                   value={form.motto}
@@ -463,7 +455,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">兴趣爱好</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => updateField('tags', event.target.value)}
                     placeholder="例如：写文、摄影、饮茶"
                     value={form.tags}
@@ -473,7 +465,7 @@ export function JoinPage() {
                 <label className="grid gap-2">
                   <span className="text-sm font-semibold">同行期待</span>
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => updateField('companion_expectation', event.target.value)}
                     placeholder="想遇见怎样的同门"
                     value={form.companion_expectation}
@@ -481,7 +473,7 @@ export function JoinPage() {
                 </label>
               </div>
 
-              <label className="flex items-start gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
+              <label className="flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
                 <input
                   checked={form.accept_rules}
                   className="mt-1 h-4 w-4"
@@ -538,13 +530,13 @@ export function JoinPage() {
         </div>
 
         {filtersOpen ? (
-          <div className="mb-5 grid gap-3 rounded-2xl border border-[#c9a45c]/25 bg-white/60 p-4 lg:grid-cols-[1.2fr_0.7fr_0.7fr_0.8fr_auto]">
+          <div className="mb-5 grid gap-3 rounded-lg border border-[#c9a45c]/25 bg-white/60 p-4 lg:grid-cols-[1.2fr_0.7fr_0.7fr_0.8fr_auto]">
             <label className="grid gap-2">
               <span className="text-sm font-semibold">搜索名册</span>
               <span className="relative">
                 <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#6f8f8b]" />
                 <input
-                  className="w-full rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
+                  className="w-full rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder="道名、江湖名或编号"
                   value={searchTerm}
@@ -554,7 +546,7 @@ export function JoinPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">辈分字</span>
               <select
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setGenerationFilter(event.target.value)}
                 value={generationFilter}
               >
@@ -569,7 +561,7 @@ export function JoinPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">性别</span>
               <select
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setGenderFilter(event.target.value)}
                 value={genderFilter}
               >
@@ -584,7 +576,7 @@ export function JoinPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">身份</span>
               <select
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setRoleFilter(event.target.value)}
                 value={roleFilter}
               >
@@ -634,12 +626,12 @@ export function JoinPage() {
                   <p>入册：{formatRosterDate(item.joined_at ?? item.created_at)}</p>
                 </div>
 
-                <p className="mt-4 rounded-2xl border border-[#c9a45c]/20 bg-[#fffaf0]/65 p-4 text-sm leading-7 text-[#526461]">
+                <p className="mt-4 rounded-lg border border-[#c9a45c]/20 bg-[#fffaf0]/65 p-4 text-sm leading-7 text-[#526461]">
                   <span className="font-semibold text-[#143044]">宣言：</span>
                   {showText(item.motto)}
                 </p>
 
-                <p className="mt-4 rounded-2xl border border-[#6f8f8b]/18 bg-[#edf3ef]/55 p-4 text-sm leading-7 text-[#526461]">
+                <p className="mt-4 rounded-lg border border-[#6f8f8b]/18 bg-[#edf3ef]/55 p-4 text-sm leading-7 text-[#526461]">
                   <span className="font-semibold text-[#143044]">兴趣爱好：</span>
                   {formatHobbies(item.tags)}
                 </p>

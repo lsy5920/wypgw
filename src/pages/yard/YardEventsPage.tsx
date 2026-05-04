@@ -1,8 +1,9 @@
-import { CalendarDays, MapPin, Users } from 'lucide-react'
+﻿import { CalendarDays, MapPin, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
+import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { cancelEventRegistration, fetchYardEvents, registerForEvent } from '../../lib/services'
@@ -118,6 +119,8 @@ export function YardEventsPage() {
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
+      <SceneBanner light label="问云小院我的雅集纯代码场景" variant="map" />
+
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {items.length === 0 ? (
           <EmptyState title="暂无雅集" message="待后台发布活动后，这里会出现可报名的问云雅集。" />
@@ -152,9 +155,9 @@ export function YardEventsPage() {
                     {event.capacity ? `人数上限 ${event.capacity} 人` : '人数不限或待定'}
                   </p>
                 </div>
-                <div className="mt-5 grid gap-3 rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4">
+                <div className="mt-5 grid gap-3 rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4">
                   <input
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 text-sm outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 text-sm outline-none focus:border-[#6f8f8b]"
                     disabled={registered}
                     onChange={(inputEvent) => updateNote(event.id, inputEvent.target.value)}
                     placeholder="报名备注，可不填"

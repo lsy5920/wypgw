@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+﻿import { FormEvent, useEffect, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
@@ -85,7 +85,7 @@ export function AdminAnnouncementsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="公告管理" title="发布山门近讯">
+      <SectionTitle eyebrow="公告管理" title="发布山门近讯" visual="scroll">
         公告可先保存草稿，也可直接发布到前台公告页。
       </SectionTitle>
 
@@ -97,7 +97,7 @@ export function AdminAnnouncementsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">公告标题 *</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('title', event.target.value)}
                 value={form.title}
               />
@@ -105,7 +105,7 @@ export function AdminAnnouncementsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">分类</span>
               <select
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('category', event.target.value)}
                 value={form.category}
               >
@@ -120,7 +120,7 @@ export function AdminAnnouncementsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">摘要</span>
             <input
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('summary', event.target.value)}
               value={form.summary}
             />
@@ -128,7 +128,7 @@ export function AdminAnnouncementsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">正文 *</span>
             <textarea
-              className="min-h-32 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+              className="min-h-32 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('content', event.target.value)}
               value={form.content}
             />
@@ -136,7 +136,7 @@ export function AdminAnnouncementsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">状态</span>
             <select
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('status', event.target.value)}
               value={form.status}
             >

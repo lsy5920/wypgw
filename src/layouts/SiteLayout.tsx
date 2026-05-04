@@ -11,7 +11,7 @@ export function SiteLayout() {
   const isHomePage = location.pathname === '/'
 
   return (
-    <div className="wenyun-shell min-h-screen overflow-x-hidden text-[#263238]">
+    <div className="wenyun-shell min-h-screen overflow-x-hidden pb-20 text-[#263238] md:pb-0">
       <SiteHeader />
       {/* 这里给每个页面增加轻微淡入上浮动效，让站点更有层次。 */}
       <motion.main

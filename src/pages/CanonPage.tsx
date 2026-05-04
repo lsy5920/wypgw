@@ -1,4 +1,4 @@
-import { ArrowUp } from 'lucide-react'
+﻿import { ArrowUp } from 'lucide-react'
 import { PageShell } from '../components/PageShell'
 import { RitualCard } from '../components/RitualCard'
 import { ScrollPanel } from '../components/ScrollPanel'
@@ -84,7 +84,7 @@ export function CanonPage() {
 
   return (
     <PageShell size="wide">
-      <SectionTitle center eyebrow="立派金典" title="问云派立派金典">
+      <SectionTitle center eyebrow="立派金典" title="问云派立派金典" visual="scroll">
         问云而来，栖心于此；乱世暂歇，同归一处。
       </SectionTitle>
 
@@ -96,7 +96,7 @@ export function CanonPage() {
             <nav className="grid max-h-[70vh] gap-2 overflow-y-auto pr-1 text-sm">
               {sections.map((section, index) => (
                 <button
-                  className="rounded-xl px-3 py-2 text-left text-[#40524f] transition hover:bg-[#edf3ef]"
+                  className="rounded-lg px-3 py-2 text-left text-[#40524f] transition hover:bg-[#edf3ef]"
                   key={`${section.title}-${index}`}
                   onClick={() => scrollToSection(index)}
                   type="button"

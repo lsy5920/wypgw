@@ -1,9 +1,9 @@
-import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound, UsersRound } from 'lucide-react'
+﻿import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound, UsersRound } from 'lucide-react'
 import { Link, NavLink, Outlet, Navigate } from 'react-router-dom'
+import { BrandMark } from '../components/BrandMark'
 import { StatusNotice } from '../components/StatusNotice'
 import { WorkbenchFrame } from '../components/WorkbenchFrame'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
-import { getPublicAsset } from '../lib/assets'
 
 // 这个数组保存后台导航项，返回值用于侧栏和移动端后台入口。
 const adminNavItems = [
@@ -45,7 +45,7 @@ export function AdminLayout() {
       <aside className="workbench-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#f6f4ef] backdrop-blur-xl lg:block">
         {/* 这里展示后台品牌信息。 */}
         <Link className="mb-8 flex items-center gap-3" to="/">
-          <img className="h-12 w-12 rounded-full border border-[#f8df9d]/45 bg-[#fff8e8]/88 object-cover p-0.5 shadow-lg shadow-[#07171d]/20" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <BrandMark className="border-[#f8df9d]/45 shadow-lg shadow-[#07171d]/20" size="normal" />
           <div>
             <p className="ink-title text-xl font-bold text-[#fff8e8]">问云后台</p>
             <p className="text-xs text-[#f8df9d]">护灯、守门、安放归心</p>
@@ -60,7 +60,7 @@ export function AdminLayout() {
             return (
               <NavLink
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                  `flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition ${
                     isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : 'text-[#f4efe0] hover:bg-white/10'
                   }`
                 }
@@ -77,12 +77,12 @@ export function AdminLayout() {
 
         {/* 这里展示问云小院入口和退出登录按钮，管理员也可以回到自己的用户后台。 */}
         <div className="absolute bottom-5 left-5 right-5 grid gap-3">
-          <Link className="flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/28 bg-white/8 px-4 py-3 text-sm text-[#fff8e8]" to="/yard">
+          <Link className="flex items-center justify-center gap-2 rounded-lg border border-[#f8df9d]/28 bg-white/8 px-4 py-3 text-sm text-[#fff8e8]" to="/yard">
             <UserRound className="h-4 w-4" />
             返回问云小院
           </Link>
           <button
-            className="flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/24 bg-[#a83b32]/86 px-4 py-3 text-sm text-white"
+            className="flex items-center justify-center gap-2 rounded-lg border border-[#f8df9d]/24 bg-[#a83b32]/86 px-4 py-3 text-sm text-white"
             onClick={() => void signOut()}
             type="button"
           >

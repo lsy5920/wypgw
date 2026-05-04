@@ -1,22 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* 这里统一全站二版主色，后续换主题只需要改这一组颜色。 */
-  --wenyun-ink: #122327;
-  --wenyun-deep: #18333a;
-  --wenyun-night: #06171d;
-  --wenyun-jade: #557f76;
-  --wenyun-moss: #7f8f63;
-  --wenyun-gold: #d5ae62;
-  --wenyun-light-gold: #f7df9e;
-  --wenyun-seal: #a83b32;
-  --wenyun-plum: #74344a;
-  --wenyun-paper: #fff8ea;
-  --wenyun-cloud: #eef4ef;
-  --wenyun-mist: #dce9e3;
-  --wenyun-line: rgba(213, 174, 98, 0.34);
-  --wenyun-shadow: rgba(18, 35, 39, 0.16);
-  --wenyun-heavy-shadow: rgba(6, 23, 29, 0.34);
+  /* 这里统一全站主色，后续换主题只需要改这一组颜色。 */
+  --wenyun-ink: #173332;
+  --wenyun-deep: #0f3d3e;
+  --wenyun-jade: #2f6f68;
+  --wenyun-mint: #e4f0eb;
+  --wenyun-cloud: #edf4ef;
+  --wenyun-paper: #fffaf0;
+  --wenyun-rice: #f8f3e8;
+  --wenyun-gold: #c8a45d;
+  --wenyun-seal: #b8473f;
+  --wenyun-plum: #7f3347;
+  --wenyun-blue: #dbe8ee;
+  --wenyun-line: rgba(47, 111, 104, 0.18);
+  --wenyun-shadow: rgba(23, 51, 50, 0.14);
   color: var(--wenyun-ink);
   background: var(--wenyun-cloud);
   font-family:
@@ -42,9 +40,8 @@ body {
   /* 这里禁止页面整体横向滚动，避免手机端被长按钮或长文字撑出屏幕。 */
   overflow-x: hidden;
   background:
-    linear-gradient(180deg, rgba(255, 248, 234, 0.92) 0%, rgba(238, 244, 239, 0.96) 44%, rgba(244, 236, 214, 0.94) 100%),
-    repeating-linear-gradient(118deg, rgba(213, 174, 98, 0.07) 0 1px, transparent 1px 28px),
-    repeating-linear-gradient(0deg, rgba(18, 35, 39, 0.035) 0 1px, transparent 1px 58px);
+    radial-gradient(circle at 82% 8%, rgba(200, 164, 93, 0.12), transparent 20rem),
+    linear-gradient(180deg, rgba(237, 244, 239, 0.98) 0%, rgba(248, 243, 232, 0.94) 46%, rgba(219, 232, 238, 0.82) 100%);
   background-attachment: fixed;
 }
 
@@ -55,20 +52,18 @@ body::before {
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(90deg, rgba(255, 248, 234, 0.72), rgba(220, 233, 227, 0.54), rgba(255, 248, 234, 0.76)),
-    linear-gradient(120deg, rgba(168, 59, 50, 0.08), transparent 36%, rgba(85, 127, 118, 0.1) 74%, transparent);
+    radial-gradient(circle at 14% 22%, rgba(255, 250, 240, 0.72), transparent 24rem),
+    linear-gradient(118deg, rgba(255, 250, 240, 0.58), transparent 38%, rgba(228, 240, 235, 0.58) 70%, rgba(219, 232, 238, 0.46));
 }
 
 body::after {
   position: fixed;
   inset: auto 0 0;
   z-index: -4;
-  height: 48vh;
+  height: 36vh;
   pointer-events: none;
   content: "";
-  background:
-    linear-gradient(0deg, rgba(85, 127, 118, 0.18), rgba(85, 127, 118, 0.04) 62%, transparent),
-    linear-gradient(90deg, rgba(213, 174, 98, 0.14), transparent 54%, rgba(168, 59, 50, 0.1));
+  background: linear-gradient(0deg, rgba(47, 111, 104, 0.16), rgba(47, 111, 104, 0.04) 62%, transparent);
 }
 
 button,
@@ -114,7 +109,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   /* 这里给表单聚焦状态增加柔和光晕，方便键盘和手机用户确认当前位置。 */
-  box-shadow: 0 0 0 4px rgba(213, 174, 98, 0.18);
+  box-shadow: 0 0 0 4px rgba(47, 111, 104, 0.16);
 }
 
 ::selection {
@@ -135,13 +130,172 @@ textarea:focus-visible {
   text-wrap: balance;
 }
 
+.section-title-block {
+  min-height: 9.5rem;
+  padding: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(47, 111, 104, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.76) 48%, rgba(228, 240, 235, 0.78)),
+    repeating-linear-gradient(118deg, rgba(200, 164, 93, 0.06) 0 1px, transparent 1px 24px);
+  box-shadow:
+    0 18px 54px rgba(23, 51, 50, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+/* 这里把标题区升级为“图片作背景、文字浮在图上”的样式，贴近用户给的总设计图。 */
+.section-title-with-visual {
+  min-height: clamp(16rem, 28vw, 23rem);
+  justify-content: flex-end;
+  padding: clamp(1.35rem, 3vw, 2.4rem);
+  border-color: rgba(200, 164, 93, 0.28);
+  background: #fffaf0;
+}
+
+/* 这里让标题背景图填满标题卡，不显示额外线条或旧线框蒙版。 */
+.section-title-visual-image {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-image: var(--section-title-visual-image);
+  background-repeat: no-repeat;
+  background-position: center 54%;
+  background-size: cover;
+  opacity: 1;
+  filter: saturate(1.02) contrast(1.06);
+}
+
+.section-title-with-visual[data-visual="lantern"] .section-title-visual-image,
+.section-title-with-visual[data-visual="map"] .section-title-visual-image,
+.section-title-with-visual[data-visual="workbench"] .section-title-visual-image {
+  background-position: center 48%;
+}
+
+.section-title-with-visual[data-visual="courtyard"] .section-title-visual-image {
+  background-position: center 52%;
+}
+
+/* 这里用左浅右透的遮罩托住文字，让标题像悬浮在图片表层而不是压在乱背景上。 */
+.section-title-visual-shade {
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.9), rgba(255, 250, 240, 0.62) 40%, rgba(255, 250, 240, 0.16) 72%, rgba(255, 250, 240, 0.03)),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.12), rgba(15, 61, 62, 0.08));
+}
+
+.section-title-with-visual .section-title-seal {
+  background: rgba(255, 250, 240, 0.46);
+  backdrop-filter: blur(8px);
+}
+
+/* 这里关闭标题卡旧的山形和线稿装饰，避免遮住真正的背景图。 */
+.section-title-with-visual::before,
+.section-title-with-visual::after {
+  display: none;
+}
+
+.section-title-block::before {
+  position: absolute;
+  right: clamp(0.5rem, 4vw, 3.5rem);
+  bottom: -1.7rem;
+  width: min(24rem, 42vw);
+  height: 8.5rem;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(135deg, transparent 0 34%, rgba(47, 111, 104, 0.16) 34% 56%, transparent 56%),
+    linear-gradient(45deg, transparent 0 42%, rgba(15, 61, 62, 0.1) 42% 62%, transparent 62%),
+    linear-gradient(180deg, transparent 0 44%, rgba(219, 232, 238, 0.58) 44% 100%);
+  clip-path: polygon(0 70%, 18% 46%, 34% 66%, 50% 34%, 67% 64%, 82% 48%, 100% 70%, 100% 100%, 0 100%);
+  opacity: 0.9;
+}
+
+.section-title-block::after {
+  position: absolute;
+  top: 1.4rem;
+  right: 1.4rem;
+  width: min(13rem, 30vw);
+  height: 4.4rem;
+  pointer-events: none;
+  content: "";
+  border: 1px solid rgba(200, 164, 93, 0.24);
+  border-right: 0;
+  border-left: 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(200, 164, 93, 0.22), transparent),
+    repeating-linear-gradient(0deg, rgba(47, 111, 104, 0.1) 0 1px, transparent 1px 14px);
+  opacity: 0.62;
+}
+
+.section-title-seal {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 1rem;
+  z-index: 1;
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border: 1px solid rgba(184, 71, 63, 0.52);
+  color: rgba(184, 71, 63, 0.84);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: rotate(-7deg);
+}
+
+/* 这里绘制页头右上角折角，呼应整站视觉稿里的金线索引。 */
+.section-title-corner {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  width: clamp(4.5rem, 12vw, 9rem);
+  height: 2.4rem;
+  pointer-events: none;
+  border-top: 1px solid rgba(200, 164, 93, 0.5);
+  border-right: 1px solid rgba(200, 164, 93, 0.38);
+  opacity: 0.76;
+}
+
+/* 这里让折角末端像一枚小书签，增强每个页面第一屏的辨识度。 */
+.section-title-corner::after {
+  position: absolute;
+  right: -0.18rem;
+  bottom: -0.18rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  content: "";
+  border-radius: 999px;
+  background: rgba(184, 71, 63, 0.72);
+  box-shadow: 0 0 0 4px rgba(184, 71, 63, 0.08);
+}
+
+/* 这里绘制三个页面定位点，让标题区不只是文字卡片，也有产品界面感。 */
+.section-title-dots span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: rgba(47, 111, 104, 0.36);
+  box-shadow: 0 0 0 3px rgba(47, 111, 104, 0.06);
+}
+
+.section-title-dots span:nth-child(2) {
+  background: rgba(200, 164, 93, 0.58);
+}
+
+.section-title-dots span:nth-child(3) {
+  background: rgba(184, 71, 63, 0.52);
+}
+
 .focus-ring {
   outline: 2px solid transparent;
   outline-offset: 3px;
 }
 
 .focus-ring:focus-visible {
-  outline-color: rgba(168, 59, 50, 0.86);
+  outline-color: rgba(184, 71, 63, 0.86);
 }
 
 .wenyun-shell {
@@ -156,54 +310,837 @@ textarea:focus-visible {
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(180deg, rgba(255, 248, 234, 0.16), rgba(238, 244, 239, 0.54) 48%, rgba(255, 248, 234, 0.62)),
-    repeating-linear-gradient(128deg, rgba(213, 174, 98, 0.08) 0 1px, transparent 1px 36px);
+    radial-gradient(circle at 18% 12%, rgba(255, 250, 240, 0.5), transparent 22rem),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.2), rgba(237, 244, 239, 0.54) 48%, rgba(219, 232, 238, 0.5));
 }
 
 .wenyun-shell::after {
   position: fixed;
   inset: auto 0 0;
   z-index: -2;
-  height: 34vh;
+  height: 28vh;
   pointer-events: none;
   content: "";
-  background: linear-gradient(0deg, rgba(18, 35, 39, 0.08), transparent);
+  background: linear-gradient(0deg, rgba(23, 51, 50, 0.06), transparent);
+}
+
+/* 这里统一页面外壳的书册网格，让每个前台页面都拥有同一套视觉底座。 */
+.design-page-frame::before {
+  position: absolute;
+  inset: 2.5rem 0 auto;
+  z-index: -12;
+  height: 16rem;
+  pointer-events: none;
+  content: "";
+  border-top: 1px solid rgba(200, 164, 93, 0.18);
+  border-bottom: 1px solid rgba(47, 111, 104, 0.08);
+  background:
+    linear-gradient(90deg, rgba(184, 71, 63, 0.08), transparent 18%, rgba(47, 111, 104, 0.08) 86%, transparent),
+    repeating-linear-gradient(90deg, rgba(47, 111, 104, 0.045) 0 1px, transparent 1px 72px);
+  opacity: 0.82;
+}
+
+/* 这里给页面中段加入很轻的纸面折线，避免长页面看起来像普通白底列表。 */
+.design-page-frame::after {
+  position: absolute;
+  inset: 38% 1.25rem auto;
+  z-index: -13;
+  height: 22rem;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(135deg, transparent 0 36%, rgba(47, 111, 104, 0.08) 36% 54%, transparent 54%),
+    linear-gradient(45deg, transparent 0 42%, rgba(200, 164, 93, 0.1) 42% 58%, transparent 58%);
+  clip-path: polygon(0 64%, 17% 48%, 32% 62%, 48% 38%, 65% 60%, 82% 46%, 100% 66%, 100% 100%, 0 100%);
+  opacity: 0.46;
+}
+
+/* 这里绘制顶部经线，配合内置生图稿里的宣纸界面层次。 */
+.page-shell-weave {
+  background:
+    linear-gradient(90deg, transparent, rgba(200, 164, 93, 0.22), transparent),
+    repeating-linear-gradient(90deg, rgba(47, 111, 104, 0.1) 0 1px, transparent 1px 36px);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.site-hero {
+  background-color: #fffaf0;
+}
+
+.site-hero-art {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(200, 164, 93, 0.34), transparent 9%),
+    radial-gradient(circle at 70% 64%, rgba(219, 232, 238, 0.55), transparent 24%),
+    radial-gradient(circle at 12% 70%, rgba(219, 232, 238, 0.65), transparent 28%),
+    linear-gradient(180deg, #fffaf0 0%, #f8f3e8 62%, #e4f0eb 100%);
+}
+
+.site-hero-art::before {
+  position: absolute;
+  inset: 150px -6% 0;
+  content: "";
+  background:
+    linear-gradient(135deg, transparent 0 34%, rgba(47, 111, 104, 0.18) 34% 54%, transparent 54%),
+    linear-gradient(45deg, transparent 0 38%, rgba(15, 61, 62, 0.14) 38% 58%, transparent 58%),
+    linear-gradient(180deg, transparent 0 42%, rgba(219, 232, 238, 0.62) 42% 100%);
+  clip-path: polygon(0 58%, 16% 40%, 28% 57%, 43% 29%, 56% 54%, 72% 35%, 100% 62%, 100% 100%, 0 100%);
+  opacity: 0.9;
+}
+
+.site-hero-art::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.12), transparent 45%, rgba(255, 250, 240, 0.18));
+}
+
+.site-hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.98), rgba(255, 250, 240, 0.72) 42%, rgba(255, 250, 240, 0.28)),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.88), rgba(255, 250, 240, 0.38) 70%, rgba(237, 244, 239, 0.82));
+}
+
+.site-hero-content {
+  text-shadow: none;
+}
+
+.hero-proof-grid > div {
+  min-width: 0;
+}
+
+.hero-safe-width {
+  width: 100%;
+  max-width: calc(100vw - 2rem);
+}
+
+.brand-mark {
+  position: relative;
+  gap: 1px;
+  padding: 0.22em;
+  border-color: rgba(248, 223, 157, 0.32);
+  background:
+    linear-gradient(135deg, var(--wenyun-seal), var(--wenyun-plum)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 8px);
+  font-family:
+    "SimSun",
+    "STSong",
+    serif;
+  line-height: 1;
+}
+
+/* 这里给朱印增加内框和磨损感，让导航 Logo 更接近参考图左上角的红色门派印。 */
+.brand-mark::before {
+  position: absolute;
+  inset: 0.22rem;
+  pointer-events: none;
+  content: "";
+  border: 1px solid rgba(255, 250, 240, 0.56);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(127, 51, 71, 0.22);
+}
+
+/* 这里控制朱印每个字的方位和大小，避免手机端缩小时文字挤成一团。 */
+.brand-mark-character {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  place-items: center;
+  color: #fffaf0;
+  text-shadow: 0 1px 0 rgba(127, 51, 71, 0.36);
+}
+
+.brand-mark-character:nth-child(1),
+.brand-mark-character:nth-child(4) {
+  transform: translateY(0.02em) rotate(-2deg);
+}
+
+.brand-mark-character:nth-child(2),
+.brand-mark-character:nth-child(3) {
+  transform: translateY(-0.02em) rotate(2deg);
+}
+
+/* 这里把内置生图模型生成的九宫格图标裁成单个图标，供首页功能卡使用。 */
+.generated-icon {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(200, 164, 93, 0.32);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.98), rgba(228, 240, 235, 0.78)),
+    repeating-linear-gradient(118deg, rgba(200, 164, 93, 0.07) 0 1px, transparent 1px 18px);
+  box-shadow:
+    0 12px 28px rgba(23, 51, 50, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.generated-icon-sheet {
+  position: absolute;
+  width: 300%;
+  max-width: none;
+  height: 300%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.generated-icon-crop-scroll .generated-icon-sheet {
+  left: 0;
+  top: 0;
+}
+
+.generated-icon-crop-shield .generated-icon-sheet {
+  left: -100%;
+  top: 0;
+}
+
+.generated-icon-crop-lantern .generated-icon-sheet {
+  left: -200%;
+  top: 0;
+}
+
+.generated-icon-crop-gate .generated-icon-sheet {
+  left: 0;
+  top: -100%;
+}
+
+.generated-icon-crop-notice .generated-icon-sheet {
+  left: -100%;
+  top: -100%;
+}
+
+.generated-icon-crop-calendar .generated-icon-sheet {
+  left: -200%;
+  top: -100%;
+}
+
+.generated-icon-crop-roster .generated-icon-sheet {
+  left: 0;
+  top: -200%;
+}
+
+.generated-icon-crop-user .generated-icon-sheet {
+  left: -100%;
+  top: -200%;
+}
+
+.generated-icon-crop-settings .generated-icon-sheet {
+  left: -200%;
+  top: -200%;
+}
+
+/* 这里是图标素材读取失败时的纯代码兜底，保证页面不会显示破图。 */
+.generated-icon-fallback {
+  position: absolute;
+  inset: 22%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--wenyun-jade), var(--wenyun-gold));
+  box-shadow: 0 0 0 0.55rem rgba(47, 111, 104, 0.08);
+}
+
+.mobile-menu-button-inline {
+  display: flex;
+}
+
+.site-header-bar {
+  padding-right: 1rem;
+}
+
+/* 这里给顶部导航加入细金导轨，贴近生图稿里的产品官网导航。 */
+.site-header-shell::before {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.4rem;
+  height: 1px;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(200, 164, 93, 0.5), rgba(47, 111, 104, 0.38), transparent);
+  opacity: 0.76;
+}
+
+/* 这里让手机底部导航像一条小型操作台，便于拇指点击又不遮挡内容。 */
+.site-mobile-dock-shell::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(184, 71, 63, 0.06), transparent 30%, rgba(47, 111, 104, 0.08)),
+    repeating-linear-gradient(90deg, rgba(200, 164, 93, 0.08) 0 1px, transparent 1px 42px);
+}
+
+.site-mobile-dock-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.seal-code-mark {
+  background:
+    linear-gradient(135deg, rgba(184, 71, 63, 0.22), rgba(127, 51, 71, 0.12)),
+    repeating-linear-gradient(45deg, rgba(248, 223, 157, 0.16) 0 1px, transparent 1px 8px);
+  font-family:
+    "SimSun",
+    "STSong",
+    serif;
+}
+
+.code-scene {
+  min-height: 16rem;
+  border: 1px solid rgba(200, 164, 93, 0.24);
+  background:
+    radial-gradient(circle at 70% 18%, rgba(248, 223, 157, 0.28), transparent 20%),
+    radial-gradient(circle at 22% 76%, rgba(219, 232, 238, 0.26), transparent 24%),
+    linear-gradient(135deg, #0b2322, #0f3d3e 55%, #2f6f68);
+}
+
+/* 这里接入本次按参考图重新生成的插图，让页面横幅不再只靠抽象线框。 */
+.code-scene-generated-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: saturate(0.92) contrast(1.04);
+  transform: scale(1.01);
+}
+
+/* 这里移除生成图上方原本的纯代码线框层，解决图片上出现奇怪矩形、灯火块和台账线的问题。 */
+.code-scene-has-generated .code-scene-mountain,
+.code-scene-has-generated .code-scene-mist,
+.code-scene-has-generated .code-scene-core,
+.code-scene-has-generated .code-scene-line,
+.code-scene-has-generated .code-scene-dot,
+.code-scene-has-generated .code-scene-ui,
+.code-scene-has-generated .code-scene-chip {
+  display: none;
+}
+
+.code-scene-has-generated::before {
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.02) 44%, rgba(15, 61, 62, 0.06));
+}
+
+/* 这里统一“标题下方背景图”的外观，让生成图成为区块氛围，不再像独立截图卡片。 */
+.section-image-backdrop {
+  border-color: rgba(200, 164, 93, 0.22);
+  background: rgba(255, 250, 240, 0.72);
+  box-shadow:
+    0 18px 46px rgba(23, 51, 50, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.section-image-backdrop::before,
+.section-image-backdrop::after {
+  opacity: 0.28;
+}
+
+.section-image-backdrop .code-scene {
+  border: 0;
+  box-shadow: none;
+}
+
+.section-background-scene {
+  min-height: clamp(13rem, 25vw, 22rem);
+}
+
+.code-scene-gate .code-scene-generated-image {
+  object-position: center 58%;
+  opacity: 0.94;
+}
+
+.code-scene-scroll .code-scene-generated-image {
+  object-position: center 58%;
+  opacity: 0.86;
+  filter: saturate(0.86) contrast(1.04) brightness(1.04);
+}
+
+.code-scene-courtyard .code-scene-generated-image {
+  object-position: center 54%;
+  opacity: 0.92;
+}
+
+.code-scene-lantern .code-scene-generated-image {
+  object-position: center 48%;
+  opacity: 0.9;
+}
+
+.code-scene-workbench .code-scene-generated-image,
+.code-scene-map .code-scene-generated-image {
+  object-position: center 58%;
+  opacity: 0.86;
+  filter: saturate(0.9) contrast(1.04) brightness(1.02);
+}
+
+.code-scene-light {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(200, 164, 93, 0.28), transparent 16%),
+    radial-gradient(circle at 18% 78%, rgba(219, 232, 238, 0.74), transparent 28%),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.88), rgba(228, 240, 235, 0.74));
+}
+
+.code-scene-light .code-scene-generated-image {
+  opacity: 0.86;
+  filter: saturate(0.9) contrast(1.02) brightness(1.06);
+}
+
+.code-scene-light .code-scene-mountain {
+  background: rgba(47, 111, 104, 0.18);
+}
+
+.code-scene-light .code-scene-mountain-b {
+  background: rgba(15, 61, 62, 0.12);
+}
+
+.code-scene-light .code-scene-mist {
+  background: rgba(15, 61, 62, 0.08);
+}
+
+.code-scene-light .code-scene-core {
+  border-color: rgba(15, 61, 62, 0.74);
+  background: rgba(255, 250, 240, 0.24);
+  box-shadow: 0 0 0 1px rgba(200, 164, 93, 0.16), 0 28px 70px rgba(23, 51, 50, 0.12);
+}
+
+/* 这里让浅色场景里的界面缩略卡更像宣纸小稿，避免深色块突兀。 */
+.code-scene-light .code-scene-ui {
+  border-color: rgba(47, 111, 104, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.72), rgba(255, 255, 255, 0.38)),
+    repeating-linear-gradient(0deg, rgba(47, 111, 104, 0.12) 0 1px, transparent 1px 18px);
+  box-shadow:
+    0 18px 46px rgba(23, 51, 50, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.code-scene-light .code-scene-chip-a {
+  background: rgba(184, 71, 63, 0.62);
+}
+
+.code-scene-light .code-scene-chip-b {
+  background: rgba(47, 111, 104, 0.54);
+}
+
+.code-scene::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  content: "";
+  background:
+    repeating-linear-gradient(110deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 28px),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.12), transparent 40%);
+}
+
+.code-scene-mountain,
+.code-scene-mist,
+.code-scene-core,
+.code-scene-line,
+.code-scene-dot {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+
+.code-scene-mountain {
+  inset: auto -8% 0;
+  height: 58%;
+  background: rgba(7, 24, 24, 0.7);
+  clip-path: polygon(0 72%, 18% 44%, 31% 68%, 47% 30%, 64% 64%, 78% 42%, 100% 70%, 100% 100%, 0 100%);
+}
+
+.code-scene-mountain-b {
+  height: 42%;
+  background: rgba(11, 35, 34, 0.62);
+  clip-path: polygon(0 84%, 19% 60%, 38% 78%, 56% 42%, 76% 74%, 100% 54%, 100% 100%, 0 100%);
+}
+
+.code-scene-mist {
+  left: -10%;
+  right: -10%;
+  height: 22%;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.12);
+  filter: blur(16px);
+}
+
+.code-scene-mist-a {
+  bottom: 22%;
+}
+
+.code-scene-mist-b {
+  bottom: 38%;
+  transform: translateX(12%);
+}
+
+.code-scene-core {
+  right: 12%;
+  bottom: 18%;
+  width: 38%;
+  height: 38%;
+  border: 10px solid rgba(255, 250, 240, 0.82);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 0 48px rgba(248, 223, 157, 0.18);
+}
+
+.code-scene-core::before,
+.code-scene-core::after {
+  position: absolute;
+  content: "";
+  background: rgba(248, 223, 157, 0.9);
+}
+
+.code-scene-core::before {
+  left: -18%;
+  top: -32%;
+  width: 136%;
+  height: 16%;
+  transform: skewX(-14deg);
+}
+
+.code-scene-core::after {
+  left: 18%;
+  top: 48%;
+  width: 64%;
+  height: 8%;
+}
+
+.code-scene-line {
+  left: 10%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(248, 223, 157, 0.72), transparent);
+}
+
+.code-scene-line-a {
+  bottom: 24%;
+}
+
+.code-scene-line-b {
+  bottom: 12%;
+}
+
+.code-scene-dot {
+  width: 48px;
+  height: 72px;
+  border-radius: 24px 24px 18px 18px;
+  background: linear-gradient(180deg, #ffd980, var(--wenyun-seal));
+  box-shadow: 0 0 52px rgba(248, 223, 157, 0.46);
+}
+
+/* 这里绘制场景里的页面缩略卡，呼应内置生图稿中的多页面总览。 */
+.code-scene-ui,
+.code-scene-chip {
+  position: absolute;
+  z-index: 3;
+  display: block;
+  pointer-events: none;
+}
+
+.code-scene-ui {
+  border: 1px solid rgba(248, 223, 157, 0.26);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.2), rgba(255, 250, 240, 0.08)),
+    repeating-linear-gradient(0deg, rgba(255, 250, 240, 0.18) 0 1px, transparent 1px 18px);
+  box-shadow:
+    0 18px 46px rgba(7, 24, 24, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.code-scene-ui-a {
+  left: 9%;
+  top: 16%;
+  width: 28%;
+  height: 30%;
+}
+
+.code-scene-ui-b {
+  right: 9%;
+  top: 18%;
+  width: 24%;
+  height: 24%;
+  opacity: 0.78;
+}
+
+.code-scene-ui-c {
+  left: 18%;
+  bottom: 12%;
+  width: 42%;
+  height: 18%;
+  opacity: 0.82;
+}
+
+.code-scene-chip {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(248, 223, 157, 0.74);
+  box-shadow: 0 0 24px rgba(248, 223, 157, 0.22);
+}
+
+.code-scene-chip-a {
+  left: 12%;
+  top: 12%;
+  width: 5rem;
+}
+
+.code-scene-chip-b {
+  right: 16%;
+  bottom: 16%;
+  width: 7rem;
+  background: rgba(255, 250, 240, 0.66);
+}
+
+.code-scene-dot-a {
+  left: 12%;
+  bottom: 22%;
+}
+
+.code-scene-dot-b {
+  left: 22%;
+  bottom: 34%;
+  width: 24px;
+  height: 36px;
+  opacity: 0.76;
+}
+
+.code-scene-scroll .code-scene-core {
+  left: 16%;
+  right: auto;
+  bottom: 28%;
+  width: 68%;
+  height: 36%;
+  border: 1px solid rgba(200, 164, 93, 0.5);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.96), rgba(228, 240, 235, 0.86)),
+    repeating-linear-gradient(0deg, rgba(15, 61, 62, 0.12) 0 1px, transparent 1px 22px);
+}
+
+.code-scene-scroll .code-scene-core::before,
+.code-scene-scroll .code-scene-core::after {
+  top: -14%;
+  width: 12%;
+  height: 128%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f8df9d, #c8a45d);
+  transform: none;
+}
+
+.code-scene-scroll .code-scene-core::before {
+  left: -5%;
+}
+
+.code-scene-scroll .code-scene-core::after {
+  left: auto;
+  right: -5%;
+}
+
+/* 这里让卷轴类场景的缩略卡退到背景，正文阅读页不会显得太繁。 */
+.code-scene-scroll .code-scene-ui-a {
+  left: 9%;
+  top: 18%;
+  width: 18%;
+  height: 42%;
+  opacity: 0.58;
+}
+
+.code-scene-scroll .code-scene-ui-b {
+  right: 8%;
+  top: 20%;
+  width: 18%;
+  height: 42%;
+  opacity: 0.58;
+}
+
+.code-scene-scroll .code-scene-ui-c {
+  left: 25%;
+  bottom: 14%;
+  width: 50%;
+  height: 14%;
+}
+
+.code-scene-lantern .code-scene-core {
+  left: 50%;
+  right: auto;
+  bottom: 24%;
+  width: 92px;
+  height: 128px;
+  border: 0;
+  border-radius: 46px 46px 34px 34px;
+  background: linear-gradient(180deg, #ffd980, #b8473f);
+  transform: translateX(-50%);
+}
+
+.code-scene-lantern .code-scene-core::before {
+  left: 28%;
+  top: -20%;
+  width: 44%;
+  height: 18%;
+  border-radius: 999px;
+  transform: none;
+}
+
+.code-scene-lantern .code-scene-core::after {
+  left: 48%;
+  top: -42%;
+  width: 2px;
+  height: 28%;
+  background: rgba(248, 223, 157, 0.82);
+}
+
+/* 这里让云灯场景里的卡片像留言纸签，和灯火主题贴合。 */
+.code-scene-lantern .code-scene-ui {
+  border-color: rgba(248, 223, 157, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.18), rgba(255, 250, 240, 0.06)),
+    repeating-linear-gradient(0deg, rgba(248, 223, 157, 0.2) 0 1px, transparent 1px 22px);
+}
+
+.code-scene-lantern .code-scene-ui-a {
+  left: 12%;
+  top: 14%;
+  width: 20%;
+  height: 32%;
+}
+
+.code-scene-lantern .code-scene-ui-b {
+  right: 12%;
+  top: 22%;
+  width: 18%;
+  height: 28%;
+}
+
+.code-scene-courtyard .code-scene-core,
+.code-scene-workbench .code-scene-core {
+  left: 14%;
+  right: 14%;
+  bottom: 20%;
+  width: auto;
+  height: 44%;
+  border: 1px solid rgba(255, 250, 240, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.22), rgba(255, 255, 255, 0.08)),
+    repeating-linear-gradient(90deg, rgba(255, 250, 240, 0.16) 0 1px, transparent 1px 58px);
+}
+
+.code-scene-courtyard .code-scene-core::before,
+.code-scene-workbench .code-scene-core::before {
+  left: 8%;
+  top: 18%;
+  width: 84%;
+  height: 1px;
+  background: rgba(248, 223, 157, 0.56);
+  transform: none;
+}
+
+.code-scene-courtyard .code-scene-core::after,
+.code-scene-workbench .code-scene-core::after {
+  left: 8%;
+  top: 42%;
+  width: 62%;
+  height: 1px;
+  background: rgba(255, 250, 240, 0.42);
+}
+
+/* 这里让小院和后台场景更像真实仪表盘，有列表、有侧栏、有操作区。 */
+.code-scene-courtyard .code-scene-ui-a,
+.code-scene-workbench .code-scene-ui-a {
+  left: 10%;
+  top: 14%;
+  width: 18%;
+  height: 54%;
+}
+
+.code-scene-courtyard .code-scene-ui-b,
+.code-scene-workbench .code-scene-ui-b {
+  right: 10%;
+  top: 16%;
+  width: 34%;
+  height: 22%;
+}
+
+.code-scene-courtyard .code-scene-ui-c,
+.code-scene-workbench .code-scene-ui-c {
+  left: 34%;
+  bottom: 16%;
+  width: 48%;
+  height: 26%;
+}
+
+.code-scene-map .code-scene-core {
+  left: 10%;
+  right: 10%;
+  bottom: 34%;
+  width: auto;
+  height: 2px;
+  border: 0;
+  background: linear-gradient(90deg, rgba(248, 223, 157, 0.12), rgba(248, 223, 157, 0.92), rgba(248, 223, 157, 0.12));
+}
+
+/* 这里让流程地图场景保留灯火路线，减少多余卡片干扰。 */
+.code-scene-map .code-scene-ui-a,
+.code-scene-map .code-scene-ui-b {
+  top: 18%;
+  width: 18%;
+  height: 22%;
+  opacity: 0.52;
+}
+
+.code-scene-map .code-scene-ui-c {
+  left: 22%;
+  bottom: 18%;
+  width: 56%;
+  height: 12%;
+  opacity: 0.46;
 }
 
 .liquid-glass {
-  border: 1px solid rgba(247, 223, 158, 0.28);
+  border: 1px solid rgba(200, 164, 93, 0.28);
   background:
-    linear-gradient(135deg, rgba(255, 248, 234, 0.18), rgba(255, 255, 255, 0.08)),
-    linear-gradient(180deg, rgba(18, 51, 58, 0.78), rgba(6, 23, 29, 0.64));
+    linear-gradient(135deg, rgba(255, 250, 240, 0.16), rgba(255, 255, 255, 0.08)),
+    linear-gradient(180deg, rgba(15, 61, 62, 0.82), rgba(7, 24, 24, 0.7));
   box-shadow:
-    0 24px 70px rgba(6, 23, 29, 0.3),
+    0 24px 64px rgba(23, 51, 50, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(22px);
 }
 
 .paper-texture {
   background:
-    linear-gradient(145deg, rgba(255, 248, 234, 0.98), rgba(255, 255, 255, 0.82) 48%, rgba(220, 233, 227, 0.84)),
-    repeating-linear-gradient(118deg, rgba(213, 174, 98, 0.08) 0 1px, transparent 1px 22px);
+    linear-gradient(145deg, rgba(255, 250, 240, 0.98), rgba(255, 255, 255, 0.86) 48%, rgba(228, 240, 235, 0.86)),
+    repeating-linear-gradient(118deg, rgba(200, 164, 93, 0.07) 0 1px, transparent 1px 22px);
 }
 
 .surface-grid {
   background:
-    linear-gradient(145deg, rgba(255, 248, 234, 0.9), rgba(238, 244, 239, 0.84)),
-    repeating-linear-gradient(90deg, rgba(18, 35, 39, 0.045) 0 1px, transparent 1px 54px),
-    repeating-linear-gradient(0deg, rgba(18, 35, 39, 0.04) 0 1px, transparent 1px 54px);
+    linear-gradient(145deg, rgba(255, 250, 240, 0.9), rgba(237, 244, 239, 0.84)),
+    repeating-linear-gradient(90deg, rgba(23, 51, 50, 0.045) 0 1px, transparent 1px 54px),
+    repeating-linear-gradient(0deg, rgba(23, 51, 50, 0.035) 0 1px, transparent 1px 54px);
 }
 
 .scroll-panel {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(213, 174, 98, 0.36);
+  border: 1px solid rgba(47, 111, 104, 0.18);
   background:
-    linear-gradient(145deg, rgba(255, 248, 234, 0.96), rgba(255, 255, 255, 0.82) 46%, rgba(220, 233, 227, 0.86)),
-    repeating-linear-gradient(116deg, rgba(213, 174, 98, 0.07) 0 1px, transparent 1px 22px);
+    linear-gradient(145deg, rgba(255, 250, 240, 0.97), rgba(255, 255, 255, 0.86) 46%, rgba(228, 240, 235, 0.9)),
+    repeating-linear-gradient(116deg, rgba(200, 164, 93, 0.06) 0 1px, transparent 1px 22px);
   background-size: auto, 480px 480px;
   box-shadow:
-    0 20px 58px rgba(18, 35, 39, 0.12),
+    0 18px 48px rgba(23, 51, 50, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
@@ -213,8 +1150,8 @@ textarea:focus-visible {
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(90deg, rgba(213, 174, 98, 0.16), transparent 18%, transparent 82%, rgba(213, 174, 98, 0.14)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), transparent 36%);
+    linear-gradient(90deg, rgba(47, 111, 104, 0.08), transparent 18%, transparent 82%, rgba(200, 164, 93, 0.1)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 36%);
   opacity: 0.76;
 }
 
@@ -223,8 +1160,8 @@ textarea:focus-visible {
   inset: 1px;
   pointer-events: none;
   content: "";
+  border: 1px solid rgba(255, 255, 255, 0.56);
   border-radius: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.58);
 }
 
 .scroll-panel > * {
@@ -233,14 +1170,29 @@ textarea:focus-visible {
 }
 
 .ritual-card {
-  border: 1px solid rgba(213, 174, 98, 0.36);
+  border: 1px solid rgba(47, 111, 104, 0.18);
   background:
-    linear-gradient(145deg, rgba(255, 248, 234, 0.96), rgba(255, 255, 255, 0.82) 48%, rgba(220, 233, 227, 0.82)),
-    repeating-linear-gradient(118deg, rgba(213, 174, 98, 0.07) 0 1px, transparent 1px 22px);
+    linear-gradient(145deg, rgba(255, 250, 240, 0.98), rgba(255, 255, 255, 0.88) 48%, rgba(228, 240, 235, 0.88)),
+    repeating-linear-gradient(118deg, rgba(200, 164, 93, 0.055) 0 1px, transparent 1px 22px);
   background-size: auto, 440px 440px;
   box-shadow:
-    0 18px 54px rgba(18, 35, 39, 0.13),
+    0 16px 44px rgba(23, 51, 50, 0.11),
     inset 0 1px 0 rgba(255, 255, 255, 0.84);
+}
+
+/* 这里统一卡片的边缘亮线，让普通内容卡、表单卡和列表卡看起来来自同一套设计。 */
+.design-surface-card {
+  outline: 1px solid rgba(255, 255, 255, 0.48);
+  outline-offset: -2px;
+}
+
+/* 这里让卡片内的标题和表单不会被长词撑出手机屏幕。 */
+.design-surface-card h1,
+.design-surface-card h2,
+.design-surface-card h3,
+.design-surface-card p,
+.design-surface-card span {
+  overflow-wrap: anywhere;
 }
 
 .ritual-card::before {
@@ -249,8 +1201,8 @@ textarea:focus-visible {
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.5) 42%, transparent 68%),
-    linear-gradient(180deg, rgba(213, 174, 98, 0.12), transparent 42%);
+    linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.42) 42%, transparent 68%),
+    linear-gradient(180deg, rgba(47, 111, 104, 0.07), transparent 42%);
   opacity: 0;
   transform: translateX(-36%);
   transition:
@@ -287,31 +1239,35 @@ textarea:focus-visible {
   transform: translateX(62%);
 }
 
+.feature-band {
+  background-color: #0b2322;
+}
+
 .hero-cloud-layer {
   background:
-    linear-gradient(90deg, transparent 0%, rgba(255, 248, 234, 0.18) 34%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 248, 234, 0.12) 66%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 250, 240, 0.18) 34%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 250, 240, 0.12) 66%, transparent 100%),
     repeating-linear-gradient(100deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 36px);
-  filter: blur(10px);
+  background-size: auto, 620px 120px;
+  filter: blur(8px);
 }
 
 .hero-light-beam {
-  background:
-    linear-gradient(112deg, transparent 0%, rgba(247, 223, 158, 0.22) 44%, rgba(255, 255, 255, 0.28) 50%, rgba(247, 223, 158, 0.14) 56%, transparent 100%);
+  background: linear-gradient(112deg, transparent 0%, rgba(248, 223, 157, 0.2) 44%, rgba(255, 255, 255, 0.24) 50%, rgba(248, 223, 157, 0.14) 56%, transparent 100%);
   mix-blend-mode: screen;
 }
 
 .mountain-frame {
   background:
-    linear-gradient(90deg, rgba(6, 23, 29, 0.84), rgba(18, 51, 58, 0.5)),
-    linear-gradient(135deg, #122327, #557f76 58%, #d5ae62 142%);
+    linear-gradient(90deg, rgba(7, 24, 24, 0.86), rgba(15, 61, 62, 0.62)),
+    linear-gradient(135deg, #173332, #2f6f68 62%, #b8473f 150%);
   background-position: center;
   background-size: cover;
 }
 
 .seal-mark-bg {
   background-image:
-    linear-gradient(135deg, rgba(255, 248, 234, 0.96), rgba(255, 255, 255, 0.76)),
-    linear-gradient(120deg, transparent, rgba(168, 59, 50, 0.08) 78%, rgba(168, 59, 50, 0.16));
+    linear-gradient(135deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.78)),
+    linear-gradient(120deg, transparent, rgba(184, 71, 63, 0.08) 78%, rgba(184, 71, 63, 0.14));
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -319,12 +1275,12 @@ textarea:focus-visible {
 .workbench-surface {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(213, 174, 98, 0.32);
+  border: 1px solid rgba(47, 111, 104, 0.2);
   background:
-    linear-gradient(145deg, rgba(255, 248, 234, 0.97), rgba(238, 246, 241, 0.94) 52%, rgba(255, 248, 234, 0.95)),
-    repeating-linear-gradient(112deg, rgba(213, 174, 98, 0.07) 0 1px, transparent 1px 24px);
+    linear-gradient(145deg, rgba(255, 250, 240, 0.98), rgba(237, 244, 239, 0.94) 52%, rgba(255, 250, 240, 0.95)),
+    repeating-linear-gradient(112deg, rgba(200, 164, 93, 0.06) 0 1px, transparent 1px 24px);
   box-shadow:
-    0 26px 80px rgba(18, 35, 39, 0.14),
+    0 24px 70px rgba(23, 51, 50, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
@@ -334,8 +1290,8 @@ textarea:focus-visible {
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(90deg, rgba(85, 127, 118, 0.1), transparent 38%, rgba(213, 174, 98, 0.12)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.58), transparent 30%);
+    linear-gradient(90deg, rgba(47, 111, 104, 0.08), transparent 38%, rgba(200, 164, 93, 0.1)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.54), transparent 30%);
 }
 
 .workbench-surface > * {
@@ -343,26 +1299,68 @@ textarea:focus-visible {
   z-index: 1;
 }
 
-.workbench-sidebar {
-  border-right: 1px solid rgba(213, 174, 98, 0.3);
+/* 这里绘制工作台内部的台账地图，只做背景，不遮挡真实内容。 */
+.workbench-surface > .workbench-frame-map {
+  position: absolute;
+  z-index: 0;
   background:
-    linear-gradient(180deg, rgba(6, 23, 29, 0.98), rgba(18, 51, 58, 0.94) 56%, rgba(85, 127, 118, 0.88)),
-    repeating-linear-gradient(128deg, rgba(247, 223, 158, 0.08) 0 1px, transparent 1px 30px);
-  box-shadow: 24px 0 70px rgba(6, 23, 29, 0.22);
+    linear-gradient(90deg, rgba(184, 71, 63, 0.06), transparent 22%, rgba(47, 111, 104, 0.08)),
+    repeating-linear-gradient(90deg, rgba(47, 111, 104, 0.055) 0 1px, transparent 1px 76px),
+    repeating-linear-gradient(0deg, rgba(200, 164, 93, 0.045) 0 1px, transparent 1px 76px);
+  mask-image: linear-gradient(180deg, #000, rgba(0, 0, 0, 0.2) 78%, transparent);
+  opacity: 0.62;
+}
+
+.workbench-sidebar {
+  border-right: 1px solid rgba(200, 164, 93, 0.26);
+  background:
+    linear-gradient(180deg, rgba(7, 24, 24, 0.98), rgba(15, 61, 62, 0.94) 58%, rgba(47, 111, 104, 0.9)),
+    repeating-linear-gradient(128deg, rgba(248, 223, 157, 0.08) 0 1px, transparent 1px 30px);
+  box-shadow: 22px 0 62px rgba(7, 24, 24, 0.2);
+}
+
+.yard-sidebar {
+  border-right: 1px solid rgba(200, 164, 93, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(248, 243, 232, 0.96) 58%, rgba(228, 240, 235, 0.92)),
+    repeating-linear-gradient(118deg, rgba(200, 164, 93, 0.08) 0 1px, transparent 1px 24px);
+  box-shadow: 22px 0 62px rgba(23, 51, 50, 0.1);
+}
+
+.yard-sidebar::before {
+  position: absolute;
+  inset: auto 1rem 1rem;
+  height: 9.5rem;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(135deg, transparent 0 38%, rgba(47, 111, 104, 0.14) 38% 58%, transparent 58%),
+    linear-gradient(180deg, transparent 0 50%, rgba(219, 232, 238, 0.62) 50% 100%);
+  clip-path: polygon(0 76%, 21% 54%, 39% 70%, 57% 40%, 75% 68%, 100% 50%, 100% 100%, 0 100%);
+  opacity: 0.78;
 }
 
 .workbench-topbar {
-  border-bottom: 1px solid rgba(213, 174, 98, 0.3);
+  border-bottom: 1px solid rgba(200, 164, 93, 0.26);
   background:
-    linear-gradient(135deg, rgba(6, 23, 29, 0.96), rgba(18, 51, 58, 0.9)),
-    linear-gradient(90deg, rgba(213, 174, 98, 0.16), transparent 48%, rgba(85, 127, 118, 0.2));
-  box-shadow: 0 18px 46px rgba(6, 23, 29, 0.16);
+    linear-gradient(135deg, rgba(7, 24, 24, 0.96), rgba(15, 61, 62, 0.9)),
+    linear-gradient(90deg, rgba(200, 164, 93, 0.14), transparent 48%, rgba(47, 111, 104, 0.18));
+  box-shadow: 0 18px 42px rgba(7, 24, 24, 0.14);
+  backdrop-filter: blur(20px);
+}
+
+.yard-topbar {
+  border-bottom: 1px solid rgba(200, 164, 93, 0.24);
+  background:
+    linear-gradient(135deg, rgba(255, 250, 240, 0.96), rgba(228, 240, 235, 0.9)),
+    linear-gradient(90deg, rgba(200, 164, 93, 0.14), transparent 48%, rgba(47, 111, 104, 0.12));
+  box-shadow: 0 18px 42px rgba(23, 51, 50, 0.1);
   backdrop-filter: blur(20px);
 }
 
 .gold-thread {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(213, 174, 98, 0.72), rgba(255, 248, 234, 0.76), rgba(213, 174, 98, 0.72), transparent);
+  background: linear-gradient(90deg, transparent, rgba(47, 111, 104, 0.52), rgba(200, 164, 93, 0.62), rgba(184, 71, 63, 0.3), transparent);
 }
 
 .cloud-drift {
@@ -390,7 +1388,148 @@ textarea:focus-visible {
 }
 
 .seal-shadow {
-  box-shadow: 0 20px 54px rgba(168, 59, 50, 0.2);
+  box-shadow: 0 18px 46px rgba(184, 71, 63, 0.18);
+}
+
+/* 这里是本次整站重新设计的公共覆盖层，统一前台、小院和后台的视觉母版。 */
+.site-hero {
+  background-color: #fffaf0;
+}
+
+/* 这里控制内置生图模型生成的首页背景图，保证桌面端露出山门，手机端保留干净留白。 */
+.site-hero-image {
+  object-position: center 58%;
+  filter: saturate(0.96) contrast(1.02);
+  transform: scale(1.01);
+}
+
+/* 这里让首页文字区像参考图里的山门首屏：标题压在真实山门前，文字面板只负责保证可读。 */
+.site-hero-copy {
+  position: relative;
+}
+
+.site-hero-copy::after {
+  position: absolute;
+  left: 0;
+  bottom: -1.1rem;
+  width: min(24rem, 72vw);
+  height: 1px;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(90deg, rgba(184, 71, 63, 0.72), rgba(200, 164, 93, 0.76), transparent);
+}
+
+/* 这里在背景图上叠加宣纸和细线纹理，让图片与全站纸面系统统一。 */
+.site-hero-art {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.78), rgba(255, 250, 240, 0.48) 42%, rgba(255, 250, 240, 0.12)),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(237, 244, 239, 0.24) 62%, rgba(237, 244, 239, 0.72));
+}
+
+/* 这里给首页文字区增加更稳定的阅读遮罩，避免图片细节压住标题。 */
+.site-hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.98), rgba(255, 250, 240, 0.78) 38%, rgba(255, 250, 240, 0.18) 72%, rgba(255, 250, 240, 0.08)),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.42), rgba(237, 244, 239, 0.76) 92%);
+}
+
+/* 这里让首页首屏的信任信息更像视觉稿里的轻量数据条。 */
+.hero-proof-grid {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.9), rgba(255, 255, 255, 0.7)),
+    repeating-linear-gradient(90deg, rgba(47, 111, 104, 0.06) 0 1px, transparent 1px 54px);
+}
+
+/* 这里统一手机底部导航的安全区域，避免被系统手势条遮住。 */
+.site-mobile-dock {
+  left: 0.5rem !important;
+  right: auto !important;
+  width: calc(100vw - 1rem);
+  max-width: calc(100vw - 1rem);
+  padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+}
+
+/* 这里把页面标题改成更接近设计稿的页面头卡，增强每个页面的第一眼识别。 */
+.section-title-block {
+  border-color: rgba(47, 111, 104, 0.14);
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.82) 46%, rgba(228, 240, 235, 0.78)),
+    linear-gradient(90deg, rgba(184, 71, 63, 0.06), transparent 26%, rgba(200, 164, 93, 0.08)),
+    repeating-linear-gradient(0deg, rgba(23, 51, 50, 0.035) 0 1px, transparent 1px 28px);
+  box-shadow:
+    0 18px 48px rgba(23, 51, 50, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+/* 这里让正文面板更轻、更平整，适合长时间阅读和后台高频操作。 */
+.scroll-panel,
+.ritual-card {
+  border-color: rgba(47, 111, 104, 0.15);
+  box-shadow:
+    0 14px 36px rgba(23, 51, 50, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+/* 这里统一工作台页面的底纹，覆盖问云小院和管理后台的所有页面。 */
+.workbench-surface {
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.98), rgba(242, 247, 243, 0.94) 48%, rgba(255, 250, 240, 0.92)),
+    repeating-linear-gradient(90deg, rgba(23, 51, 50, 0.045) 0 1px, transparent 1px 62px),
+    repeating-linear-gradient(0deg, rgba(23, 51, 50, 0.035) 0 1px, transparent 1px 62px);
+}
+
+/* 这里让小院和后台侧栏更接近视觉稿里的管理中心导航。 */
+.workbench-sidebar,
+.yard-sidebar {
+  width: 18rem;
+}
+
+/* 这里统一表单控件，使登录、名册、后台设置等页面拥有同一套输入体验。 */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-radius: 8px;
+  border-color: rgba(47, 111, 104, 0.18);
+  background-color: rgba(255, 250, 240, 0.84);
+}
+
+/* 这里让列表和表格在后台页面里更像紧凑台账，减少大屏空散感。 */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th,
+td {
+  border-color: rgba(47, 111, 104, 0.12);
+}
+
+/* 这里放在公共覆盖层末尾，确保所有含生成图的面板都使用干净背景横幅样式。 */
+.scroll-panel.section-image-backdrop,
+.scroll-panel:has(> .code-scene-has-generated) {
+  border-color: rgba(200, 164, 93, 0.22);
+  background: rgba(255, 250, 240, 0.72);
+  box-shadow:
+    0 18px 46px rgba(23, 51, 50, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.scroll-panel.section-image-backdrop::before,
+.scroll-panel:has(> .code-scene-has-generated)::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 48%);
+  opacity: 0.22;
+}
+
+.scroll-panel.section-image-backdrop::after,
+.scroll-panel:has(> .code-scene-has-generated)::after {
+  opacity: 0.34;
+}
+
+.scroll-panel.section-image-backdrop .code-scene,
+.scroll-panel:has(> .code-scene-has-generated) .code-scene {
+  border: 0;
+  box-shadow: none;
 }
 
 @keyframes cloud-drift {
@@ -451,7 +1590,7 @@ textarea:focus-visible {
     transform: translateX(-22%) skewX(-12deg);
   }
   50% {
-    opacity: 0.72;
+    opacity: 0.68;
     transform: translateX(22%) skewX(-12deg);
   }
 }
@@ -461,12 +1600,89 @@ textarea:focus-visible {
     background-attachment: scroll;
   }
 
+  .design-page-frame::before {
+    top: 1.2rem;
+    height: 10rem;
+    opacity: 0.46;
+  }
+
+  .design-page-frame::after {
+    display: none;
+  }
+
+  .site-hero-image {
+    object-position: center 58%;
+    opacity: 0.82;
+  }
+
+  .site-hero-content {
+    min-height: auto !important;
+    padding-bottom: 5rem;
+  }
+
+  .site-hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.98), rgba(255, 250, 240, 0.84) 56%, rgba(255, 250, 240, 0.28)),
+      linear-gradient(180deg, rgba(255, 250, 240, 0.66), rgba(237, 244, 239, 0.86) 92%);
+  }
+
+  .section-title-block {
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .section-title-block::before,
+  .section-title-block::after {
+    opacity: 0.34;
+  }
+
+  .section-title-seal {
+    width: 2.15rem;
+    height: 2.15rem;
+    font-size: 1.1rem;
+  }
+
+  .section-title-corner {
+    width: 4.6rem;
+    opacity: 0.42;
+  }
+
+  .code-scene-ui-a,
+  .code-scene-ui-b {
+    opacity: 0.42;
+  }
+
+  .code-scene-ui-c {
+    opacity: 0.5;
+  }
+
+  .site-mobile-dock-shell a[aria-current="page"],
+  .site-mobile-dock-shell a[aria-current="page"] svg {
+    color: #fffaf0 !important;
+  }
+
+  .site-hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.98), rgba(255, 250, 240, 0.72)),
+      linear-gradient(180deg, rgba(255, 250, 240, 0.82), rgba(237, 244, 239, 0.72) 76%, rgba(237, 244, 239, 0.86));
+  }
+
   .scroll-panel,
   .ritual-card,
   .workbench-surface {
     box-shadow:
-      0 16px 42px rgba(18, 35, 39, 0.12),
+      0 14px 34px rgba(23, 51, 50, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  }
+}
+
+@media (min-width: 1280px) {
+  .site-header-bar {
+    padding-right: 1rem;
+  }
+
+  .mobile-menu-button-inline {
+    display: none;
   }
 }
 

@@ -1,8 +1,9 @@
-import { CheckCheck, Mail } from 'lucide-react'
+﻿import { CheckCheck, Mail } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
+import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { fetchMyNotifications, markNotificationRead } from '../../lib/services'
@@ -87,6 +88,8 @@ export function YardNotificationsPage() {
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
+      <SceneBanner light label="问云小院消息提醒纯代码场景" variant="lantern" />
+
       <div className="mt-8 grid gap-5">
         {notifications.length === 0 ? (
           <EmptyState title="暂无消息" message="等山门有回音，消息会在这里出现。" />
@@ -103,7 +106,7 @@ export function YardNotificationsPage() {
                 </span>
               </div>
               <p className="mt-4 leading-8 text-[#526461]">{item.content}</p>
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4 text-sm text-[#526461]">
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4 text-sm text-[#526461]">
                 <p className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-[#c9a45c]" />
                   邮件状态：{formatEmailStatus(item.email_status)}

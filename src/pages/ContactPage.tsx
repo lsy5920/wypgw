@@ -1,11 +1,11 @@
 import { Mail, ShieldCheck } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { BrandMark } from '../components/BrandMark'
 import { CloudButton } from '../components/CloudButton'
 import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
-import { getPublicAsset } from '../lib/assets'
 import { fetchSettings } from '../lib/services'
 import type { SiteSetting } from '../lib/types'
 
@@ -48,7 +48,7 @@ export function ContactPage() {
 
   return (
     <PageShell>
-      <SectionTitle center eyebrow="联系山门" title="不公开永久二维码，只留清净入口">
+      <SectionTitle center eyebrow="联系山门" title="不公开永久二维码，只留清净入口" visual="gate">
         问云派首版采用名册登记与人工审核，不直接公开永久微信群二维码，避免广告和陌生人直接入群。
       </SectionTitle>
 
@@ -56,7 +56,7 @@ export function ContactPage() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
         <ScrollPanel className="seal-mark-bg">
-          <img className="mx-auto h-48 w-48 rounded-full object-cover shadow-xl" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <BrandMark className="mx-auto shadow-xl" size="large" />
           <h2 className="ink-title mt-6 text-center text-3xl font-bold">问云派山门</h2>
           <p className="mt-4 text-center leading-8 text-[#526461]">
             {contact.contactTip ?? '请先提交名册登记，执事查看后会择时联系。'}

@@ -13,16 +13,16 @@ interface RitualCardProps {
   dark?: boolean
 }
 
-// 这个函数渲染统一仪式卡片，入参是内容和样式，返回值是带边框、宣纸质感和微动效的容器。
+// 这个函数渲染统一信息卡片，入参是内容和样式，返回值是带边框、纸纹和微动效的容器。
 export function RitualCard({ children, className = '', delay = 0, dark = false }: RitualCardProps) {
   // 这个变量保存当前卡片色调样式，深色用于后台重点或深色区块。
   const toneClass = dark
-    ? 'border-white/12 bg-white/9 text-[#f6f4ef] shadow-[#07171d]/24 backdrop-blur'
-    : 'ritual-card text-[#172b2c]'
+    ? 'border-white/14 bg-white/10 text-[#f8f3e8] shadow-[#06171d]/22 backdrop-blur'
+    : 'ritual-card text-[#173332]'
 
   return (
     <motion.section
-      className={`relative overflow-hidden rounded-[1.35rem] p-5 transition duration-300 hover:-translate-y-1 hover:shadow-2xl md:p-7 ${toneClass} ${className}`}
+      className={`design-surface-card relative overflow-hidden rounded-lg p-5 transition duration-300 hover:-translate-y-1 hover:shadow-xl md:p-7 ${toneClass} ${className}`}
       initial={{ opacity: 0, y: 18, scale: 0.985 }}
       transition={{ duration: 0.44, delay, ease: 'easeOut' }}
       viewport={{ once: true, margin: '-60px' }}

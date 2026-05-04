@@ -1,4 +1,4 @@
-import { Crown, KeyRound, Mail, Search, ShieldCheck, UserRound } from 'lucide-react'
+﻿import { Crown, KeyRound, Mail, Search, ShieldCheck, UserRound } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
@@ -193,7 +193,7 @@ export function AdminStewardsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="执事管理" title="授予执事，分灯守山">
+      <SectionTitle eyebrow="执事管理" title="授予执事，分灯守山" visual="courtyard">
         只有超级管理员可以设置执事身份。成员被设为执事后，可使用自己的账号进入管理后台。
       </SectionTitle>
 
@@ -210,7 +210,7 @@ export function AdminStewardsPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
           <label className="grid gap-2">
             <span className="text-sm font-semibold">搜索成员</span>
-            <span className="flex items-center gap-2 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3">
+            <span className="flex items-center gap-2 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3">
               <Search className="h-4 w-4 text-[#6f8f8b]" />
               <input
                 className="min-w-0 flex-1 bg-transparent outline-none"
@@ -289,7 +289,7 @@ export function AdminStewardsPage() {
                   </div>
                 </div>
 
-                <details className="mt-5 rounded-2xl border border-[#6f8f8b]/15 bg-[#f7f2e8]/55 p-4">
+                <details className="mt-5 rounded-lg border border-[#6f8f8b]/15 bg-[#f7f2e8]/55 p-4">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#143044]">
                     <span className="flex items-center gap-2">
                       <KeyRound className="h-4 w-4 text-[#6f8f8b]" />
@@ -301,7 +301,7 @@ export function AdminStewardsPage() {
                   <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
                     <label className="grid gap-2">
                       <span className="text-xs font-semibold text-[#526461]">绑定邮箱</span>
-                      <span className="flex items-center gap-2 rounded-xl border border-[#6f8f8b]/20 bg-white/85 px-3 py-2">
+                      <span className="flex items-center gap-2 rounded-lg border border-[#6f8f8b]/20 bg-white/85 px-3 py-2">
                         <Mail className="h-4 w-4 shrink-0 text-[#6f8f8b]" />
                         <input
                           className="min-w-0 flex-1 bg-transparent text-sm outline-none disabled:text-[#526461]/55"
@@ -316,7 +316,7 @@ export function AdminStewardsPage() {
 
                     <label className="grid gap-2">
                       <span className="text-xs font-semibold text-[#526461]">重置密码</span>
-                      <span className="flex items-center gap-2 rounded-xl border border-[#6f8f8b]/20 bg-white/85 px-3 py-2">
+                      <span className="flex items-center gap-2 rounded-lg border border-[#6f8f8b]/20 bg-white/85 px-3 py-2">
                         <KeyRound className="h-4 w-4 shrink-0 text-[#6f8f8b]" />
                         <input
                           autoComplete="new-password"

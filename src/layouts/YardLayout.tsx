@@ -1,9 +1,9 @@
-import { Bell, CalendarDays, FileText, Home, Lamp, LogOut, ScrollText, ShieldCheck, UserRound } from 'lucide-react'
+﻿import { Bell, CalendarDays, FileText, Home, Lamp, LogOut, ScrollText, ShieldCheck, UserRound } from 'lucide-react'
 import { Link, Navigate, NavLink, Outlet } from 'react-router-dom'
+import { BrandMark } from '../components/BrandMark'
 import { StatusNotice } from '../components/StatusNotice'
 import { WorkbenchFrame } from '../components/WorkbenchFrame'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
-import { getPublicAsset } from '../lib/assets'
 
 // 这个数组保存问云小院导航项，返回值用于桌面侧栏和手机横向导航。
 const yardNavItems = [
@@ -39,12 +39,12 @@ export function YardLayout() {
 
   return (
     <div className="wenyun-shell min-h-screen bg-[#eef3ef] text-[#172b2c]">
-      <aside className="workbench-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#f6f4ef] backdrop-blur-xl lg:block">
+      <aside className="yard-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#172b2c] backdrop-blur-xl lg:block">
         <Link className="mb-8 flex items-center gap-3" to="/">
-          <img className="h-12 w-12 rounded-full border border-[#f8df9d]/45 bg-[#fff8e8]/88 object-cover p-0.5 shadow-md shadow-[#07171d]/20" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
+          <BrandMark className="border-[#b8473f]/35 shadow-md shadow-[#b8473f]/12" size="normal" />
           <div>
-            <p className="ink-title text-xl font-bold text-[#fff8e8]">问云小院</p>
-            <p className="text-xs text-[#f8df9d]">一方清净，安放来路</p>
+            <p className="ink-title text-xl font-bold text-[#173332]">问云小院</p>
+            <p className="text-xs text-[#7a6a48]">一方清净，安放来路</p>
           </div>
         </Link>
 
@@ -55,8 +55,8 @@ export function YardLayout() {
             return (
               <NavLink
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
-                    isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : 'text-[#f4efe0] hover:bg-white/10'
+                  `flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition ${
+                    isActive ? 'bg-[#b8473f] !text-white shadow-md shadow-[#b8473f]/18' : 'text-[#40524f] hover:bg-[#edf3ef]'
                   }`
                 }
                 end={item.path === '/yard'}
@@ -73,7 +73,7 @@ export function YardLayout() {
         {/* 这里给掌门和执事额外展示管理后台入口，不影响普通同门的小院体验。 */}
         {canManageAdmin ? (
           <Link
-            className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/28 bg-[#a83b32] px-4 py-3 text-sm text-white shadow-lg shadow-[#a83b32]/20"
+            className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-[#b8473f]/18 bg-[#b8473f] px-4 py-3 text-sm text-white shadow-lg shadow-[#b8473f]/20"
             to="/admin"
           >
             <ShieldCheck className="h-4 w-4" />
@@ -82,12 +82,12 @@ export function YardLayout() {
         ) : null}
 
         <div className="absolute bottom-5 left-5 right-5 grid gap-3">
-          <Link className="flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/28 bg-white/8 px-4 py-3 text-sm text-[#fff8e8]" to="/">
+          <Link className="flex items-center justify-center gap-2 rounded-lg border border-[#2f6f68]/18 bg-white/72 px-4 py-3 text-sm text-[#40524f]" to="/">
             <FileText className="h-4 w-4" />
             返回官网
           </Link>
           <button
-            className="flex items-center justify-center gap-2 rounded-xl border border-[#f8df9d]/24 bg-[#a83b32]/86 px-4 py-3 text-sm text-white"
+            className="flex items-center justify-center gap-2 rounded-lg border border-[#b8473f]/18 bg-[#b8473f]/90 px-4 py-3 text-sm text-white"
             onClick={() => void signOut()}
             type="button"
           >
@@ -98,7 +98,7 @@ export function YardLayout() {
       </aside>
 
       <div className="lg:pl-72">
-        <header className="workbench-topbar sticky top-0 z-30 px-4 py-3 text-[#fff8e8] lg:hidden">
+        <header className="yard-topbar sticky top-0 z-30 px-4 py-3 text-[#173332] lg:hidden">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Link className="flex items-center gap-2" to="/">
@@ -106,13 +106,13 @@ export function YardLayout() {
                 返回官网
               </Link>
               {canManageAdmin ? (
-                <Link className="flex items-center gap-1 text-sm text-[#f8df9d]" to="/admin">
+                <Link className="flex items-center gap-1 text-sm text-[#b8473f]" to="/admin">
                   <ShieldCheck className="h-4 w-4" />
                   后台
                 </Link>
               ) : null}
             </div>
-            <button className="text-sm text-[#f8df9d]" onClick={() => void signOut()} type="button">
+            <button className="text-sm text-[#b8473f]" onClick={() => void signOut()} type="button">
               退出
             </button>
           </div>
@@ -120,7 +120,7 @@ export function YardLayout() {
             {yardNavItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
-                    `shrink-0 rounded-full px-3 py-2 text-xs font-semibold shadow-sm ${isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-[#07171d]/18' : 'bg-white/12 text-[#fff8e8]'}`
+                    `shrink-0 rounded-full px-3 py-2 text-xs font-semibold shadow-sm ${isActive ? 'bg-[#b8473f] !text-white shadow-[#b8473f]/18' : 'bg-white/75 text-[#40524f]'}`
                 }
                 end={item.path === '/yard'}
                 key={item.path}

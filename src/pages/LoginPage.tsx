@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+﻿import { FormEvent, useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { CloudButton } from '../components/CloudButton'
 import { PageShell } from '../components/PageShell'
@@ -7,7 +7,6 @@ import { SectionTitle } from '../components/SectionTitle'
 import { StatusNotice } from '../components/StatusNotice'
 import { useAuth } from '../hooks/useAuth'
 import { getPasswordRecoveryRedirectUrl, translateSupabaseAuthError } from '../lib/authMessages'
-import { getPublicAsset } from '../lib/assets'
 import { supabase } from '../lib/supabaseClient'
 import type { Profile } from '../lib/types'
 
@@ -112,8 +111,6 @@ async function ensureProfile(userId: string, email: string): Promise<Profile | n
 
 // 这个函数渲染问云小院登录页，入参为空，返回值是登录和注册表单。
 export function LoginPage() {
-  // 这个常量保存问云小院插画路径，用于登录页展示入院场景。
-  const courtyardIllustrationPath = getPublicAsset('visual-v2/courtyard-illustration-v2.svg')
   // 这里读取当前认证状态，用于已登录时自动进入问云小院。
   const { profile, loading, refresh } = useAuth()
   // 这个变量用于页面跳转。
@@ -375,13 +372,11 @@ export function LoginPage() {
 
   return (
     <PageShell size="narrow">
-      <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院">
+      <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院" visual="courtyard">
         同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事也有自己的小院，并可从小院进入管理后台。
       </SectionTitle>
 
       <ScrollPanel className="relative overflow-hidden seal-mark-bg">
-        {/* 这里展示小院插画，让登录入口更像进入自己的院门。 */}
-        <img className="mb-6 max-h-64 w-full rounded-[1.25rem] object-cover" src={courtyardIllustrationPath} alt="问云派问云小院插画" />
         <div className="pointer-events-none absolute right-6 top-6 h-28 w-28 rounded-full border border-[#c9a45c]/30 bg-[#edf3ef]/70" />
         {stateMessage ? <StatusNotice title="访问提示" message={stateMessage} /> : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
@@ -408,7 +403,7 @@ export function LoginPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">已绑定邮箱</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setRecoveryEmail(event.target.value)}
                 placeholder="填写你绑定到账号上的真实邮箱"
                 type="email"
@@ -430,7 +425,7 @@ export function LoginPage() {
               <span className="text-sm font-semibold">新密码</span>
               <input
                 autoComplete="new-password"
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setNewPassword(event.target.value)}
                 placeholder="输入新的登录密码"
                 type="password"
@@ -441,7 +436,7 @@ export function LoginPage() {
               <span className="text-sm font-semibold">确认新密码</span>
               <input
                 autoComplete="new-password"
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 placeholder="再输入一次新密码"
                 type="password"
@@ -462,7 +457,7 @@ export function LoginPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">邮箱或编号</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="新用户填邮箱，旧名册可填 001"
                 type="text"
@@ -472,7 +467,7 @@ export function LoginPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">密码</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => setPassword(event.target.value)}
                 placeholder="邮箱密码或旧名册生日密码"
                 type="password"
@@ -492,7 +487,7 @@ export function LoginPage() {
           </form>
         ) : null}
 
-        <div className="mt-6 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
+        <div className="mt-6 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
           新用户按“邮箱 + 密码”直接注册登录；旧名册同门可用 001 这类短编号登录，密码优先使用出生年份，没有年份时使用短编号本身。001 已绑定超级管理员邮箱，需使用该邮箱账号当前密码。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。
         </div>
       </ScrollPanel>

@@ -1,4 +1,4 @@
-import { CheckCircle2, Info, TriangleAlert } from 'lucide-react'
+﻿import { CheckCircle2, Info, TriangleAlert } from 'lucide-react'
 
 // 这个类型描述提示条的入参，返回值用于表单、演示模式和错误提示。
 interface StatusNoticeProps {
@@ -26,7 +26,7 @@ export function StatusNotice({ type = 'info', title, message }: StatusNoticeProp
   }[type]
 
   return (
-    <div className={`flex gap-3 rounded-2xl border px-4 py-3 shadow-xl shadow-[#102a31]/8 backdrop-blur ${colorClass}`}>
+    <div className={`flex gap-3 rounded-lg border px-4 py-3 shadow-xl shadow-[#102a31]/8 backdrop-blur ${colorClass}`}>
       {/* 这里放状态图标，手机端也能一眼看出是提醒、成功还是错误。 */}
       <Icon className="mt-0.5 h-5 w-5 shrink-0" />
       <div className="min-w-0">

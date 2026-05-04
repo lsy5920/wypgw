@@ -1,24 +1,21 @@
 import { Link } from 'react-router-dom'
-import { getPublicAsset } from '../lib/assets'
+import { BrandMark } from './BrandMark'
 
 // 这个函数渲染官网底部信息，入参为空，返回值是页脚内容。
 export function SiteFooter() {
-  // 这个常量保存门派 Logo 路径，避免页脚里重复拼接资源地址。
-  const logoPath = getPublicAsset('wenyun-logo.png')
-  // 这个常量保存二版朱砂印路径，用作页脚插画式识别元素。
-  const sealPath = getPublicAsset('visual-v2/seal-v2.svg')
-
   return (
-    <footer className="relative overflow-hidden border-t border-[#d6aa54]/24 bg-[#07171d] pb-12 pt-14 text-[#f6f4ef]">
-      {/* 这里用流动雾层连接页面末尾和山门气质。 */}
+    <footer className="relative overflow-hidden border-t border-[#c8a45d]/24 bg-[#07181a] pb-12 pt-14 text-[#f6f4ef]">
+      {/* 这里用纯代码雾层连接页面末尾和山门气质。 */}
       <div className="hero-cloud-layer mist-flow pointer-events-none absolute inset-x-[-20%] top-8 h-28 opacity-40" />
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,42,49,0.82),rgba(7,23,29,0.94)),linear-gradient(90deg,rgba(214,170,84,0.12),transparent_48%,rgba(95,143,131,0.14))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,61,62,0.82),rgba(7,24,24,0.94)),linear-gradient(90deg,rgba(200,164,93,0.12),transparent_48%,rgba(47,111,104,0.14))]" />
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-[1.2fr_1fr_1fr] md:px-6">
-        {/* 这里展示门派 Logo 和总旨。 */}
+        {/* 这里展示纯代码门派印记和总旨。 */}
         <div>
           <div className="mb-4 flex items-center gap-4">
-            <img className="h-16 w-16 rounded-full border border-[#f8df9d]/48 bg-[#fff8e8]/86 object-cover p-0.5 shadow-xl shadow-[#07171d]/20" src={logoPath} alt="问云派门派 Logo" />
-            <img className="h-14 w-14 rotate-6 rounded-xl shadow-xl shadow-[#07171d]/20" src={sealPath} alt="问云派朱砂印插画" />
+            <BrandMark size="large" />
+            <div className="seal-code-mark grid h-14 w-14 place-items-center rounded-lg border border-[#f8df9d]/30 text-[#f8df9d] shadow-xl shadow-[#07171d]/20">
+              问
+            </div>
           </div>
           <p className="ink-title text-2xl font-bold text-[#fff8e8]">问云派</p>
           <p className="mt-3 max-w-md leading-8 text-[#f4efe0]">

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+﻿import { FormEvent, useEffect, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
@@ -128,7 +128,7 @@ export function AdminEventsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="活动管理" title="筹备问云雅集">
+      <SectionTitle eyebrow="活动管理" title="筹备问云雅集" visual="map">
         线上清谈、读书会、茶会、徒步与公益活动都可从这里创建。
       </SectionTitle>
 
@@ -140,7 +140,7 @@ export function AdminEventsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">活动标题 *</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('title', event.target.value)}
                 value={form.title}
               />
@@ -148,7 +148,7 @@ export function AdminEventsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">活动类型</span>
               <select
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('type', event.target.value)}
                 value={form.type}
               >
@@ -165,7 +165,7 @@ export function AdminEventsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">活动方式</span>
               <select
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('mode', event.target.value)}
                 value={form.mode}
               >
@@ -176,7 +176,7 @@ export function AdminEventsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">活动时间</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateField('event_time', event.target.value)}
                 type="datetime-local"
                 value={form.event_time}
@@ -185,7 +185,7 @@ export function AdminEventsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">人数上限</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 min="1"
                 onChange={(event) => updateField('capacity', event.target.value)}
                 type="number"
@@ -196,7 +196,7 @@ export function AdminEventsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">活动地点</span>
             <input
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('location', event.target.value)}
               placeholder="例如：微信群、杭州西湖、线上会议"
               value={form.location}
@@ -205,7 +205,7 @@ export function AdminEventsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">活动简介</span>
             <textarea
-              className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+              className="min-h-28 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('description', event.target.value)}
               value={form.description}
             />
@@ -213,7 +213,7 @@ export function AdminEventsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">状态</span>
             <select
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('status', event.target.value)}
               value={form.status}
             >
@@ -265,7 +265,7 @@ export function AdminEventsPage() {
                     <h3 className="mt-2 text-xl font-bold text-[#143044]">{item.nickname ?? '未填写昵称'}</h3>
                   </div>
                   <select
-                    className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                     onChange={(event) => void handleRegistrationStatus(item.id, event.target.value as EventRegistrationStatus)}
                     value={item.status}
                   >

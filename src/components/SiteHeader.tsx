@@ -1,9 +1,17 @@
-import { Menu, UserRound, X } from 'lucide-react'
+import { BookOpen, Home, Menu, ScrollText, UserRound, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { siteNavItems } from '../data/siteContent'
-import { getPublicAsset } from '../lib/assets'
+import { BrandMark } from './BrandMark'
+
+// 这个数组保存手机端底部常用入口，返回值用于让小屏用户一只手也能快速切换核心页面。
+const mobileDockItems = [
+  { label: '首页', path: '/', icon: Home },
+  { label: '金典', path: '/canon', icon: BookOpen },
+  { label: '名册', path: '/join', icon: ScrollText },
+  { label: '小院', path: '/yard', icon: UserRound }
+]
 
 // 这个函数渲染官网顶部导航，入参为空，返回值是桌面和手机共用的导航栏。
 export function SiteHeader() {
@@ -13,28 +21,15 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    // 这里在手机端首次打开官网时自动展开菜单，让新用户知道导航入口在哪里。
-    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches
-
-    if (!isMobile) {
-      return undefined
-    }
-
-    setOpen(true)
-
-    // 这里两秒后自动收回菜单，避免遮挡首屏内容。
-    const timer = window.setTimeout(() => {
-      setOpen(false)
-    }, 2000)
-
-    // 这里清理定时器，避免页面切换时继续执行。
-    return () => window.clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
     // 这个函数根据滚动位置更新导航质感，入参为空，返回值为空。
     function handleScroll() {
-      setScrolled(window.scrollY > 24)
+      try {
+        // 这里读取滚动距离，滚动后让导航背景更实，方便阅读。
+        setScrolled(window.scrollY > 24)
+      } catch {
+        // 这里兜底处理少数浏览器读取滚动失败的情况，失败时保持默认导航样式。
+        setScrolled(false)
+      }
     }
 
     handleScroll()
@@ -48,33 +43,44 @@ export function SiteHeader() {
   const closeMenu = () => setOpen(false)
   // 这个变量保存导航主容器质感，返回值用于滚动前后平滑切换。
   const headerSurfaceClass = scrolled
-    ? 'border-[#f8df9d]/28 bg-[#07171d]/88 shadow-[#07171d]/32'
-    : 'border-[#f8df9d]/32 bg-[#07171d]/62 shadow-[#07171d]/22'
+    ? 'border-[#173332]/12 bg-white/90 shadow-[#173332]/16'
+    : 'border-white/22 bg-white/72 shadow-[#173332]/10'
 
   return (
-    <header className="fixed inset-x-3 top-3 z-40 pointer-events-none md:top-5">
+    <header className="pointer-events-none fixed inset-x-3 top-3 z-40 md:top-5">
       <motion.div
         animate={{ y: 0, opacity: 1 }}
-        className={`pointer-events-auto mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between rounded-[2rem] border px-4 shadow-2xl backdrop-blur-2xl transition duration-300 md:h-20 md:px-6 ${headerSurfaceClass}`}
+        className={`site-header-bar site-header-shell pointer-events-auto relative mx-auto flex h-16 max-w-7xl items-center justify-between rounded-lg border px-3 shadow-xl backdrop-blur-2xl transition duration-300 md:h-[4.5rem] md:px-4 ${headerSurfaceClass}`}
         initial={{ y: -18, opacity: 0 }}
         transition={{ duration: 0.48, ease: 'easeOut' }}
       >
         {/* 这里展示门派正式 Logo 和站点名称。 */}
-        <Link className="flex items-center gap-3" to="/" onClick={closeMenu}>
-          <img className="h-12 w-12 rounded-full border border-[#f8df9d]/55 bg-[#fff8e8]/92 object-cover p-0.5 shadow-md shadow-[#07171d]/18 md:h-14 md:w-14" src={getPublicAsset('wenyun-logo.png')} alt="问云派门派 Logo" />
-          <div>
-            <p className="ink-title text-2xl font-bold leading-none text-[#fff8e8] drop-shadow">问云派</p>
-            <p className="mt-1 text-xs text-[#f8df9d]">乱世问云 心有所栖</p>
+        <Link className="flex min-w-0 items-center gap-3" to="/" onClick={closeMenu}>
+          <BrandMark className="shadow-[#173332]/10" size="normal" />
+          <div className="min-w-0">
+            <p className="ink-title truncate text-2xl font-bold leading-none text-[#173332]">问云派</p>
+            <p className="mt-1 hidden text-xs text-[#7b6b4a] sm:block">乱世问云 心有所栖</p>
           </div>
         </Link>
 
-        {/* 这里展示桌面端导航，手机端会隐藏。 */}
-        <nav className="hidden items-center gap-1 lg:flex">
+        {/* 这里把手机菜单按钮放在品牌旁边，避免窄屏被右侧边界挤出视口。 */}
+        <button
+          aria-expanded={open}
+          aria-label={open ? '关闭菜单' : '打开菜单'}
+          className="mobile-menu-button-inline focus-ring items-center justify-center rounded-lg border border-[#0f3d3e]/16 bg-white/84 p-3 text-[#173332] shadow-md shadow-[#173332]/10"
+          onClick={() => setOpen((value) => !value)}
+          type="button"
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+
+        {/* 这里展示桌面端导航，较窄屏幕会切换为菜单按钮。 */}
+        <nav className="hidden min-w-0 items-center gap-1 xl:flex">
           {siteNavItems.map((item) => (
             <NavLink
               className={({ isActive }) =>
-                `rounded-full px-3 py-2 text-sm font-semibold transition ${
-                  isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : '!text-[#f6f4ef] hover:bg-white/12'
+                `rounded-lg px-2.5 py-2 text-xs font-semibold transition ${
+                  isActive ? 'bg-[#173332] !text-white shadow-md shadow-[#173332]/16' : '!text-[#173332] hover:bg-[#e4f0eb]'
                 }`
               }
               key={item.path}
@@ -85,41 +91,36 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* 这里展示后台入口和手机菜单按钮。 */}
-        <div className="flex items-center gap-2">
-          <Link className="cloud-button hidden items-center gap-2 rounded-full border border-[#f8df9d]/42 bg-[#fff8e8]/12 px-4 py-2 text-sm font-semibold !text-[#fff8e8] transition hover:-translate-y-0.5 hover:bg-[#fff8e8]/20 md:inline-flex" to="/yard">
+        {/* 这里展示小院入口和手机菜单按钮。 */}
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            className="cloud-button hidden items-center gap-2 rounded-lg border border-[#0f3d3e]/16 bg-[#173332] px-4 py-2 text-sm font-semibold !text-white shadow-md shadow-[#173332]/14 transition hover:-translate-y-0.5 hover:bg-[#0f3d3e] xl:inline-flex"
+            to="/yard"
+          >
             <UserRound className="h-4 w-4" />
             问云小院
           </Link>
-          <button
-            aria-label={open ? '关闭菜单' : '打开菜单'}
-            className="focus-ring rounded-full border border-[#f8df9d]/35 bg-[#fff8e8]/12 p-3 text-[#fff8e8] shadow-md shadow-[#07171d]/18 lg:hidden"
-            onClick={() => setOpen((value) => !value)}
-            type="button"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </div>
       </motion.div>
 
-      {/* 这里展示手机端展开菜单。 */}
+      {/* 这里展示手机和平板端展开菜单。 */}
       <AnimatePresence>
         {open ? (
           <motion.div
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-[1.75rem] border border-[#f8df9d]/32 bg-[#07171d]/94 px-4 pb-4 shadow-2xl shadow-[#07171d]/26 backdrop-blur-2xl lg:hidden"
+            className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-lg border border-[#173332]/12 bg-white/94 px-3 pb-3 shadow-xl shadow-[#173332]/16 backdrop-blur-2xl xl:hidden"
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
           >
-            <nav className="grid grid-cols-2 auto-rows-fr gap-2 pt-3">
+            <nav className="grid grid-cols-2 auto-rows-fr gap-2 pt-3 md:grid-cols-3">
               {siteNavItems.map((item) => (
                 <NavLink
                   className={({ isActive }) =>
-                    `flex min-h-12 items-center justify-center rounded-2xl border px-3 py-3 text-center text-base font-semibold leading-5 shadow-md shadow-[#07171d]/10 transition ${
+                    `flex min-h-12 items-center justify-center rounded-lg border px-3 py-3 text-center text-sm font-semibold leading-5 shadow-sm shadow-[#173332]/6 transition ${
                       isActive
-                        ? 'border-[#f8df9d]/70 bg-[#fff8e8] text-[#102a31]'
-                        : 'border-[#d6aa54]/28 bg-[#fff8e8]/96 text-[#102a31] hover:bg-white'
+                        ? 'border-[#173332]/18 bg-[#173332] text-white'
+                        : 'border-[#0f3d3e]/12 bg-[#edf4ef] text-[#173332] hover:bg-white'
                     }`
                   }
                   key={item.path}
@@ -131,10 +132,8 @@ export function SiteHeader() {
               ))}
               <NavLink
                 className={({ isActive }) =>
-                  `flex min-h-12 items-center justify-center rounded-2xl border px-3 py-3 text-center text-base font-semibold leading-5 shadow-md shadow-[#07171d]/10 transition ${
-                    isActive
-                      ? 'border-[#f8df9d]/70 bg-[#fff8e8] text-[#102a31]'
-                      : 'border-[#d6aa54]/22 bg-[#a83b32] text-white hover:bg-[#8f312b]'
+                  `flex min-h-12 items-center justify-center rounded-lg border px-3 py-3 text-center text-sm font-semibold leading-5 shadow-sm shadow-[#173332]/6 transition ${
+                    isActive ? 'border-[#b8473f]/22 bg-[#7f3347] text-white' : 'border-[#b8473f]/18 bg-[#b8473f] text-white hover:bg-[#9e3a3f]'
                   }`
                 }
                 onClick={closeMenu}
@@ -146,6 +145,31 @@ export function SiteHeader() {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      {/* 这里渲染手机端底部常用导航，完整页面列表仍放在顶部展开菜单里。 */}
+      <nav className="site-mobile-dock site-mobile-dock-shell pointer-events-auto fixed bottom-3 left-2 right-2 z-40 grid grid-cols-4 gap-1 overflow-hidden rounded-lg border border-[#173332]/12 bg-[#fffaf0]/94 p-1 shadow-2xl shadow-[#173332]/18 backdrop-blur-2xl md:hidden">
+        {mobileDockItems.map((item) => {
+          // 这个变量保存当前入口的图标组件，避免在 JSX 里重复查找。
+          const Icon = item.icon
+
+          return (
+            <NavLink
+              className={({ isActive }) =>
+                `flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-0.5 text-[0.68rem] font-semibold leading-none transition ${
+                  isActive ? 'bg-[#173332] text-white shadow-md shadow-[#173332]/14' : 'text-[#40524f] hover:bg-[#e4f0eb]'
+                }`
+              }
+              end={item.path === '/'}
+              key={item.path}
+              onClick={closeMenu}
+              to={item.path}
+            >
+              <Icon className="h-4 w-4" />
+              <span className="max-w-full truncate">{item.label}</span>
+            </NavLink>
+          )
+        })}
+      </nav>
     </header>
   )
 }

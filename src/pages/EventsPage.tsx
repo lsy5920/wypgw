@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Users } from 'lucide-react'
+﻿import { CalendarDays, MapPin, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
 import { EmptyState } from '../components/EmptyState'
@@ -119,7 +119,7 @@ export function EventsPage() {
 
   return (
     <PageShell>
-      <SectionTitle center eyebrow="问云雅集" title="线上清谈，线下相逢">
+      <SectionTitle center eyebrow="问云雅集" title="线上清谈，线下相逢" visual="courtyard">
         问云派日常不求繁杂，但求有温度、有秩序、有意义。
       </SectionTitle>
 
@@ -159,11 +159,11 @@ export function EventsPage() {
                   </p>
                 </div>
 
-                <div className="mt-5 rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4">
+                <div className="mt-5 rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4">
                   {profile ? (
                     <div className="grid gap-3">
                       <input
-                        className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 text-sm outline-none focus:border-[#6f8f8b]"
+                        className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 text-sm outline-none focus:border-[#6f8f8b]"
                         disabled={registered}
                         onChange={(event) => updateNote(item.id, event.target.value)}
                         placeholder="报名备注，可不填"

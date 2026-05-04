@@ -1,12 +1,12 @@
-import { Bell, CalendarDays, Lamp, QrCode, ScrollText, ShieldQuestion, X } from 'lucide-react'
+﻿import { Bell, CalendarDays, Lamp, QrCode, ScrollText, ShieldQuestion, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { CodeScene } from '../../components/CodeScene'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels, lanternStatusLabels } from '../../data/siteContent'
-import { getPublicAsset } from '../../lib/assets'
 import { confirmMyGuiyuntangJoined, fetchGuiyuntangSetting, fetchYardOverview } from '../../lib/services'
 import type { GuiyuntangSetting, JoinApplication, YardOverview } from '../../lib/types'
 
@@ -50,8 +50,6 @@ function shouldPopupGuiyuntang(application: JoinApplication | undefined): boolea
 
 // 这个函数渲染问云小院总览页，入参为空，返回值是用户后台首页。
 export function YardDashboardPage() {
-  // 这个常量保存问云小院插画路径，用于总览页展示个人小院场景。
-  const courtyardIllustrationPath = getPublicAsset('visual-v2/courtyard-illustration-v2.svg')
   // 这个状态保存小院总览数据。
   const [overview, setOverview] = useState<YardOverview | null>(null)
   // 这个状态保存归云堂二维码设置，只有符合条件的用户才能通过数据库 RLS 读取。
@@ -151,13 +149,13 @@ export function YardDashboardPage() {
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
       <ScrollPanel className="mt-8 overflow-hidden p-0">
-        {/* 这里展示小院插画，让用户后台首页也延续二版插画设计。 */}
-        <img className="max-h-[24rem] w-full object-cover" src={courtyardIllustrationPath} alt="问云派问云小院插画" />
+        {/* 这里展示纯代码小院场景，让用户后台首页也延续视觉稿设计。 */}
+        <CodeScene className="min-h-[22rem] rounded-none" label="问云派问云小院纯代码场景" variant="courtyard" />
       </ScrollPanel>
 
       {guiyuntangOpen && canShowGuiyuntang ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143044]/55 px-4 py-8 backdrop-blur-sm">
-          <div className="max-h-[92vh] w-full max-w-md overflow-auto rounded-[2rem] border border-[#c9a45c]/45 bg-[#fffaf0] p-5 shadow-2xl shadow-[#143044]/25">
+            <div className="max-h-[92vh] w-full max-w-md overflow-auto rounded-lg border border-[#c9a45c]/45 bg-[#fffaf0] p-5 shadow-2xl shadow-[#143044]/25">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-[#9e3d32]">名帖已通过</p>
@@ -173,14 +171,14 @@ export function YardDashboardPage() {
               </button>
             </div>
             <p className="mt-3 text-sm leading-7 text-[#526461]">{guiyuntangSetting?.instruction}</p>
-            <div className="mt-5 rounded-3xl border border-[#c9a45c]/35 bg-white p-4">
+            <div className="mt-5 rounded-lg border border-[#c9a45c]/35 bg-white p-4">
               <img
                 alt="归云堂入群二维码"
-                className="mx-auto aspect-square w-full max-w-72 rounded-2xl object-contain"
+                className="mx-auto aspect-square w-full max-w-72 rounded-lg object-contain"
                 src={guiyuntangSetting?.qr_image_data_url ?? ''}
               />
             </div>
-            <div className="mt-4 rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee] p-4 text-sm leading-7 text-[#7a342d]">
+            <div className="mt-4 rounded-lg border border-[#9e3d32]/25 bg-[#fff1ee] p-4 text-sm leading-7 text-[#7a342d]">
               {guiyuntangSetting?.warning}
             </div>
             <button
@@ -247,7 +245,7 @@ export function YardDashboardPage() {
               <EmptyState title="暂无提醒" message="名帖、云灯和雅集有变化时，会在这里亮起一盏小灯。" />
             ) : (
               latestNotifications.map((item) => (
-                <div className="rounded-2xl border border-[#c9a45c]/25 bg-white/60 p-4" key={item.id}>
+                <div className="rounded-lg border border-[#c9a45c]/25 bg-white/60 p-4" key={item.id}>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-semibold text-[#143044]">{item.title}</p>
                     <span className="text-xs text-[#7a6a48]">{formatDate(item.created_at)}</span>
@@ -276,7 +274,7 @@ export function YardDashboardPage() {
           </div>
 
           {canShowGuiyuntang ? (
-            <div className="mt-5 rounded-2xl border border-[#c9a45c]/30 bg-white/65 p-4">
+            <div className="mt-5 rounded-lg border border-[#c9a45c]/30 bg-white/65 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-[#9e3d32]" />

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+﻿import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
@@ -230,7 +230,7 @@ export function AdminSettingsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="站点设置" title="维护联系山门信息">
+      <SectionTitle eyebrow="站点设置" title="维护联系山门信息" visual="workbench">
         这里用于管理联系页展示说明，也可以维护问云小院邮件提醒使用的 SMTP 服务。
       </SectionTitle>
 
@@ -241,7 +241,7 @@ export function AdminSettingsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">联系人名称</span>
             <input
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('wechatName', event.target.value)}
               value={form.wechatName}
             />
@@ -249,7 +249,7 @@ export function AdminSettingsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">联系说明</span>
             <textarea
-              className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+              className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('contactTip', event.target.value)}
               value={form.contactTip}
             />
@@ -257,7 +257,7 @@ export function AdminSettingsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">二维码安全说明</span>
             <textarea
-              className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+              className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateField('qrDescription', event.target.value)}
               value={form.qrDescription}
             />
@@ -277,7 +277,7 @@ export function AdminSettingsPage() {
         </div>
 
         <form className="grid gap-5" onSubmit={handleGuiyuntangSubmit}>
-          <label className="flex items-start gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
+          <label className="flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
             <input
               checked={guiyuntangForm.enabled}
               className="mt-1 h-4 w-4"
@@ -291,7 +291,7 @@ export function AdminSettingsPage() {
             <span className="text-sm font-semibold">上传归云堂二维码图片</span>
             <input
               accept="image/*"
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none file:mr-4 file:rounded-full file:border-0 file:bg-[#6f8f8b] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none file:mr-4 file:rounded-full file:border-0 file:bg-[#6f8f8b] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
               onChange={(event) => handleGuiyuntangQrFile(event.target.files?.[0] ?? null)}
               type="file"
             />
@@ -299,10 +299,10 @@ export function AdminSettingsPage() {
           </label>
 
           {guiyuntangForm.qr_image_data_url ? (
-            <div className="grid gap-4 rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/65 p-4 md:grid-cols-[auto_1fr] md:items-center">
+            <div className="grid gap-4 rounded-lg border border-[#9e3d32]/25 bg-[#fff1ee]/65 p-4 md:grid-cols-[auto_1fr] md:items-center">
               <img
                 alt="归云堂入群二维码预览"
-                className="h-44 w-44 rounded-2xl border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
+                className="h-44 w-44 rounded-lg border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
                 src={guiyuntangForm.qr_image_data_url}
               />
               <div className="text-sm leading-7 text-[#526461]">
@@ -318,7 +318,7 @@ export function AdminSettingsPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4 text-sm leading-7 text-[#526461]">
+            <div className="rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4 text-sm leading-7 text-[#526461]">
               当前尚未保存二维码。请先选择图片并保存，后台名帖审核页才会显示入群提示。
             </div>
           )}
@@ -326,7 +326,7 @@ export function AdminSettingsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">审核通过提示文案</span>
             <textarea
-              className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+              className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateGuiyuntangField('instruction', event.target.value)}
               value={guiyuntangForm.instruction}
             />
@@ -335,13 +335,13 @@ export function AdminSettingsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">保密提醒</span>
             <textarea
-              className="min-h-24 rounded-xl border border-[#9e3d32]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#9e3d32]"
+              className="min-h-24 rounded-lg border border-[#9e3d32]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#9e3d32]"
               onChange={(event) => updateGuiyuntangField('warning', event.target.value)}
               value={guiyuntangForm.warning}
             />
           </label>
 
-          <div className="rounded-xl border border-[#c9a45c]/25 bg-white/55 p-4 text-sm leading-7 text-[#526461]">
+          <div className="rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4 text-sm leading-7 text-[#526461]">
             当前状态：{guiyuntangSetting?.enabled ? '已启用归云堂二维码提示' : '未启用归云堂二维码提示'}。
             {guiyuntangSetting?.updated_at ? ` 最后保存时间：${new Date(guiyuntangSetting.updated_at).toLocaleString('zh-CN')}。` : ''}
           </div>
@@ -361,7 +361,7 @@ export function AdminSettingsPage() {
         </div>
 
         <form className="grid gap-5" onSubmit={handleSmtpSubmit}>
-          <label className="flex items-start gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
+          <label className="flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
             <input
               checked={smtpForm.enabled}
               className="mt-1 h-4 w-4"
@@ -375,7 +375,7 @@ export function AdminSettingsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">SMTP 主机</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateSmtpField('host', event.target.value)}
                 placeholder="smtp.qq.com"
                 value={smtpForm.host}
@@ -384,14 +384,14 @@ export function AdminSettingsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">端口</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 min="1"
                 onChange={(event) => updateSmtpField('port', event.target.value)}
                 type="number"
                 value={smtpForm.port}
               />
             </label>
-            <label className="flex items-center gap-3 rounded-xl border border-[#6f8f8b]/25 bg-white/70 px-4 py-3">
+            <label className="flex items-center gap-3 rounded-lg border border-[#6f8f8b]/25 bg-white/70 px-4 py-3">
               <input
                 checked={smtpForm.secure}
                 onChange={(event) => updateSmtpField('secure', event.target.checked)}
@@ -405,7 +405,7 @@ export function AdminSettingsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">SMTP 账号</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateSmtpField('username', event.target.value)}
                 placeholder="例如：your@qq.com"
                 value={smtpForm.username}
@@ -414,7 +414,7 @@ export function AdminSettingsPage() {
             <label className="grid gap-2">
               <span className="text-sm font-semibold">发件人</span>
               <input
-                className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                 onChange={(event) => updateSmtpField('from_email', event.target.value)}
                 placeholder="例如：your@qq.com"
                 value={smtpForm.from_email}
@@ -425,7 +425,7 @@ export function AdminSettingsPage() {
           <label className="grid gap-2">
             <span className="text-sm font-semibold">SMTP 授权码</span>
             <input
-              className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => updateSmtpField('password', event.target.value)}
               placeholder={smtpSetting ? '留空表示保留旧授权码' : '首次配置请填写授权码'}
               type="password"
@@ -433,7 +433,7 @@ export function AdminSettingsPage() {
             />
           </label>
 
-          <div className="rounded-xl border border-[#c9a45c]/25 bg-white/55 p-4 text-sm leading-7 text-[#526461]">
+          <div className="rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4 text-sm leading-7 text-[#526461]">
             当前状态：{smtpSetting?.enabled ? '已启用后台 SMTP 配置' : '未启用后台 SMTP 配置'}。
             {smtpSetting?.updated_at ? ` 最后保存时间：${new Date(smtpSetting.updated_at).toLocaleString('zh-CN')}。` : ''}
           </div>

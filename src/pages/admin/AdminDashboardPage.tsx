@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { ScrollPanel } from '../../components/ScrollPanel'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
-import { getPublicAsset } from '../../lib/assets'
 import {
   fetchAdminAnnouncements,
   fetchAdminApplications,
@@ -25,8 +24,6 @@ interface DashboardStats {
 
 // 这个函数渲染后台首页，入参为空，返回值是数据总览。
 export function AdminDashboardPage() {
-  // 这个常量保存后台插画路径，用于总览页展示管理场景。
-  const adminIllustrationPath = getPublicAsset('visual-v2/admin-illustration-v2.svg')
   // 这个状态保存总览统计。
   const [stats, setStats] = useState<DashboardStats>({
     pendingApplications: 0,
@@ -64,16 +61,11 @@ export function AdminDashboardPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="后台总览" title="护灯与守门">
+      <SectionTitle eyebrow="后台总览" title="护灯与守门" visual="workbench">
         查看名册登记、云灯留言、公告和雅集的当前状态。
       </SectionTitle>
 
       {notice ? <StatusNotice title="演示模式提示" message={notice} /> : null}
-
-      <ScrollPanel className="mt-8 overflow-hidden p-0">
-        {/* 这里展示后台插画，让后台首页也统一到二版插画风格。 */}
-        <img className="max-h-[24rem] w-full object-cover" src={adminIllustrationPath} alt="问云派后台管理插画" />
-      </ScrollPanel>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[

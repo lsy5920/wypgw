@@ -50,7 +50,7 @@ export function AdminLanternsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="云灯审核" title="让温暖公开，让杂音止步">
+      <SectionTitle eyebrow="云灯审核" title="让温暖公开，让杂音止步" visual="lantern">
         云灯默认先审核再公开，避免广告、低俗内容和恶意刷屏。
       </SectionTitle>
 

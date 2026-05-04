@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ScrollPanel } from '../../components/ScrollPanel'
+import { SceneBanner } from '../../components/SceneBanner'
 import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
 import { applicationStatusLabels } from '../../data/siteContent'
@@ -47,6 +48,8 @@ export function YardApplicationsPage() {
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
+      <SceneBanner light label="问云小院我的名帖纯代码场景" variant="scroll" />
+
       <div className="mt-8 grid gap-5">
         {applications.length === 0 ? (
           <EmptyState title="尚未递交名帖" message="可到问云名册页面递上名帖，之后会在这里看到审核进度。" />
@@ -72,21 +75,21 @@ export function YardApplicationsPage() {
                 <p>入册时间：{item.joined_at ? formatDate(item.joined_at) : formatDate(item.created_at)}</p>
                 <p>审核时间：{item.reviewed_at ? formatDate(item.reviewed_at) : '尚未审核'}</p>
               </div>
-              <div className="mt-5 rounded-2xl border border-[#c9a45c]/25 bg-white/55 p-4">
+              <div className="mt-5 rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4">
                 <p className="text-sm font-semibold text-[#143044]">宣言</p>
                 <p className="mt-2 text-sm leading-7 text-[#526461]">{item.motto ?? item.reason}</p>
               </div>
-              <div className="mt-4 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
+              <div className="mt-4 rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
                 <p className="text-sm font-semibold text-[#143044]">兴趣爱好</p>
                 <p className="mt-2 text-sm leading-7 text-[#526461]">{item.tags?.trim() || '未填写'}</p>
                 <p className="mt-1 text-sm leading-7 text-[#526461]">同行期待：{item.companion_expectation ?? '未填写'}</p>
               </div>
-              <div className="mt-4 rounded-2xl border border-[#c9a45c]/20 bg-white/50 p-4">
+              <div className="mt-4 rounded-lg border border-[#c9a45c]/20 bg-white/50 p-4">
                 <p className="text-sm font-semibold text-[#143044]">联系方式</p>
                 <p className="mt-2 text-sm leading-7 text-[#526461]">{item.legacy_contact ?? item.wechat_id}</p>
               </div>
               {item.admin_note ? (
-                <div className="mt-4 rounded-2xl border border-[#9e3d32]/20 bg-[#fff1ee]/70 p-4">
+                <div className="mt-4 rounded-lg border border-[#9e3d32]/20 bg-[#fff1ee]/70 p-4">
                   <p className="text-sm font-semibold text-[#9e3d32]">管理员备注</p>
                   <p className="mt-2 text-sm leading-7 text-[#526461]">{item.admin_note}</p>
                 </div>

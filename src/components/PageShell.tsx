@@ -23,11 +23,13 @@ export function PageShell({ children, size = 'normal', className = '' }: PageShe
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      className={`relative isolate mx-auto w-full ${shellSizeClass[size]} px-4 py-12 md:px-6 md:py-16 ${className}`}
+      className={`design-page-frame relative isolate mx-auto w-full ${shellSizeClass[size]} px-4 py-12 md:px-6 md:py-16 ${className}`}
       initial={{ opacity: 0, y: 18 }}
       transition={{ duration: 0.46, ease: 'easeOut' }}
     >
-      {/* 这里给每个内容页加一条很轻的金线，让页面从导航下方进入时更有层次。 */}
+      {/* 这里绘制页面边缘的纸纹经线，让每个前台页面都像同一张设计稿延展出来。 */}
+      <div aria-hidden="true" className="page-shell-weave pointer-events-none absolute inset-x-4 top-8 -z-10 hidden h-20 md:block" />
+      {/* 这里给每个内容页加一条很轻的分隔线，让页面从导航下方进入时更有层次。 */}
       <div className="gold-thread pointer-events-none absolute inset-x-6 top-0 -z-10 opacity-70" />
       {children}
     </motion.div>

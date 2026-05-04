@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Eye, EyeOff, QrCode, Save, Search, ShieldAlert, Trash2 } from 'lucide-react'
+﻿import { ChevronDown, ChevronUp, Eye, EyeOff, QrCode, Save, Search, ShieldAlert, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../../components/CloudButton'
 import { EmptyState } from '../../components/EmptyState'
@@ -263,19 +263,19 @@ export function AdminApplicationsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订">
+      <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订" visual="workbench">
         默认展示未审核名帖。道名和联系方式的用户申请，请切到“资料修改”筛选后展开审核。
       </SectionTitle>
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
-      <div className="mt-8 grid gap-4 rounded-2xl border border-[#c9a45c]/25 bg-white/60 p-4 xl:grid-cols-[1fr_auto]">
+      <div className="mt-8 grid gap-4 rounded-lg border border-[#c9a45c]/25 bg-white/60 p-4 xl:grid-cols-[1fr_auto]">
         <label className="grid gap-2">
           <span className="text-sm font-semibold">搜索名帖</span>
           <span className="relative">
             <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#6f8f8b]" />
             <input
-              className="w-full rounded-xl border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
+              className="w-full rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="输入道名、真实姓名或联系方式"
               value={searchTerm}
@@ -360,7 +360,7 @@ export function AdminApplicationsPage() {
 
                 {expanded ? (
                   <div className="mt-6 border-t border-[#c9a45c]/20 pt-6">
-                    <div className="mb-5 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/65 p-4">
+                    <div className="mb-5 rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/65 p-4">
                       <p className="text-sm font-semibold text-[#143044]">最新问心考核</p>
                       <div className="mt-2 grid gap-2 text-sm leading-7 text-[#526461] md:grid-cols-4">
                         <p>分数：{latestQuiz ? `${latestQuiz.score}/${latestQuiz.total_score}` : '未参加'}</p>
@@ -371,7 +371,7 @@ export function AdminApplicationsPage() {
                     </div>
 
                     {shouldProminentlyShowGuiyuntang ? (
-                      <div className="mb-5 rounded-3xl border-2 border-[#9e3d32]/35 bg-[#fff1ee]/85 p-5 shadow-xl shadow-[#9e3d32]/10">
+                      <div className="mb-5 rounded-lg border-2 border-[#9e3d32]/35 bg-[#fff1ee]/85 p-5 shadow-xl shadow-[#9e3d32]/10">
                         <div className="flex flex-wrap items-start justify-between gap-4">
                           <div className="min-w-0">
                             <p className="flex items-center gap-2 text-sm font-semibold text-[#9e3d32]">
@@ -389,11 +389,11 @@ export function AdminApplicationsPage() {
                           {guiyuntangQrReady ? (
                             <img
                               alt="归云堂入群二维码"
-                              className="h-44 w-44 shrink-0 rounded-2xl border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
+                              className="h-44 w-44 shrink-0 rounded-lg border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
                               src={guiyuntangSetting?.qr_image_data_url ?? ''}
                             />
                           ) : (
-                            <div className="grid h-44 w-44 shrink-0 place-items-center rounded-2xl border border-[#9e3d32]/25 bg-white/70 p-4 text-center text-sm leading-7 text-[#9e3d32]">
+                            <div className="grid h-44 w-44 shrink-0 place-items-center rounded-lg border border-[#9e3d32]/25 bg-white/70 p-4 text-center text-sm leading-7 text-[#9e3d32]">
                               <QrCode className="mb-2 h-8 w-8" />
                               尚未配置二维码
                               <CloudButton className="mt-3 w-full" to="/admin/settings" variant="ghost">
@@ -406,7 +406,7 @@ export function AdminApplicationsPage() {
                     ) : null}
 
                     {shouldCompactlyShowGuiyuntang ? (
-                      <div className="mb-5 rounded-2xl border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
+                      <div className="mb-5 rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/60 p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
                             <p className="text-sm font-semibold text-[#143044]">已确认进群</p>
@@ -427,10 +427,10 @@ export function AdminApplicationsPage() {
                           </CloudButton>
                         </div>
                         {joinedQrOpen && guiyuntangQrReady ? (
-                          <div className="mt-4 grid gap-4 rounded-2xl border border-[#c9a45c]/25 bg-white/65 p-4 md:grid-cols-[auto_1fr] md:items-center">
+                          <div className="mt-4 grid gap-4 rounded-lg border border-[#c9a45c]/25 bg-white/65 p-4 md:grid-cols-[auto_1fr] md:items-center">
                             <img
                               alt="归云堂入群二维码"
-                              className="h-40 w-40 rounded-2xl border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
+                              className="h-40 w-40 rounded-lg border border-white bg-white object-contain p-2 shadow-lg shadow-[#263238]/10"
                               src={guiyuntangSetting?.qr_image_data_url ?? ''}
                             />
                             <p className="text-sm font-semibold leading-7 text-[#9e3d32]">
@@ -442,7 +442,7 @@ export function AdminApplicationsPage() {
                     ) : null}
 
                     {draft.requested_nickname || draft.requested_legacy_contact ? (
-                      <div className="mb-5 rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4">
+                      <div className="mb-5 rounded-lg border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4">
                         <p className="text-sm font-semibold text-[#9e3d32]">用户申请修改</p>
                         <div className="mt-3 grid gap-3 text-sm leading-7 text-[#526461] md:grid-cols-2">
                           {draft.requested_nickname ? (
@@ -503,7 +503,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">道名</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'nickname', event.target.value)}
                           value={draft.nickname}
                         />
@@ -511,7 +511,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">江湖名</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'jianghu_name', event.target.value)}
                           value={draft.jianghu_name}
                         />
@@ -519,7 +519,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">真实姓名</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'real_name', event.target.value)}
                           value={draft.real_name}
                         />
@@ -527,7 +527,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">联系方式</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => {
                             updateDraft(item.id, 'legacy_contact', event.target.value)
                             updateDraft(item.id, 'wechat_id', event.target.value)
@@ -541,7 +541,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">编号</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'member_code', event.target.value)}
                           placeholder="问云-云-001"
                           value={draft.member_code}
@@ -550,7 +550,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">辈分字</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           maxLength={1}
                           onChange={(event) => updateDraft(item.id, 'generation_name', event.target.value)}
                           value={draft.generation_name}
@@ -559,7 +559,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">身份</span>
                         <select
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'member_role', event.target.value as WenyunMemberRole)}
                           value={draft.member_role}
                         >
@@ -573,7 +573,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">当前状态</span>
                         <select
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'status', event.target.value as JoinApplicationStatus)}
                           value={draft.status}
                         >
@@ -584,7 +584,7 @@ export function AdminApplicationsPage() {
                           ))}
                         </select>
                       </label>
-                      <label className="flex min-h-[4.8rem] items-center gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 px-4 py-3">
+                      <label className="flex min-h-[4.8rem] items-center gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 px-4 py-3">
                         <input
                           checked={draft.guiyuntang_joined}
                           className="h-4 w-4"
@@ -605,7 +605,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">性别</span>
                         <select
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'gender', event.target.value as MemberGender)}
                           value={draft.gender}
                         >
@@ -619,7 +619,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">出生年份</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           inputMode="numeric"
                           maxLength={4}
                           onChange={(event) => updateDraft(item.id, 'age_range', event.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -630,7 +630,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">所在城市</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'public_region', event.target.value)}
                           value={draft.public_region}
                         />
@@ -638,7 +638,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">后台城市原文</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'raw_region', event.target.value)}
                           value={draft.raw_region}
                         />
@@ -649,7 +649,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">宣言</span>
                         <textarea
-                          className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                          className="min-h-28 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => {
                             updateDraft(item.id, 'motto', event.target.value)
                             updateDraft(item.id, 'reason', event.target.value)
@@ -660,7 +660,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">兴趣爱好</span>
                         <textarea
-                          className="min-h-28 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                          className="min-h-28 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'tags', event.target.value)}
                           placeholder="例如：写文、摄影、饮茶"
                           value={draft.tags}
@@ -672,7 +672,7 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">管理员备注</span>
                         <textarea
-                          className="min-h-24 rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
+                          className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'admin_note', event.target.value)}
                           placeholder="填写联系记录、审核说明、暂存原因或退派说明"
                           value={draft.admin_note}
@@ -684,14 +684,14 @@ export function AdminApplicationsPage() {
                       <label className="grid gap-2">
                         <span className="text-sm font-semibold">同行期待</span>
                         <input
-                          className="rounded-xl border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
+                          className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
                           onChange={(event) => updateDraft(item.id, 'companion_expectation', event.target.value)}
                           value={draft.companion_expectation}
                         />
                       </label>
                     </div>
 
-                    <label className="mt-4 flex items-start gap-3 rounded-xl border border-[#c9a45c]/35 bg-white/60 p-4">
+                    <label className="mt-4 flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
                       <input
                         checked={draft.accept_rules}
                         className="mt-1 h-4 w-4"
@@ -702,7 +702,7 @@ export function AdminApplicationsPage() {
                     </label>
 
                     <div className="mt-5 flex flex-col gap-3 border-t border-[#c9a45c]/20 pt-5 md:flex-row md:items-center md:justify-between">
-                      <div className="rounded-2xl border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4 text-sm leading-7 text-[#526461]">
+                      <div className="rounded-lg border border-[#9e3d32]/25 bg-[#fff1ee]/70 p-4 text-sm leading-7 text-[#526461]">
                         <p className="font-semibold text-[#9e3d32]">危险操作</p>
                         <p>彻底删除后不可恢复；如只是临时不展示，可把状态改为“暂存”或“已退派”。</p>
                       </div>
