@@ -544,6 +544,11 @@ textarea:focus-visible {
 
 .mobile-menu-button-inline {
   display: flex;
+  flex: 0 0 3rem;
+  width: 3rem;
+  height: 3rem;
+  margin-left: auto;
+  padding: 0;
 }
 
 .site-header-bar {
@@ -561,22 +566,6 @@ textarea:focus-visible {
   content: "";
   background: linear-gradient(90deg, transparent, rgba(200, 164, 93, 0.5), rgba(47, 111, 104, 0.38), transparent);
   opacity: 0.76;
-}
-
-/* 这里让手机底部导航像一条小型操作台，便于拇指点击又不遮挡内容。 */
-.site-mobile-dock-shell::before {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-  background:
-    linear-gradient(90deg, rgba(184, 71, 63, 0.06), transparent 30%, rgba(47, 111, 104, 0.08)),
-    repeating-linear-gradient(90deg, rgba(200, 164, 93, 0.08) 0 1px, transparent 1px 42px);
-}
-
-.site-mobile-dock-shell > * {
-  position: relative;
-  z-index: 1;
 }
 
 .seal-code-mark {
@@ -1440,15 +1429,6 @@ textarea:focus-visible {
     repeating-linear-gradient(90deg, rgba(47, 111, 104, 0.06) 0 1px, transparent 1px 54px);
 }
 
-/* 这里统一手机底部导航的安全区域，避免被系统手势条遮住。 */
-.site-mobile-dock {
-  left: 0.5rem !important;
-  right: auto !important;
-  width: calc(100vw - 1rem);
-  max-width: calc(100vw - 1rem);
-  padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
-}
-
 /* 这里把页面标题改成更接近设计稿的页面头卡，增强每个页面的第一眼识别。 */
 .section-title-block {
   border-color: rgba(47, 111, 104, 0.14);
@@ -1595,9 +1575,33 @@ td {
   }
 }
 
-@media (max-width: 640px) {
+/* 这里把移动端统一校准到 785×706 设计档位，覆盖 Tailwind 在 768px 以上自动启用的平板尺寸。 */
+@media (max-width: 785px) {
   body {
     background-attachment: scroll;
+  }
+
+  .site-header-bar {
+    width: min(100%, 785px);
+    height: 4.9rem !important;
+    padding-right: 1.05rem;
+    padding-left: 1rem;
+  }
+
+  .site-header-shell::before {
+    left: 1rem;
+    right: 1rem;
+    opacity: 0.48;
+  }
+
+  .mobile-menu-button-inline {
+    display: flex;
+    flex: 0 0 3rem;
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
+    min-height: 3rem;
+    margin-left: auto;
   }
 
   .design-page-frame::before {
@@ -1611,24 +1615,56 @@ td {
   }
 
   .site-hero-image {
-    object-position: center 58%;
-    opacity: 0.82;
+    object-position: 62% 58%;
+    opacity: 0.96;
+  }
+
+  .site-hero-art {
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.54), rgba(255, 250, 240, 0.28) 48%, rgba(255, 250, 240, 0.08)),
+      linear-gradient(180deg, rgba(255, 250, 240, 0.42), rgba(237, 244, 239, 0.18) 62%, rgba(237, 244, 239, 0.48));
   }
 
   .site-hero-content {
     min-height: auto !important;
-    padding-bottom: 5rem;
+    width: min(100%, 785px);
+    gap: 1.5rem;
+    padding-top: 8.6rem !important;
+    padding-right: 1rem;
+    padding-bottom: 2.6rem !important;
+    padding-left: 1rem;
   }
 
-  .site-hero-overlay {
-    background:
-      linear-gradient(90deg, rgba(255, 250, 240, 0.98), rgba(255, 250, 240, 0.84) 56%, rgba(255, 250, 240, 0.28)),
-      linear-gradient(180deg, rgba(255, 250, 240, 0.66), rgba(237, 244, 239, 0.86) 92%);
+  .site-hero-copy {
+    width: 100%;
+    max-width: calc(100vw - 2rem);
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    background: rgba(255, 250, 240, 0.58);
+    box-shadow: 0 22px 56px rgba(23, 51, 50, 0.12);
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-safe-width {
+    max-width: 100%;
+  }
+
+  .hero-proof-grid {
+    margin-top: 1rem;
+  }
+
+  .hero-proof-grid > div {
+    padding: 0.9rem 0.75rem;
   }
 
   .section-title-block {
     min-height: 0;
     padding: 1rem;
+  }
+
+  .section-title-with-visual {
+    min-height: min(52vw, 20rem);
+    padding: 1.1rem;
   }
 
   .section-title-block::before,
@@ -1656,15 +1692,10 @@ td {
     opacity: 0.5;
   }
 
-  .site-mobile-dock-shell a[aria-current="page"],
-  .site-mobile-dock-shell a[aria-current="page"] svg {
-    color: #fffaf0 !important;
-  }
-
   .site-hero-overlay {
     background:
-      linear-gradient(90deg, rgba(255, 250, 240, 0.98), rgba(255, 250, 240, 0.72)),
-      linear-gradient(180deg, rgba(255, 250, 240, 0.82), rgba(237, 244, 239, 0.72) 76%, rgba(237, 244, 239, 0.86));
+      linear-gradient(90deg, rgba(255, 250, 240, 0.86), rgba(255, 250, 240, 0.46) 58%, rgba(255, 250, 240, 0.12)),
+      linear-gradient(180deg, rgba(255, 250, 240, 0.38), rgba(237, 244, 239, 0.42) 76%, rgba(237, 244, 239, 0.66));
   }
 
   .scroll-panel,

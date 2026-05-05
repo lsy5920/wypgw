@@ -83,7 +83,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* 这里展示小院入口和手机菜单按钮。 */}
+        {/* 这里展示桌面端小院入口，手机端改由右侧菜单承接。 */}
         <div className="flex shrink-0 items-center gap-2">
           <Link
             className="cloud-button hidden items-center gap-2 rounded-lg border border-[#0f3d3e]/16 bg-[#173332] px-4 py-2 text-sm font-semibold !text-white shadow-md shadow-[#173332]/14 transition hover:-translate-y-0.5 hover:bg-[#0f3d3e] xl:inline-flex"
