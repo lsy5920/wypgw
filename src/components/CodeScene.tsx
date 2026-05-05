@@ -15,12 +15,12 @@ interface CodeSceneProps {
 
 // 这个对象保存内置生图模型生成的场景素材，返回值用于让不同页面自动套用对应插图。
 const generatedScenePathByVariant: Record<CodeSceneVariant, string> = {
-  gate: `${import.meta.env.BASE_URL}visual-generated/wenyun-gate-reference-20260504.png`,
-  scroll: `${import.meta.env.BASE_URL}visual-generated/wenyun-gate-reference-20260504.png`,
-  lantern: `${import.meta.env.BASE_URL}visual-generated/wenyun-lantern-ledger-reference-20260504.png`,
-  courtyard: `${import.meta.env.BASE_URL}visual-generated/wenyun-courtyard-reference-20260504.png`,
-  workbench: `${import.meta.env.BASE_URL}visual-generated/wenyun-lantern-ledger-reference-20260504.png`,
-  map: `${import.meta.env.BASE_URL}visual-generated/wenyun-lantern-ledger-reference-20260504.png`
+  gate: `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`,
+  scroll: `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`,
+  lantern: `${import.meta.env.BASE_URL}visual-drawui/lantern-ledger.svg`,
+  courtyard: `${import.meta.env.BASE_URL}visual-drawui/courtyard-landscape.svg`,
+  workbench: `${import.meta.env.BASE_URL}visual-drawui/workbench-ledger.svg`,
+  map: `${import.meta.env.BASE_URL}visual-drawui/lantern-ledger.svg`
 }
 
 // 这个函数渲染生成图加纯代码线框的抽象场景，入参是主题、说明和样式，返回值是可容错的视觉区域。

@@ -36,7 +36,7 @@ export function CloudButton({
     ghost:
       'border border-[#0f3d3e]/18 bg-white/88 !text-[#173332] shadow-md shadow-[#173332]/8 backdrop-blur hover:border-[#b8473f]/35 hover:bg-white hover:!text-[#0f3d3e]',
     seal:
-      'border border-[#b8473f]/18 bg-[linear-gradient(135deg,#b8473f,#7f3347)] text-white shadow-lg shadow-[#b8473f]/22 hover:shadow-[#b8473f]/30'
+      'border border-[#b8473f]/18 bg-[linear-gradient(135deg,#b8473f,#7f3347)] !text-white shadow-lg shadow-[#b8473f]/22 hover:shadow-[#b8473f]/30'
   }[variant]
 
   // 这个常量保存通用按钮样式，保证所有按钮高度、圆角、换行和动效统一。

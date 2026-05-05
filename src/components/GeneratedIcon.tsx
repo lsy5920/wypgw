@@ -1,6 +1,4 @@
-import { useState } from 'react'
-
-// 这个类型描述内置生图图标板里的图标名称，入参用于选择要裁出的图标。
+// 这个类型描述 draw-ui 线描图标名称，入参用于选择要展示的图标。
 export type GeneratedIconName = 'scroll' | 'shield' | 'lantern' | 'gate' | 'notice' | 'calendar' | 'roster' | 'user' | 'settings'
 
 // 这个类型描述生成图标组件入参，入参用于控制图标种类和额外样式。
@@ -24,24 +22,91 @@ const iconLabelByName: Record<GeneratedIconName, string> = {
   settings: '设置图标'
 }
 
-// 这个常量保存图标素材板地址，返回值会跟随部署路径自动变化。
-const iconBoardPath = `${import.meta.env.BASE_URL}visual-generated/wenyun-icon-board-20260504.png`
-
-// 这个函数渲染从生成图标板裁出的单个图标，入参是图标名称和样式，返回值是带兜底的图标节点。
-export function GeneratedIcon({ name, className = '' }: GeneratedIconProps) {
-  // 这个状态记录图标素材板是否加载失败，失败时显示纯色兜底点，避免卡片出现破图。
-  const [imageFailed, setImageFailed] = useState(false)
-
-  // 这个函数处理素材板加载失败的情况，入参为空，返回值为空。
-  function handleImageError() {
-    // 这里兜底切换为纯代码图标底座，保证页面仍能正常阅读和点击。
-    setImageFailed(true)
+// 这个函数按名称返回线描路径，入参是图标名称，返回值是可放入 SVG 的路径节点。
+function renderIconPath(name: GeneratedIconName) {
+  // 这里用分支返回不同图标，保证所有图标同线宽、同圆角、同金色描边。
+  switch (name) {
+    case 'scroll':
+      return (
+        <>
+          <path d="M16 9h24a7 7 0 0 1 7 7v31H20a8 8 0 0 1-8-8V13a4 4 0 0 1 4-4Z" />
+          <path d="M20 47a8 8 0 0 1 0-16h27" />
+          <path d="M23 19h15M23 27h11" />
+        </>
+      )
+    case 'shield':
+      return (
+        <>
+          <path d="M32 8 49 15v13c0 13-7 22-17 28-10-6-17-15-17-28V15l17-7Z" />
+          <path d="m24 31 6 6 11-14" />
+        </>
+      )
+    case 'lantern':
+      return (
+        <>
+          <path d="M22 14h20M27 8h10M32 14v42" />
+          <path d="M20 31c0-10 5-17 12-17s12 7 12 17-5 17-12 17-12-7-12-17Z" />
+          <path d="M20 31h24M24 48h16" />
+        </>
+      )
+    case 'gate':
+      return (
+        <>
+          <path d="M11 26h42M16 19h32L43 13H21l-5 6Z" />
+          <path d="M20 26v24M44 26v24M27 50V34h10v16" />
+          <path d="M15 50h34" />
+        </>
+      )
+    case 'notice':
+      return (
+        <>
+          <path d="M16 13h32v38H16z" />
+          <path d="M23 23h18M23 31h18M23 39h12" />
+          <path d="M14 19h-3v26h3M50 19h3v26h-3" />
+        </>
+      )
+    case 'calendar':
+      return (
+        <>
+          <path d="M16 16h32v34H16z" />
+          <path d="M22 10v10M42 10v10M16 26h32" />
+          <path d="M24 34h4M36 34h4M24 42h4M36 42h4" />
+        </>
+      )
+    case 'roster':
+      return (
+        <>
+          <path d="M17 12h30v40H17z" />
+          <path d="M24 22h16M24 31h16M24 40h11" />
+          <path d="M13 20h4M13 32h4M13 44h4" />
+        </>
+      )
+    case 'user':
+      return (
+        <>
+          <path d="M32 31a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
+          <path d="M16 52c3-11 10-17 16-17s13 6 16 17" />
+        </>
+      )
+    case 'settings':
+      return (
+        <>
+          <path d="M32 40a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" />
+          <path d="M32 8v8M32 48v8M15 17l6 6M43 41l6 6M8 32h8M48 32h8M15 47l6-6M43 23l6-6" />
+        </>
+      )
+    default:
+      return null
   }
+}
 
+// 这个函数渲染参考设计图风格的线描图标，入参是图标名称和样式，返回值是统一图标节点。
+export function GeneratedIcon({ name, className = '' }: GeneratedIconProps) {
   return (
-    <span aria-label={iconLabelByName[name]} className={`generated-icon generated-icon-crop-${name} ${className}`} role="img">
-      {!imageFailed ? <img alt="" aria-hidden="true" className="generated-icon-sheet" onError={handleImageError} src={iconBoardPath} /> : null}
-      {imageFailed ? <span aria-hidden="true" className="generated-icon-fallback" /> : null}
+    <span aria-label={iconLabelByName[name]} className={`generated-icon ${className}`} role="img">
+      <svg aria-hidden="true" className="generated-icon-line" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 64 64">
+        {renderIconPath(name)}
+      </svg>
     </span>
   )
 }

@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { CodeSceneVariant } from './CodeScene'
 
 // 这个类型描述区块标题的入参，返回值用于统一各页面标题样式。
@@ -21,12 +21,12 @@ interface SectionTitleProps {
 
 // 这个对象保存标题背景图地址，返回值用于把生成图直接铺进标题卡底层。
 const visualPathByVariant: Record<CodeSceneVariant, string> = {
-  gate: `${import.meta.env.BASE_URL}visual-generated/wenyun-gate-reference-20260504.png`,
-  scroll: `${import.meta.env.BASE_URL}visual-generated/wenyun-gate-reference-20260504.png`,
-  lantern: `${import.meta.env.BASE_URL}visual-generated/wenyun-lantern-ledger-reference-20260504.png`,
-  courtyard: `${import.meta.env.BASE_URL}visual-generated/wenyun-courtyard-reference-20260504.png`,
-  workbench: `${import.meta.env.BASE_URL}visual-generated/wenyun-lantern-ledger-reference-20260504.png`,
-  map: `${import.meta.env.BASE_URL}visual-generated/wenyun-lantern-ledger-reference-20260504.png`
+  gate: `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`,
+  scroll: `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`,
+  lantern: `${import.meta.env.BASE_URL}visual-drawui/lantern-ledger.svg`,
+  courtyard: `${import.meta.env.BASE_URL}visual-drawui/courtyard-landscape.svg`,
+  workbench: `${import.meta.env.BASE_URL}visual-drawui/workbench-ledger.svg`,
+  map: `${import.meta.env.BASE_URL}visual-drawui/lantern-ledger.svg`
 }
 
 // 这个函数渲染统一的区块标题，入参是标题内容，返回值是标题区域。
@@ -45,23 +45,18 @@ export function SectionTitle({ eyebrow, title, children, center = false, tone = 
   const hasVisual = Boolean(visual)
   // 这个变量保存背景图说明，避免维护者每次都手写重复文字。
   const safeVisualLabel = visualLabel ?? `${title}背景图`
-  // 这个变量把图片地址写入 CSS 变量，返回值用于让背景图稳定铺满标题卡。
-  const visualStyle = visual
-    ? ({
-        '--section-title-visual-image': `url("${visualPathByVariant[visual]}")`
-      } as CSSProperties)
-    : undefined
+  // 这个变量保存当前标题背景图地址，返回值用于真实图片层，避免手机浏览器漏掉 CSS 背景变量。
+  const visualImagePath = visual ? visualPathByVariant[visual] : ''
 
   return (
     <div
       className={`section-title-block relative mb-10 flex flex-col ${hasVisual ? 'section-title-with-visual' : ''} ${alignClassName}`}
       data-visual={visual}
-      style={visualStyle}
     >
       {visual ? (
         <>
-          {/* 这里把生成图直接作为标题区背景，避免组件嵌套导致图片无法铺满。 */}
-          <span aria-label={safeVisualLabel} className="section-title-visual-image absolute inset-0 z-0" role="img" />
+          {/* 这里使用真实图片层当标题背景，避免手机端 CSS 背景变量失效导致图片不显示。 */}
+          <img alt="" aria-hidden="true" className="section-title-visual-image absolute inset-0 z-0" data-visual-label={safeVisualLabel} src={visualImagePath} />
           {/* 这里叠加柔和遮罩，保证文字浮在图上也能清楚阅读。 */}
           <span aria-hidden="true" className="section-title-visual-shade absolute inset-0 z-[1]" />
         </>

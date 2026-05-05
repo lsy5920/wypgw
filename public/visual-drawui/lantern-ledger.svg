@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 760" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8ea"/>
+      <stop offset="0.5" stop-color="#eef3ee"/>
+      <stop offset="1" stop-color="#d9e7e2"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+  <rect width="1500" height="760" fill="url(#bg)"/>
+  <g opacity="0.34">
+    <path d="M0 650C196 570 300 642 448 538C600 430 718 560 852 452C1008 326 1146 480 1302 362C1386 298 1450 294 1500 266V760H0Z" fill="#bfd0cb"/>
+    <path d="M0 712C180 638 326 690 498 620C640 562 792 646 968 576C1144 506 1300 584 1500 500V760H0Z" fill="#d4e0dc"/>
+  </g>
+  <g opacity="0.66">
+    <path d="M180 160h1050v420H180z" fill="#fffaf0" opacity="0.58" stroke="#c8a45d" stroke-opacity="0.38"/>
+    <path d="M250 238h400M250 300h760M250 362h760M250 424h760M250 486h760" stroke="#2f6f68" stroke-opacity="0.16" stroke-width="3"/>
+    <path d="M720 238h360M720 300h360M720 362h360M720 424h360" stroke="#c8a45d" stroke-opacity="0.18" stroke-width="2"/>
+  </g>
+  <g transform="translate(170 94)">
+    <g>
+      <path d="M76 0v76" stroke="#c8a45d" stroke-width="4"/>
+      <ellipse cx="76" cy="112" rx="54" ry="74" fill="#e88f60" opacity="0.86"/>
+      <ellipse cx="76" cy="112" rx="34" ry="72" fill="#f6c378" opacity="0.55"/>
+      <path d="M34 112h84M76 40v144" stroke="#b8473f" stroke-opacity="0.36" stroke-width="3"/>
+      <ellipse cx="76" cy="112" rx="70" ry="92" fill="#f3b45d" opacity="0.22" filter="url(#glow)"/>
+    </g>
+    <g transform="translate(970 34)">
+      <path d="M76 0v76" stroke="#c8a45d" stroke-width="4"/>
+      <ellipse cx="76" cy="112" rx="46" ry="66" fill="#d76d54" opacity="0.86"/>
+      <ellipse cx="76" cy="112" rx="28" ry="64" fill="#f4bd68" opacity="0.48"/>
+      <path d="M40 112h72M76 48v132" stroke="#b8473f" stroke-opacity="0.36" stroke-width="3"/>
+      <ellipse cx="76" cy="112" rx="62" ry="82" fill="#f3b45d" opacity="0.2" filter="url(#glow)"/>
+    </g>
+  </g>
+  <g opacity="0.45" stroke="#c8a45d" fill="none">
+    <path d="M1220 116c78 34 104 92 72 174"/>
+    <path d="M1280 132c54 28 72 68 48 124"/>
+    <path d="M1058 596c118-56 230-54 342 8"/>
+  </g>
+</svg>

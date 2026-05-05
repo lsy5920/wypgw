@@ -8,7 +8,6 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
-import { CodeScene } from '../components/CodeScene'
 import { GateHero } from '../components/GateHero'
 import { GeneratedIcon, type GeneratedIconName } from '../components/GeneratedIcon'
 import { PageShell } from '../components/PageShell'
@@ -32,13 +31,6 @@ const entryCards: Array<{ title: string; text: string; path: string; icon: Gener
   { title: '问心考核', text: '先答一份小卷，确认你理解温暖和边界。', path: '/wenxin-quiz', icon: 'shield' },
   { title: '问云名册', text: '递交名帖，公开展示愿意被看见的资料。', path: '/join', icon: 'roster' },
   { title: '云灯留言', text: '留下一句话，给后来者一点安定灯火。', path: '/cloud-lantern', icon: 'lantern' }
-]
-
-// 这个数组保存首页工作流说明，返回值用于展示前台、小院和后台的分工。
-const workflowCards = [
-  { value: '前台', label: '展示愿景、金典、名册、公告与雅集。' },
-  { value: '小院', label: '承接登录、资料、名帖、提醒和个人状态。' },
-  { value: '后台', label: '维护审核、公告、活动、云灯与执事权限。' }
 ]
 
 // 这个函数渲染官网首页，入参为空，返回值是重新设计后的问云派首页。
@@ -83,7 +75,7 @@ export function HomePage() {
         title="问云派"
       >
         <p className="text-balance">
-          这里是一座线上山门：读金典、过问心、递名帖、入小院。愿来者先知边界，再得温暖。
+          问心 · 问道 · 问云派
         </p>
       </GateHero>
 
@@ -98,32 +90,6 @@ export function HomePage() {
               <p className="mt-4 leading-8 text-[#526461]">{item.text}</p>
             </RitualCard>
           ))}
-        </section>
-
-        <section className="mt-16 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          <div className="feature-band relative min-h-[30rem] overflow-hidden rounded-lg border border-[#c8a45d]/26 shadow-xl shadow-[#173332]/14">
-            {/* 这里用纯代码场景替代图片素材，让用户在首页直接看到网站的核心场景。 */}
-            <CodeScene className="h-full min-h-[30rem] rounded-none" label="问云名册和小院抽象场景" variant="courtyard" />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,35,34,0.88),rgba(11,35,34,0.58)_42%,rgba(11,35,34,0.16))]" />
-            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10">
-              <p className="text-sm font-semibold text-[#f8df9d]">名册有序 · 小院有归</p>
-              <h2 className="ink-title mt-3 text-balance text-4xl font-black leading-tight text-[#fff8e8] md:text-6xl">
-                不是把人聚成热闹，而是把心安放成秩序。
-              </h2>
-              <p className="mt-5 max-w-2xl leading-8 text-[#f8f3e8]">
-                网站把入派路径拆成清楚的几步：看见门风、确认本心、递交名帖、进入小院，所有资料和提醒都各归其位。
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            {workflowCards.map((item, index) => (
-              <RitualCard delay={index * 0.05} key={item.value}>
-                <p className="ink-title text-4xl font-black text-[#b8473f]">{item.value}</p>
-                <p className="mt-4 leading-8 text-[#526461]">{item.label}</p>
-              </RitualCard>
-            ))}
-          </div>
         </section>
 
         <section className="mt-16">
@@ -245,20 +211,6 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mt-16 grid gap-4 md:grid-cols-3">
-          {[
-            { title: '问心', variant: 'scroll' },
-            { title: '名册', variant: 'workbench' },
-            { title: '小院', variant: 'courtyard' }
-          ].map((item) => (
-            <CodeScene
-              className="aspect-[1.45] w-full border border-[#c8a45d]/24 shadow-lg shadow-[#173332]/10"
-              key={item.title}
-              label={`问云派${item.title}纯代码场景`}
-              variant={item.variant as 'scroll' | 'workbench' | 'courtyard'}
-            />
-          ))}
-        </section>
       </PageShell>
     </>
   )

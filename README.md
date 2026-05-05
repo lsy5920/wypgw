@@ -4,18 +4,18 @@
 
 问云派官网是一座“线上山门”，用于展示问云派愿景、立派金典、问心考核、问云名册、云灯留言、门派公告、问云雅集、联系山门、问云小院与后台管理。
 
-网站核心气质是：清雅书院、线上山门、温暖港湾、来去自由、有界有礼。当前版本已严格按 `draw-ui` 流程升级为“先出视觉稿、再还原页面”的书院式产品官网视觉系统，整站视觉总稿由内置生图模型生成并保存到 `design-drafts/wenyun-all-pages-redesign-20260504.png`；首页首屏背景图也由内置生图模型生成并保存到 `public/visual-generated/`，用于增强第一屏的真实山门记忆点。
+网站核心气质是：清雅书院、线上山门、温暖港湾、来去自由、有界有礼。当前版本按 `draw-ui` 技能和用户提供的整站设计图做了全站级重构：新增 `public/visual-drawui/` 矢量插画素材，统一山门、云灯、小院、后台台账、宣纸远山和线描图标，让前台、问云小院和后台都贴近同一张参考设计图。
 
 ## 视觉与移动端设计说明
 
-1. 全站视觉系统集中在 `src/styles/global.css`，统一维护色彩、背景、光影、云雾、卡片、工作台、按钮、动效和移动端基础规则。
-2. 首页首屏按视觉稿还原为浅色书院山门：内置生图模型生成的山门背景图、纯代码“云”字印记、主要行动按钮和右侧抽象山门场景，第一眼就能看到问云派和入册入口。
-3. 首页重新拆成“核心承诺、系统分工、主要入口、门派精神、入册流程、云灯留言、山门近讯、最终行动”八类模块，手机端按单列阅读，桌面端按网格浏览。
-4. 每一个前台页面、问云小院页面和后台管理页面都通过 `SectionTitle` 的 `visual` 配置接入内置生图模型生成的标题背景图，标题、说明、金线和朱印悬浮在图片表层，避免独立插画卡片打断阅读。
-5. 前台页面统一使用 `PageShell`、`SectionTitle`、`ScrollPanel`、`RitualCard`、`CloudButton`、`BrandMark`、`CodeScene` 和 `GeneratedIcon`，页面外壳新增书册网格、标题折角、卡片亮线和生成图标入口，更利于长期维护和移动端排版。
-6. 问云小院采用浅色书册侧栏和移动端横向导航，管理后台采用深色执事堂侧栏和 `WorkbenchFrame` 工作台外壳；工作台新增台账地图底纹，重点保证长期使用时清晰、耐看、好操作。
+1. 全站视觉系统集中在 `src/styles/global.css`，统一维护参考图里的宣纸底、青绿主色、朱砂印、金线、8px 卡片、表单、表格、侧栏、按钮和移动端规则。
+2. 首页首屏按设计图还原为浅色山门大图：`visual-drawui/gate-landscape.svg` 铺底，中央展示问云派题字，底部保留五个线描入口图标，不再保留旧版右侧代码舞台和首屏行动按钮。
+3. 首页内容改为紧凑的书院官网节奏：核心承诺、主要入口、门派精神、入册流程、云灯留言、山门近讯和最终行动，删除旧版“系统分工”展示舞台。
+4. 每一个前台页面、问云小院页面和后台管理页面都通过 `SectionTitle` 的 `visual` 配置接入 `public/visual-drawui/` 标题背景图，标题、说明、金线和朱印悬浮在真实图片层上。
+5. 前台页面统一使用 `PageShell`、`SectionTitle`、`ScrollPanel`、`RitualCard`、`CloudButton`、`BrandMark` 和 `GeneratedIcon`；`GeneratedIcon` 已改为纯代码线描图标，不再裁切旧九宫格图片。
+6. 问云小院采用浅色书册侧栏和移动端横向导航，管理后台采用深青色执事堂侧栏和 `WorkbenchFrame` 台账外壳；工作台统一为参考图下半部分的卡片、表格和仪表盘质感。
 7. 动效优先使用位移、透明度和缩放，减少卡顿风险；如果用户系统开启“减少动态效果”，页面会自动降低动画强度。
-8. 移动端重点适配 320、375、430、768、1024 和 1440 宽度，按钮、表单、弹窗和导航都按小屏优先检查；前台手机端新增底部四入口导航，常用页面可以一只手快速切换。
+8. 移动端统一以 785×706 设计档位校准，并兼顾更窄手机；顶部菜单按钮固定右侧，底部四入口导航已删除，避免遮挡正文。
 
 ## 环境要求
 
@@ -529,9 +529,9 @@ https://你的用户名.github.io/仓库名/#/canon
 1. 前台官网采用“书院式线上山门”视觉方向，首页首屏必须第一眼看到问云派、生成山门背景、纯代码品牌印记和清晰阅读区；首屏不再放置三枚行动按钮，避免手机端下方按钮过密。
 2. 问云小院采用温暖但严整的浅色书册工作台风格，重点展示个人名帖、云灯、雅集、消息和问心考核状态。
 3. 管理后台采用深色“执事堂”风格，强调审核、秩序和危险操作分层，避免后台页面杂乱。
-4. 旧版公共视觉资产放在 `public/visual/`，二版插画资产放在 `public/visual-v2/`，仅作为历史资产保留；当前页面主要使用本次内置生图模型生成的 `public/visual-generated/` 图片，包括山门背景、小院背景、云灯台账背景和九宫格图标板。
-5. 公共视觉组件放在 `src/components/`，后续新增页面应优先复用 `PageShell`、`GateHero`、`RitualCard`、`WorkbenchFrame`、`BrandMark`、`SectionTitle` 和 `GeneratedIcon`；需要标题背景图时优先使用 `SectionTitle` 的 `visual` 入参。
-6. 新视觉稿和运行截图放在 `design-drafts/`，当前保留 `wenyun-all-pages-redesign-20260504.png` 作为本次重新设计所有页面的整站总稿，并保留 `runtime-redesign-mobile-home-20260504.png`、`runtime-cloud-lantern-floating-bg-ready-20260505.png`、`runtime-mobile-785x706-home-20260505.png` 作为运行截图，后续如果继续拆分前台、小院或后台单独视觉稿，也统一放到这个目录。
+4. 旧版公共视觉资产放在 `public/visual/`，二版插画资产放在 `public/visual-v2/`，旧内置生图素材放在 `public/visual-generated/`，这些都作为历史资产保留；当前页面主要使用 `public/visual-drawui/` 的山门、小院、云灯、后台台账和宣纸远山矢量素材。
+5. 公共视觉组件放在 `src/components/`，后续新增页面应优先复用 `PageShell`、`GateHero`、`RitualCard`、`WorkbenchFrame`、`BrandMark`、`SectionTitle` 和 `GeneratedIcon`；需要标题背景图时优先使用 `SectionTitle` 的 `visual` 入参，组件内部会用真实图片层铺底，避免手机端漏显背景。
+6. 新视觉稿和运行截图放在 `design-drafts/`，当前保留 `wenyun-all-pages-redesign-20260504.png` 作为整站总稿，并保留 `runtime-drawui-home-desktop-20260505.png`、`runtime-drawui-home-mobile-20260505.png`、`runtime-drawui-home-mobile-785-20260505.png`、`runtime-drawui-cloud-mobile-20260505.png` 等运行截图，后续如果继续拆分前台、小院或后台单独视觉稿，也统一放到这个目录。
 7. 动画以轻量、克制、可持续为原则：页面淡入、云雾慢漂、灯火呼吸、卡片微浮和面板展开；系统已尊重浏览器的减少动态偏好。
 8. 移动端统一按 785×706 设计档位校准：顶部菜单按钮固定在导航栏右侧，首页首屏和标题图统一压住 768 像素以上的平板默认尺寸；手机端底部四入口导航已删除，避免遮挡正文。
 
@@ -557,24 +557,35 @@ wypgw/
 │     ├─ admin-illustration-v2.svg # 后台管理插画
 │     ├─ lantern-map-v2.svg        # 入册流程灯火图
 │     └─ seal-v2.svg               # 二版朱砂印
-│  └─ visual-generated/            # 内置生图模型生成的当前页面资产
+│  ├─ visual-generated/            # 内置生图模型生成的历史页面资产
 │     ├─ wenyun-hero-watercolor-20260504.png # 首页首屏水墨山门历史背景图
 │     ├─ wenyun-gate-reference-20260504.png # 标题区和首页使用的山门背景图
 │     ├─ wenyun-courtyard-reference-20260504.png # 小院、雅集和资料页背景图
 │     ├─ wenyun-lantern-ledger-reference-20260504.png # 云灯、流程和后台台账背景图
 │     └─ wenyun-icon-board-20260504.png # 首页入口使用的九宫格生成图标板
+│  └─ visual-drawui/               # 按用户参考设计图重新生成的当前矢量视觉资产
+│     ├─ paper-mountains.svg       # 全站宣纸远山与底部金线参考素材
+│     ├─ gate-landscape.svg        # 首页山门和金典类标题背景图
+│     ├─ courtyard-landscape.svg   # 问云小院、雅集和资料类标题背景图
+│     ├─ lantern-ledger.svg        # 云灯、流程和公告类标题背景图
+│     └─ workbench-ledger.svg      # 后台和名册台账类标题背景图
 ├─ scripts/
 │  └─ generate-v2-assets.mjs       # 生成网站重构 2.0 插画、设计图和归档目录
 ├─ design-drafts/
 │  ├─ wenyun-all-pages-redesign-20260504.png # 内置生图模型生成的整站页面总稿
 │  ├─ runtime-redesign-mobile-home-20260504.png # 本次手机端首页运行截图
 │  ├─ runtime-cloud-lantern-floating-bg-ready-20260505.png # 云灯标题背景整改运行截图
-│  └─ runtime-mobile-785x706-home-20260505.png # 785×706 移动端首页运行截图
+│  ├─ runtime-mobile-785x706-home-20260505.png # 785×706 移动端首页运行截图
+│  ├─ runtime-mobile-section-title-bg-20260505.png # 手机端标题背景图恢复运行截图
+│  ├─ runtime-drawui-home-desktop-20260505.png # draw-ui 重构后桌面首页运行截图
+│  ├─ runtime-drawui-home-mobile-20260505.png # draw-ui 重构后窄屏首页运行截图
+│  ├─ runtime-drawui-home-mobile-785-20260505.png # draw-ui 重构后 785×706 首页运行截图
+│  └─ runtime-drawui-cloud-mobile-20260505.png # draw-ui 重构后云灯内页运行截图
 ├─ src/
 │  ├─ components/                  # 通用组件，如按钮、标题、导航、提示条
 │  │  ├─ BrandMark.tsx             # 纯代码“云”字品牌印记
-│  │  ├─ CodeScene.tsx             # 纯代码山门、卷轴、云灯、小院和工作台场景
-│  │  ├─ GeneratedIcon.tsx          # 从内置生图图标板裁出单个功能图标
+│  │  ├─ CodeScene.tsx             # 兼容旧横幅的 draw-ui 场景展示组件
+│  │  ├─ GeneratedIcon.tsx          # 按设计图绘制的纯代码线描功能图标
 │  │  ├─ GateHero.tsx              # 按视觉稿还原的生成山门背景首页首屏组件
 │  │  ├─ LoginRequiredNotice.tsx   # 需要登录时的统一提醒和登录入口
 │  │  ├─ PageShell.tsx             # 前台页面统一外壳
@@ -1096,3 +1107,5 @@ npm run preview
 2026-05-04 22:45 【优化】继续按 draw-ui 整站视觉总稿统一所有页面母版，新增页面书册网格、标题折角、卡片亮线、场景页面缩略卡、工作台台账底纹和手机底部导航质感；同步归档内置生图模型整站总稿与手机端首页运行截图，更新 README 视觉说明和目录结构，并通过自动测试与生产构建验证。
 2026-05-05 01:08 【优化】按用户标注继续整改全站标题视觉，移除生成图上方的旧线框、斜线和卡片蒙版，把山门、小院、云灯台账等内置生图素材改为 `SectionTitle` 标题区背景图，让标题和说明悬浮在图片表层；同步新增生成图标板和云灯页运行截图，更新 README 视觉说明与目录结构，并通过自动测试和生产构建验证。
 2026-05-05 10:02 【优化】按 785×706 移动端设计档位统一首页和导航尺寸，顶部菜单按钮改为固定右对齐，删除首页首屏三枚行动按钮和手机端底部四入口导航；同步新增移动端运行截图并更新 README，通过自动测试和生产构建验证。
+2026-05-05 11:36 【修复】修复手机端各页面标题背景图漏显的问题，将 `SectionTitle` 的背景从 CSS 变量背景改为真实图片层，并收紧手机端标题文字换行和遮罩透明度；同步新增手机端标题背景截图并通过自动测试和生产构建验证。
+2026-05-05 12:14 【优化】按用户提供的 draw-ui 整站设计图进行全站级重构，新增 `public/visual-drawui` 山门、小院、云灯、后台台账和宣纸远山矢量素材；首页改为山门大图加五入口图标条，删除旧版右侧代码舞台和系统分工展示，统一前台、小院、后台的导航、卡片、按钮、表单、表格、标题背景和 785×706 移动端布局；同步新增运行截图并通过自动测试和生产构建验证。

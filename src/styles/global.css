@@ -158,10 +158,8 @@ textarea:focus-visible {
   width: 100%;
   height: 100%;
   border-radius: inherit;
-  background-image: var(--section-title-visual-image);
-  background-repeat: no-repeat;
-  background-position: center 54%;
-  background-size: cover;
+  object-fit: cover;
+  object-position: center 54%;
   opacity: 1;
   filter: saturate(1.02) contrast(1.06);
 }
@@ -169,11 +167,11 @@ textarea:focus-visible {
 .section-title-with-visual[data-visual="lantern"] .section-title-visual-image,
 .section-title-with-visual[data-visual="map"] .section-title-visual-image,
 .section-title-with-visual[data-visual="workbench"] .section-title-visual-image {
-  background-position: center 48%;
+  object-position: center 48%;
 }
 
 .section-title-with-visual[data-visual="courtyard"] .section-title-visual-image {
-  background-position: center 52%;
+  object-position: center 52%;
 }
 
 /* 这里用左浅右透的遮罩托住文字，让标题像悬浮在图片表层而不是压在乱背景上。 */
@@ -1663,8 +1661,38 @@ td {
   }
 
   .section-title-with-visual {
-    min-height: min(52vw, 20rem);
+    min-height: clamp(15rem, 56vw, 20rem);
     padding: 1.1rem;
+  }
+
+  .section-title-block h2,
+  .section-title-block h2 + div {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .section-title-block h2 {
+    font-size: clamp(1.85rem, 8vw, 2.6rem);
+    line-height: 1.16;
+  }
+
+  .section-title-block h2 + div {
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
+  .section-title-with-visual .section-title-visual-image {
+    opacity: 1;
+    filter: saturate(1.08) contrast(1.08);
+  }
+
+  .section-title-visual-shade {
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.74), rgba(255, 250, 240, 0.42) 48%, rgba(255, 250, 240, 0.12) 78%, rgba(255, 250, 240, 0.04)),
+      linear-gradient(180deg, rgba(255, 250, 240, 0.06), rgba(15, 61, 62, 0.1));
   }
 
   .section-title-block::before,
@@ -1714,6 +1742,543 @@ td {
 
   .mobile-menu-button-inline {
     display: none;
+  }
+}
+
+/* 这里开始是 draw-ui 全站重构母版，目标是让前台、小院和后台统一贴近参考设计图。 */
+body {
+  background:
+    radial-gradient(circle at 86% 8%, rgba(238, 205, 135, 0.22), transparent 18rem),
+    radial-gradient(circle at 12% 18%, rgba(255, 250, 240, 0.88), transparent 24rem),
+    linear-gradient(180deg, #f8f1e4 0%, #f3edde 44%, #dfeae5 100%);
+}
+
+body::before {
+  background:
+    linear-gradient(115deg, rgba(255, 250, 240, 0.72), rgba(255, 250, 240, 0.16) 44%, rgba(219, 232, 238, 0.5)),
+    repeating-linear-gradient(90deg, rgba(23, 51, 50, 0.032) 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(0deg, rgba(23, 51, 50, 0.028) 0 1px, transparent 1px 56px);
+}
+
+body::after {
+  height: 42vh;
+  background:
+    linear-gradient(0deg, rgba(47, 111, 104, 0.18), rgba(47, 111, 104, 0.05) 62%, transparent),
+    linear-gradient(135deg, transparent 0 38%, rgba(47, 111, 104, 0.08) 38% 54%, transparent 54%),
+    linear-gradient(45deg, transparent 0 44%, rgba(200, 164, 93, 0.12) 44% 58%, transparent 58%);
+  opacity: 0.86;
+}
+
+.wenyun-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+/* 这里把页面背景底部的山水线稿统一成设计图里的淡墨远山。 */
+.wenyun-shell::before {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: -3;
+  height: min(36rem, 52vh);
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(135deg, transparent 0 34%, rgba(47, 111, 104, 0.12) 34% 54%, transparent 54%),
+    linear-gradient(45deg, transparent 0 42%, rgba(15, 61, 62, 0.1) 42% 60%, transparent 60%),
+    linear-gradient(180deg, transparent 0 38%, rgba(210, 225, 220, 0.72) 38% 100%);
+  clip-path: polygon(0 66%, 12% 50%, 24% 63%, 36% 42%, 49% 64%, 62% 46%, 75% 62%, 88% 48%, 100% 66%, 100% 100%, 0 100%);
+  opacity: 0.66;
+}
+
+/* 这里把所有品牌印章做成参考图左上角的朱砂方印。 */
+.brand-mark {
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, #b8473f, #7f3347),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 7px);
+  box-shadow:
+    0 8px 18px rgba(127, 51, 71, 0.22),
+    inset 0 0 0 1px rgba(255, 250, 240, 0.26);
+}
+
+.brand-mark::before {
+  inset: 0.22rem;
+  border-radius: 5px;
+  border-color: rgba(255, 250, 240, 0.62);
+}
+
+/* 这里重做官网顶部导航，匹配设计图中白色圆角导航条和紧凑菜单。 */
+.site-header-bar {
+  width: min(1500px, calc(100vw - 3rem));
+  height: 4.75rem;
+  max-width: min(1500px, calc(100vw - 3rem));
+  border-color: rgba(47, 111, 104, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 14px 34px rgba(23, 51, 50, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+.site-header-shell::before {
+  bottom: 0.55rem;
+  background: linear-gradient(90deg, transparent, rgba(200, 164, 93, 0.62), rgba(47, 111, 104, 0.3), transparent);
+  opacity: 0.58;
+}
+
+.site-header-bar nav a {
+  border-radius: 7px;
+  color: #173332 !important;
+  font-size: 0.84rem;
+  letter-spacing: 0;
+}
+
+.site-header-bar nav a[aria-current="page"] {
+  color: #fffaf0 !important;
+  background: #0f3d3e !important;
+}
+
+.mobile-menu-button-inline {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+/* 这里把首页首屏改成设计图里的山门主卡，而不是旧版左右分栏舞台。 */
+.site-hero {
+  min-height: auto;
+  padding: 8.7rem 1.5rem 3rem;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.site-hero-image {
+  inset: 8.7rem 1.5rem 3rem !important;
+  width: calc(100% - 3rem) !important;
+  height: auto !important;
+  border: 1px solid rgba(200, 164, 93, 0.28);
+  border-radius: 8px;
+  object-position: center 55%;
+  box-shadow:
+    0 18px 46px rgba(23, 51, 50, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.site-hero-art {
+  display: none;
+}
+
+.site-hero-overlay {
+  inset: 8.7rem 1.5rem 3rem !important;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.12), rgba(255, 250, 240, 0.2) 45%, rgba(255, 250, 240, 0.72) 78%, rgba(255, 250, 240, 0.94)),
+    linear-gradient(90deg, rgba(255, 250, 240, 0.34), transparent 30%, transparent 70%, rgba(255, 250, 240, 0.34));
+}
+
+.site-hero-content {
+  display: flex;
+  min-height: clamp(34rem, 58vw, 45rem) !important;
+  max-width: 1500px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.site-hero-copy {
+  display: flex;
+  width: min(100%, 56rem);
+  max-width: min(56rem, calc(100vw - 5rem));
+  min-height: clamp(27rem, 44vw, 36rem);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0 !important;
+  background: transparent !important;
+  text-align: center;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.site-hero-copy::after {
+  left: 50%;
+  bottom: clamp(4.8rem, 8vw, 6.5rem);
+  width: min(21rem, 58vw);
+  transform: translateX(-50%);
+}
+
+.site-hero-copy .brand-mark {
+  width: 3.2rem;
+  height: 3.2rem;
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+}
+
+.site-hero-copy h1 {
+  color: #073f40;
+  font-size: clamp(4.2rem, 10vw, 8.8rem);
+  line-height: 0.98;
+  text-shadow: 0 12px 28px rgba(23, 51, 50, 0.12);
+}
+
+.site-hero-copy h1 + div {
+  max-width: 28rem;
+  margin-top: 1rem;
+  margin-bottom: 5.2rem;
+  color: #526461;
+  font-size: 1.08rem;
+  line-height: 2;
+}
+
+.hero-proof-grid {
+  position: absolute;
+  right: clamp(2rem, 6vw, 5rem);
+  bottom: clamp(4.2rem, 6vw, 5.4rem);
+  left: clamp(2rem, 6vw, 5rem);
+  max-width: none;
+  border-color: rgba(200, 164, 93, 0.28);
+  background: rgba(255, 250, 240, 0.88);
+  box-shadow: 0 12px 32px rgba(23, 51, 50, 0.1);
+}
+
+.hero-proof-grid > div {
+  display: grid;
+  min-height: 5.25rem;
+  align-content: center;
+  padding: 0.8rem 1.2rem;
+}
+
+/* 这里统一页面容器，保留参考图的大幅宣纸留白和窄金线。 */
+.design-page-frame {
+  max-width: min(1500px, calc(100vw - 3rem));
+  padding-top: 3.25rem;
+  padding-bottom: 3.75rem;
+}
+
+.design-page-frame::before,
+.design-page-frame::after {
+  display: none;
+}
+
+.gold-thread {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184, 71, 63, 0.58), rgba(200, 164, 93, 0.72), transparent);
+}
+
+/* 这里把标题区做成设计图里的“图片铺底，文字浮层”卡片。 */
+.section-title-block {
+  min-height: 12rem;
+  border-radius: 8px;
+  border-color: rgba(47, 111, 104, 0.14);
+  background: rgba(255, 250, 240, 0.82);
+  box-shadow:
+    0 16px 36px rgba(23, 51, 50, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.section-title-with-visual {
+  min-height: clamp(20rem, 26vw, 27rem);
+  padding: clamp(1.8rem, 3vw, 3rem);
+}
+
+.section-title-visual-image {
+  object-position: center 54%;
+  filter: saturate(0.94) contrast(1.02);
+}
+
+.section-title-visual-shade {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.86), rgba(255, 250, 240, 0.55) 42%, rgba(255, 250, 240, 0.16) 74%, rgba(255, 250, 240, 0.05)),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(15, 61, 62, 0.08));
+}
+
+.section-title-block h2 {
+  color: #173332;
+  font-size: clamp(2.5rem, 4.6vw, 5rem);
+  line-height: 1.08;
+}
+
+.section-title-block h2 + div {
+  color: #526461;
+}
+
+.section-title-seal {
+  border-radius: 0;
+  background: rgba(255, 250, 240, 0.52);
+}
+
+/* 这里把卡片、面板和按钮统一为参考图里的 8px 小圆角宣纸卡。 */
+.design-surface-card,
+.scroll-panel,
+.ritual-card,
+.workbench-surface,
+.feature-band,
+.mountain-frame {
+  border-radius: 8px !important;
+}
+
+.scroll-panel,
+.ritual-card,
+.design-surface-card {
+  border: 1px solid rgba(47, 111, 104, 0.14);
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.78) 52%, rgba(228, 240, 235, 0.68)),
+    repeating-linear-gradient(90deg, rgba(23, 51, 50, 0.028) 0 1px, transparent 1px 52px);
+  box-shadow:
+    0 12px 28px rgba(23, 51, 50, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+.cloud-button {
+  min-height: 2.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.generated-icon {
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  color: #b88942;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.72)),
+    radial-gradient(circle, rgba(200, 164, 93, 0.16), transparent 68%);
+  box-shadow: none;
+}
+
+.generated-icon-line {
+  width: 78%;
+  height: 78%;
+  stroke-width: 3.3;
+}
+
+/* 这里统一表单和筛选器，让申请、登录、后台筛选都像设计图里的浅色输入框。 */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  min-height: 2.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(47, 111, 104, 0.16);
+  background: rgba(255, 253, 246, 0.92);
+  color: #173332;
+}
+
+table {
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.78);
+}
+
+th {
+  color: #526461;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+td {
+  color: #173332;
+  font-size: 0.9rem;
+}
+
+/* 这里重构小院与后台工作台，贴近设计图下半部分的侧栏和台账卡片。 */
+.yard-sidebar,
+.workbench-sidebar {
+  width: 17rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, #0f3d3e, #0a3333 64%, #082828),
+    repeating-linear-gradient(0deg, rgba(248, 223, 157, 0.08) 0 1px, transparent 1px 48px);
+  box-shadow: 12px 0 34px rgba(23, 51, 50, 0.14);
+}
+
+.yard-sidebar {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.92), rgba(232, 241, 236, 0.92)),
+    repeating-linear-gradient(0deg, rgba(47, 111, 104, 0.08) 0 1px, transparent 1px 48px);
+}
+
+.workbench-surface {
+  border: 1px solid rgba(47, 111, 104, 0.14);
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.82) 48%, rgba(228, 240, 235, 0.78)),
+    repeating-linear-gradient(90deg, rgba(23, 51, 50, 0.035) 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(0deg, rgba(23, 51, 50, 0.028) 0 1px, transparent 1px 56px);
+  box-shadow:
+    0 18px 42px rgba(23, 51, 50, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.workbench-frame-map {
+  background:
+    radial-gradient(circle at 85% 8%, rgba(200, 164, 93, 0.14), transparent 14rem),
+    linear-gradient(135deg, transparent 0 40%, rgba(47, 111, 104, 0.06) 40% 58%, transparent 58%);
+  opacity: 0.8;
+}
+
+.yard-topbar {
+  border-bottom: 1px solid rgba(47, 111, 104, 0.12);
+  background: rgba(255, 250, 240, 0.9);
+  backdrop-filter: blur(16px);
+}
+
+.workbench-topbar {
+  border-bottom: 1px solid rgba(248, 223, 157, 0.16);
+  background: rgba(15, 61, 62, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+.mountain-frame {
+  background:
+    linear-gradient(135deg, rgba(15, 61, 62, 0.94), rgba(7, 24, 24, 0.84)),
+    linear-gradient(45deg, transparent 0 42%, rgba(200, 164, 93, 0.22) 42% 60%, transparent 60%);
+}
+
+.site-footer {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.34), rgba(248, 241, 228, 0.84)),
+    linear-gradient(90deg, rgba(200, 164, 93, 0.08), transparent 40%, rgba(47, 111, 104, 0.08));
+}
+
+.site-footer-lines {
+  pointer-events: none;
+  background:
+    linear-gradient(164deg, transparent 0 42%, rgba(200, 164, 93, 0.4) 42% 44%, transparent 44%),
+    linear-gradient(170deg, transparent 0 48%, rgba(184, 137, 66, 0.34) 48% 50%, transparent 50%),
+    linear-gradient(176deg, transparent 0 54%, rgba(200, 164, 93, 0.28) 54% 56%, transparent 56%);
+  opacity: 0.78;
+}
+
+/* 这里把 785×706 作为手机端统一画板，所有页面都走同一组比例。 */
+@media (max-width: 785px) {
+  header:has(.site-header-bar) {
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+
+  .site-header-bar {
+    width: auto !important;
+    max-width: none;
+    margin-right: 0;
+    margin-left: 0;
+    height: 4.6rem !important;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .site-header-bar p:first-child {
+    font-size: 1.45rem;
+  }
+
+  .site-header-bar .brand-mark {
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+
+  .mobile-menu-button-inline {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    z-index: 4;
+    display: flex !important;
+    flex-basis: 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    transform: translateY(-50%);
+  }
+
+  .site-hero {
+    padding: 6.9rem 1rem 1.8rem;
+  }
+
+  .site-hero-image,
+  .site-hero-overlay {
+    inset: 6.9rem 1rem 1.8rem !important;
+    width: calc(100% - 2rem) !important;
+  }
+
+  .site-hero-content {
+    min-height: 31rem !important;
+    width: 100%;
+  }
+
+  .site-hero-copy {
+    max-width: calc(100vw - 2rem);
+    min-height: 25rem;
+    padding: 0 1rem;
+  }
+
+  .site-hero-copy h1 {
+    font-size: clamp(3.6rem, 15vw, 4.9rem);
+  }
+
+  .site-hero-copy h1 + div {
+    max-width: 18rem;
+    margin-bottom: 4.6rem;
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
+  .hero-proof-grid {
+    right: 0.85rem;
+    bottom: 2.4rem;
+    left: 0.85rem;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin-top: 0;
+  }
+
+  .hero-proof-grid > div {
+    min-height: 4.6rem;
+    padding: 0.55rem 0.25rem;
+  }
+
+  .hero-proof-grid .generated-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .hero-proof-grid p {
+    font-size: 0.68rem;
+  }
+
+  .design-page-frame {
+    max-width: calc(100vw - 2rem);
+    padding: 2rem 0 2.4rem;
+  }
+
+  .section-title-with-visual {
+    min-height: 16rem;
+    padding: 1.25rem;
+  }
+
+  .section-title-block h2 {
+    font-size: clamp(2rem, 9vw, 2.9rem);
+  }
+
+  .section-title-block h2 + div {
+    font-size: 0.98rem;
+    line-height: 1.78;
+  }
+
+  .section-title-visual-shade {
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.72), rgba(255, 250, 240, 0.42) 52%, rgba(255, 250, 240, 0.12)),
+      linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(15, 61, 62, 0.08));
+  }
+
+  .scroll-panel,
+  .ritual-card,
+  .design-surface-card {
+    padding: 1.2rem;
+  }
+
+  .yard-sidebar,
+  .workbench-sidebar {
+    width: 17rem;
+  }
+
+  .workbench-surface {
+    padding: 1rem;
   }
 }
 
