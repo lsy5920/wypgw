@@ -172,7 +172,7 @@ export function WenxinQuizPage() {
   }
 
   return (
-    <PageShell className="overflow-x-hidden" size="normal">
+    <PageShell className="compact-design-page quiz-design-page overflow-x-hidden" size="normal">
       <SectionTitle center eyebrow="问心考核" title="一题一问，照见门风" visual="quiz">
         此卷共三十题，皆据《问云派立派金典》而设。逐题作答，答案皆可于金典中查得；最新成绩合格后，方可递交问云名帖。
       </SectionTitle>

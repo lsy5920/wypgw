@@ -124,7 +124,7 @@ export function EventsPage() {
   }
 
   return (
-    <PageShell size="wide">
+    <PageShell className="compact-design-page events-design-page" size="wide">
       <SectionTitle center eyebrow="问云雅集" title="线上清谈，线下相逢" visual="events">
         问云派日常不求繁杂，但求有温度、有秩序、有意义。
       </SectionTitle>

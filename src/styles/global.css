@@ -2761,6 +2761,102 @@ textarea {
   background-size: auto, 420px 420px;
 }
 
+/* 这里把参考稿里的普通内页还原成“小页签 + 内容区”结构，不再使用旧版半屏大横幅。 */
+.compact-design-page {
+  padding-top: 2.6rem;
+}
+
+.compact-design-page > .section-title-block {
+  min-height: auto;
+  margin-bottom: 1.6rem;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.compact-design-page > .section-title-block::before,
+.compact-design-page > .section-title-block::after,
+.compact-design-page > .section-title-block .section-title-visual-image,
+.compact-design-page > .section-title-block .section-title-visual-shade,
+.compact-design-page > .section-title-block .section-title-corner,
+.compact-design-page > .section-title-block .section-title-seal,
+.compact-design-page > .section-title-block .section-title-dots {
+  display: none;
+}
+
+.compact-design-page > .section-title-block > p {
+  margin-bottom: 0.7rem;
+  border-color: rgba(248, 223, 157, 0.48);
+  background: linear-gradient(135deg, #0f3d3e, #1f5f58);
+  color: #fff8e8;
+  box-shadow: 0 8px 18px rgba(15, 61, 62, 0.18);
+}
+
+.compact-design-page > .section-title-block h2 {
+  max-width: 56rem;
+  font-size: clamp(2.2rem, 4.2vw, 4.2rem);
+  line-height: 1.08;
+}
+
+.compact-design-page > .section-title-block h2 + div {
+  max-width: 48rem;
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.compact-design-page > .section-title-block .gold-thread {
+  margin-top: 0.9rem;
+}
+
+/* 这里给内页内容区补充整稿中的淡墨山水底，不让页面像普通白卡片堆叠。 */
+.compact-design-page::before {
+  position: absolute;
+  inset: 6rem 1.5rem auto;
+  z-index: -1;
+  height: 26rem;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / auto 100% repeat-x;
+  opacity: 0.18;
+}
+
+/* 这里强化金典页左侧目录，让它更像设计稿中的悬挂卷轴目录。 */
+.canon-design-page aside .ritual-card {
+  border-color: rgba(127, 67, 42, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.96), rgba(245, 235, 211, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+}
+
+.canon-design-page aside .ritual-card::after {
+  position: absolute;
+  left: 50%;
+  bottom: -1.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+  border-right: 1px solid rgba(127, 67, 42, 0.28);
+  border-bottom: 1px solid rgba(127, 67, 42, 0.28);
+  background: rgba(245, 235, 211, 0.9);
+}
+
+/* 这里让名册、考核和云灯的首屏像互动稿一样更紧凑，重点放在表单和列表本身。 */
+.join-design-page .join-roster-panel,
+.quiz-design-page .quiz-summary-grid,
+.cloud-lantern-design-page .cloud-lantern-layout {
+  margin-top: 1.4rem;
+}
+
+.join-design-page > .section-title-block h2,
+.quiz-design-page > .section-title-block h2,
+.cloud-lantern-design-page > .section-title-block h2 {
+  font-size: clamp(2.1rem, 3.8vw, 3.6rem);
+}
+
 /* 这里校准移动端，使图像、入口条、表单不会溢出 785 设计档位。 */
 @media (max-width: 785px) {
   .section-title-with-visual {
@@ -2793,6 +2889,18 @@ textarea {
 
   .events-note-stack {
     position: static;
+  }
+
+  .compact-design-page {
+    padding-top: 1.9rem;
+  }
+
+  .compact-design-page > .section-title-block h2 {
+    font-size: clamp(1.9rem, 8vw, 2.8rem);
+  }
+
+  .compact-design-page > .section-title-block h2 + div {
+    font-size: 0.95rem;
   }
 
   .announcement-feature-panel,

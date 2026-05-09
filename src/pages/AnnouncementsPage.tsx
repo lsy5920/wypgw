@@ -59,7 +59,7 @@ export function AnnouncementsPage() {
     : announcements
 
   return (
-    <PageShell size="wide">
+    <PageShell className="compact-design-page announcement-design-page" size="wide">
       <SectionTitle center eyebrow="门派公告" title="山门有讯，灯火相传" visual="announcements">
         山门公告、门规更新、活动通知与金典修订都会在这里发布。
       </SectionTitle>

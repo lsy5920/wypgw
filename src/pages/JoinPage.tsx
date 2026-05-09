@@ -247,7 +247,7 @@ export function JoinPage() {
   }
 
   return (
-    <PageShell size="wide">
+    <PageShell className="compact-design-page join-design-page" size="wide">
       <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号" visual="roster">
         先过问心考核，再递问云名帖。名册公开展示道名、江湖名、编号、性别、身份、所在城市、宣言、兴趣爱好、同行期待和入册时间。
       </SectionTitle>

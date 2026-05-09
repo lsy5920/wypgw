@@ -83,7 +83,7 @@ export function CanonPage() {
   }
 
   return (
-    <PageShell size="wide">
+    <PageShell className="compact-design-page canon-design-page" size="wide">
       <SectionTitle center eyebrow="立派金典" title="问云派立派金典" visual="canon">
         问云而来，栖心于此；乱世暂歇，同归一处。
       </SectionTitle>
