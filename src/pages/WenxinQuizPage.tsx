@@ -1,7 +1,6 @@
 ﻿import { CheckCircle2, ChevronLeft, ChevronRight, RotateCcw, ScrollText, Send } from 'lucide-react'
 import { FormEvent, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
-import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
 import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
 import { SectionTitle } from '../components/SectionTitle'
@@ -207,9 +206,6 @@ export function WenxinQuizPage() {
 
       <div className="mt-6 grid gap-4">
         {loading ? <StatusNotice title="正在读取登录状态" message="请稍候，系统正在确认你是否已经进入问云小院。" /> : null}
-        {!profile && !loading ? (
-          <LoginRequiredNotice title="考核前请先登录" message="问心考核成绩需要记录到你的问云小院，登录后合格成绩会自动用于登记入册。" />
-        ) : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
         {result?.passed && profile ? (
           <ScrollPanel className="border-[#7a8b6f]/35 bg-[#f1f7e9]/80">

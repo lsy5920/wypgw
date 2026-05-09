@@ -2905,10 +2905,32 @@ textarea {
 }
 
 /* 这里把互动页标题降级成设计稿中的页头说明，让表单和卡片成为首屏主体。 */
+.join-design-page > .section-title-block,
+.quiz-design-page > .section-title-block,
+.cloud-lantern-design-page > .section-title-block {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.65rem;
+  text-align: left;
+}
+
+/* 这里把互动页小页签放在左侧，复刻设计稿里标题行的短签样式。 */
+.join-design-page > .section-title-block > p,
+.quiz-design-page > .section-title-block > p,
+.cloud-lantern-design-page > .section-title-block > p {
+  grid-row: 1 / 3;
+  align-self: center;
+  margin: 0;
+}
+
 .join-design-page > .section-title-block h2,
 .quiz-design-page > .section-title-block h2,
 .cloud-lantern-design-page > .section-title-block h2 {
-  font-size: clamp(1.7rem, 2.35vw, 2.45rem);
+  grid-column: 2;
+  max-width: none;
+  font-size: clamp(1.45rem, 2vw, 2.05rem);
   line-height: 1.16;
 }
 
@@ -2916,10 +2938,18 @@ textarea {
 .join-design-page > .section-title-block h2 + div,
 .quiz-design-page > .section-title-block h2 + div,
 .cloud-lantern-design-page > .section-title-block h2 + div {
+  grid-column: 2;
   max-width: 46rem;
-  margin-top: 0.45rem;
-  font-size: 0.9rem;
-  line-height: 1.65;
+  margin-top: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+/* 这里去掉互动页页头金线，避免旧标题组件把内容向下撑开。 */
+.join-design-page > .section-title-block .gold-thread,
+.quiz-design-page > .section-title-block .gold-thread,
+.cloud-lantern-design-page > .section-title-block .gold-thread {
+  display: none;
 }
 
 /* 这里减少互动页主体和页头之间的距离，复刻参考稿里的紧凑卡片排布。 */
@@ -2934,20 +2964,44 @@ textarea {
   margin-bottom: 0.9rem;
 }
 
+/* 这里压缩名册顶部标题和筛选区，让名册卡片更早出现在首屏。 */
+.join-roster-panel {
+  padding: 1.25rem !important;
+}
+
+.join-roster-panel h2 {
+  font-size: clamp(1.8rem, 2.5vw, 2.45rem);
+}
+
+.join-roster-panel label {
+  gap: 0.35rem;
+}
+
+.join-roster-panel input,
+.join-roster-panel select {
+  min-height: 2.8rem;
+  padding-block: 0.55rem;
+}
+
+.join-roster-panel .mb-5 {
+  margin-bottom: 0.75rem;
+}
+
 /* 这里压缩名册登记表，让它像参考稿下半部分的名帖表单，而不是独立大页面。 */
 .join-form-panel {
   margin-top: 1rem !important;
+  padding: 1.25rem !important;
 }
 
 /* 这里控制名册卡片高度，保持横向卡片像设计稿中的名帖栏。 */
 .join-roster-panel .ritual-card {
-  min-height: 21rem;
+  min-height: 18.5rem;
+  padding: 1.25rem !important;
 }
 
 /* 这里把问心考核首屏改成左侧试卷、右侧提示的结构。 */
 .quiz-summary-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(13.5rem, 0.28fr);
-  gap: 0.9rem;
+  display: none;
 }
 
 /* 这里让考核说明成为横向细条，避免挤掉下方试卷卡。 */
