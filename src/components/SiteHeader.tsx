@@ -40,11 +40,8 @@ export function SiteHeader() {
 
   return (
     <header className="pointer-events-none fixed inset-x-3 top-3 z-40 md:top-5">
-      <motion.div
-        animate={{ y: 0, opacity: 1 }}
+      <div
         className={`site-header-bar site-header-shell pointer-events-auto relative mx-auto flex h-16 max-w-7xl items-center justify-between rounded-lg border px-3 shadow-xl backdrop-blur-2xl transition duration-300 md:h-[4.5rem] md:px-4 ${headerSurfaceClass}`}
-        initial={{ y: -18, opacity: 0 }}
-        transition={{ duration: 0.48, ease: 'easeOut' }}
       >
         {/* 这里展示门派正式 Logo 和站点名称。 */}
         <Link className="flex min-w-0 items-center gap-3" to="/" onClick={closeMenu}>
@@ -93,7 +90,7 @@ export function SiteHeader() {
             问云小院
           </Link>
         </div>
-      </motion.div>
+      </div>
 
       {/* 这里展示手机和平板端展开菜单。 */}
       <AnimatePresence>

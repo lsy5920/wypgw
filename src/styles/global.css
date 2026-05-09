@@ -2764,6 +2764,80 @@ textarea {
   background-size: auto, 420px 420px;
 }
 
+/* 这里按小院和后台设计稿重新校准工作台：侧栏更窄，内容区像一张完整宣纸台账。 */
+@media (min-width: 1024px) {
+  .yard-sidebar,
+  .workbench-sidebar {
+    width: 12rem !important;
+    padding: 1rem !important;
+  }
+
+  .yard-sidebar + div,
+  .workbench-sidebar + div {
+    padding-left: 12rem !important;
+  }
+}
+
+/* 这里让后台页面外层拥有设计稿中的深青执事堂底色。 */
+.wenyun-shell:has(.workbench-sidebar) {
+  background:
+    radial-gradient(circle at 80% 0%, rgba(248, 223, 157, 0.14), transparent 22rem),
+    linear-gradient(180deg, #062f31 0%, #083a39 52%, #062829 100%) !important;
+}
+
+/* 这里让小院工作台保留浅色山水底，与用户后台设计稿一致。 */
+.wenyun-shell:has(.yard-sidebar) {
+  background:
+    linear-gradient(180deg, rgba(247, 239, 224, 0.96), rgba(226, 236, 231, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / auto 24rem repeat-x !important;
+}
+
+/* 这里压缩工作台页头，让各个小院和后台页面更像参考稿里的应用界面。 */
+.workbench-content .section-title-block {
+  min-height: auto;
+  margin-bottom: 1rem;
+  padding: 1rem 1.2rem;
+}
+
+/* 这里把工作台页面的插画标题改成横向薄幅，不再使用前台大横幅。 */
+.workbench-content .section-title-with-visual {
+  min-height: clamp(9rem, 14vw, 13rem);
+}
+
+/* 这里压缩工作台页面标题文字，保证统计卡和表格能进入首屏。 */
+.workbench-content .section-title-block h2 {
+  font-size: clamp(1.65rem, 2.4vw, 2.7rem);
+}
+
+.workbench-content .section-title-block h2 + div {
+  max-width: 40rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+/* 这里让小院与后台卡片更像设计稿中的低高度数据卡。 */
+.workbench-content .scroll-panel {
+  padding: 1.15rem !important;
+}
+
+.workbench-content .mt-8 {
+  margin-top: 1rem !important;
+}
+
+/* 这里统一后台筛选条和表单卡的密度，避免旧页面表单过高。 */
+.workbench-content input,
+.workbench-content select,
+.workbench-content textarea {
+  min-height: 2.75rem;
+  padding-block: 0.55rem;
+}
+
+/* 这里让后台与小院按钮保持设计稿里短而明确的操作尺寸。 */
+.workbench-content button,
+.workbench-content a.cloud-button {
+  min-height: 2.5rem;
+}
+
 /* 这里把参考稿里的普通内页还原成“小页签 + 内容区”结构，不再使用旧版半屏大横幅。 */
 .compact-design-page {
   padding-top: 2.6rem;
@@ -3143,6 +3217,34 @@ textarea {
 
   .compact-design-page > .section-title-block h2 + div {
     font-size: 0.95rem;
+  }
+
+  /* 这里让互动页手机端回到单栏，避免桌面横向页头和云灯两栏把文字挤窄。 */
+  .join-design-page > .section-title-block,
+  .quiz-design-page > .section-title-block,
+  .cloud-lantern-design-page > .section-title-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+  }
+
+  .join-design-page > .section-title-block > p,
+  .quiz-design-page > .section-title-block > p,
+  .cloud-lantern-design-page > .section-title-block > p {
+    align-self: center;
+  }
+
+  .join-design-page > .section-title-block h2,
+  .quiz-design-page > .section-title-block h2,
+  .cloud-lantern-design-page > .section-title-block h2 {
+    max-width: 100%;
+    font-size: clamp(2rem, 8vw, 2.85rem);
+  }
+
+  .cloud-lantern-design-page .cloud-lantern-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .announcement-feature-panel,

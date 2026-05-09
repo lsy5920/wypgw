@@ -1,5 +1,4 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { SiteFooter } from '../components/SiteFooter'
 import { SiteHeader } from '../components/SiteHeader'
 
@@ -14,15 +13,9 @@ export function SiteLayout() {
     <div className="wenyun-shell min-h-screen overflow-x-hidden pb-20 text-[#263238] md:pb-0">
       <SiteHeader />
       {/* 这里给每个页面增加轻微淡入上浮动效，让站点更有层次。 */}
-      <motion.main
-        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        className={isHomePage ? 'pt-0' : 'pt-[5.5rem] md:pt-[6.5rem]'}
-        initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
-        key={location.pathname}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-      >
+      <main className={isHomePage ? 'pt-0' : 'pt-[5.5rem] md:pt-[6.5rem]'} key={location.pathname}>
         <Outlet />
-      </motion.main>
+      </main>
       <SiteFooter />
     </div>
   )
