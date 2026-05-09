@@ -254,7 +254,7 @@ export function JoinPage() {
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
-      <ScrollPanel className="mt-8 overflow-hidden seal-mark-bg">
+      <ScrollPanel className="join-form-panel mt-8 overflow-hidden seal-mark-bg">
         <button
           className="flex w-full flex-col gap-5 text-left md:flex-row md:items-center md:justify-between"
           onClick={() => setFormOpen((current) => !current)}
@@ -495,7 +495,7 @@ export function JoinPage() {
         )}
       </ScrollPanel>
 
-      <ScrollPanel className="mt-8 overflow-hidden">
+      <ScrollPanel className="join-roster-panel mt-8 overflow-hidden">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="flex items-center gap-2 text-sm font-semibold text-[#9e3d32]">

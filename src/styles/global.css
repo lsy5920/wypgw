@@ -2490,6 +2490,151 @@ textarea {
   border-color: rgba(248, 223, 157, 0.32);
 }
 
+/* 这里按互动页设计稿重排问云名册：先看名册和筛选，再在下方递交名帖。 */
+.design-page-frame:has(.join-form-panel) {
+  display: flex;
+  flex-direction: column;
+}
+
+.join-roster-panel {
+  order: 2;
+}
+
+.join-form-panel {
+  order: 3;
+}
+
+.join-roster-panel > div:first-child {
+  align-items: flex-end;
+}
+
+.join-roster-panel [class*="overflow-x-auto"] {
+  scroll-snap-type: x mandatory;
+}
+
+.join-roster-panel [class*="min-w-"] {
+  scroll-snap-align: start;
+}
+
+/* 这里按问心考核设计稿重排：上方为统计和须知，答题区是左主试卷、右状态栏。 */
+.quiz-summary-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 0.32fr);
+}
+
+.quiz-summary-grid .scroll-panel:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.quiz-answer-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.32fr);
+  align-items: start;
+}
+
+.quiz-answer-layout > .scroll-panel {
+  min-height: 26rem;
+}
+
+.quiz-answer-layout > div:last-child {
+  grid-column: 1 / -1;
+}
+
+/* 这里按云灯设计稿重排：左侧点灯表单、右侧云灯墙，列表以两列卡片展示。 */
+.cloud-lantern-layout {
+  align-items: start;
+}
+
+.cloud-lantern-form-panel {
+  position: sticky;
+  top: 7rem;
+}
+
+.cloud-lantern-wall-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cloud-lantern-wall-panel > .scroll-panel,
+.cloud-lantern-wall-panel > .scroll-panel p {
+  min-width: 0;
+}
+
+/* 这里按登录设计稿重排：左侧小院山门大图，右侧登录面板。 */
+.login-page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(22rem, 0.72fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.login-page-layout .section-title-block {
+  min-height: clamp(33rem, 56vw, 46rem);
+  margin-bottom: 0;
+}
+
+.login-page-layout .section-title-visual-shade {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.18), rgba(255, 250, 240, 0.08) 46%, rgba(255, 250, 240, 0.74) 100%),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.03), rgba(15, 61, 62, 0.1));
+}
+
+.login-page-layout .section-title-block h2 {
+  max-width: 16rem;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: clamp(3rem, 5vw, 5.4rem);
+  line-height: 1.2;
+}
+
+.login-page-layout .section-title-block h2 + div {
+  max-width: 18rem;
+}
+
+.login-form-panel {
+  align-self: stretch;
+  margin-top: 0 !important;
+}
+
+/* 这里给所有小院与后台页面补一个设计稿里的顶部白色工作台栏。 */
+.workbench-inner-topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: 3.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -0.2rem -0.2rem 1.2rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(184, 137, 66, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.92), rgba(250, 244, 232, 0.84)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 320px 320px;
+}
+
+.workbench-inner-topbar-button,
+.workbench-inner-topbar-avatar {
+  display: inline-grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid rgba(184, 137, 66, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #0f3d3e;
+}
+
+.workbench-inner-topbar-title {
+  min-width: 0;
+  font-weight: 700;
+  color: #173332;
+}
+
+.workbench-inner-topbar-subtitle {
+  font-size: 0.75rem;
+  color: #7a6a48;
+}
+
 /* 这里校准移动端，使图像、入口条、表单不会溢出 785 设计档位。 */
 @media (max-width: 785px) {
   .section-title-with-visual {
@@ -2507,6 +2652,27 @@ textarea {
   .yard-sidebar,
   .workbench-sidebar {
     width: 17rem;
+  }
+
+  .quiz-summary-grid,
+  .quiz-answer-layout,
+  .cloud-lantern-wall-panel,
+  .login-page-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cloud-lantern-form-panel {
+    position: static;
+  }
+
+  .login-page-layout .section-title-block {
+    min-height: 24rem;
+  }
+
+  .login-page-layout .section-title-block h2 {
+    max-width: 100%;
+    writing-mode: horizontal-tb;
+    font-size: clamp(2.5rem, 11vw, 3.6rem);
   }
 }
 

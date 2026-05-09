@@ -92,8 +92,8 @@ export function CloudLanternPage() {
         留下一句祝福、一段心情、一个问候。云灯默认先由执事审核，避免广告和恶意内容扰乱山门。
       </SectionTitle>
 
-      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-        <ScrollPanel className="seal-mark-bg">
+      <div className="cloud-lantern-layout grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+        <ScrollPanel className="cloud-lantern-form-panel seal-mark-bg">
           {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
           {!profile ? (
             <LoginRequiredNotice
@@ -145,7 +145,7 @@ export function CloudLanternPage() {
           </form>
         </ScrollPanel>
 
-        <div className="grid gap-4">
+        <div className="cloud-lantern-wall-panel grid gap-4">
           {lanterns.length === 0 ? (
             <EmptyState title="暂无公开云灯" message="待执事审核后，温暖的话会在这里亮起。" />
           ) : (

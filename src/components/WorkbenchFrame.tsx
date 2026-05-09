@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Bell, Menu, UserRound } from 'lucide-react'
 
 // 这个类型描述工作台外壳入参，入参用于统一小院和后台的内容区域。
 interface WorkbenchFrameProps {
@@ -16,6 +17,26 @@ export function WorkbenchFrame({ children, className = '' }: WorkbenchFrameProps
       <div aria-hidden="true" className="workbench-frame-map pointer-events-none absolute inset-0" />
       {/* 这里给工作台顶部加一条金线，强化后台和小院的高级仪表盘感。 */}
       <div className="gold-thread mb-5 opacity-80" />
+      {/* 这里补上设计稿里的工作台顶部栏，桌面端和移动端都能看到当前工作区状态。 */}
+      <div className="workbench-inner-topbar">
+        <div className="flex min-w-0 items-center gap-3">
+          <span aria-hidden="true" className="workbench-inner-topbar-button">
+            <Menu className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="workbench-inner-topbar-title truncate">问云工作台</p>
+            <p className="workbench-inner-topbar-subtitle">清明守序，灯火有回音</p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <span aria-hidden="true" className="workbench-inner-topbar-button">
+            <Bell className="h-4 w-4" />
+          </span>
+          <span aria-hidden="true" className="workbench-inner-topbar-avatar">
+            <UserRound className="h-4 w-4" />
+          </span>
+        </div>
+      </div>
       {children}
     </section>
   )

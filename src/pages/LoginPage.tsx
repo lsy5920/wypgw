@@ -371,12 +371,12 @@ export function LoginPage() {
   }
 
   return (
-    <PageShell size="narrow">
+    <PageShell className="login-page-layout" size="wide">
       <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院" visual="login">
         同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事也有自己的小院，并可从小院进入管理后台。
       </SectionTitle>
 
-      <ScrollPanel className="relative overflow-hidden seal-mark-bg">
+      <ScrollPanel className="login-form-panel relative overflow-hidden seal-mark-bg">
         <div className="pointer-events-none absolute right-6 top-6 h-28 w-28 rounded-full border border-[#c9a45c]/30 bg-[#edf3ef]/70" />
         {stateMessage ? <StatusNotice title="访问提示" message={stateMessage} /> : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}

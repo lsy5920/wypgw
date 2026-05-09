@@ -177,7 +177,7 @@ export function WenxinQuizPage() {
         此卷共三十题，皆据《问云派立派金典》而设。逐题作答，答案皆可于金典中查得；最新成绩合格后，方可递交问云名帖。
       </SectionTitle>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="quiz-summary-grid grid gap-5 md:grid-cols-2">
         <ScrollPanel className="md:col-span-1">
           <ScrollText className="h-5 w-5 text-[#9e3d32]" />
           <p className="mt-3 text-sm text-[#7a6a48]">题型</p>
@@ -222,7 +222,7 @@ export function WenxinQuizPage() {
       </div>
 
       {profile ? (
-        <form className="mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
+        <form className="quiz-answer-layout mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
           <ScrollPanel className="min-w-0 overflow-hidden p-5 md:p-8 seal-mark-bg">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-semibold text-[#9e3d32]">
