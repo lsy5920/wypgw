@@ -138,7 +138,7 @@ export function YardLayout() {
         </header>
 
         <main className="mx-auto max-w-[1540px] px-3 py-5 md:px-8 md:py-8">
-          <WorkbenchFrame>
+          <WorkbenchFrame subtitle="桌面端为主，移动端从顶部菜单进入" title="问云小院">
           <Outlet />
           </WorkbenchFrame>
         </main>

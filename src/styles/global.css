@@ -2635,6 +2635,132 @@ textarea {
   color: #7a6a48;
 }
 
+/* 这里复刻公告页设计稿：左侧大榜文、右侧公告索引，空数据也保留完整榜文结构。 */
+.announcement-board-layout {
+  align-items: start;
+}
+
+.announcement-feature-panel {
+  min-height: 28rem;
+}
+
+.announcement-feature-panel::before {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5), transparent 38%),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / auto 11rem repeat-x;
+  opacity: 0.34;
+}
+
+.announcement-empty-ledger {
+  min-height: 16rem;
+  display: grid;
+  align-content: center;
+}
+
+.announcement-side-stack {
+  align-content: start;
+}
+
+.announcement-side-card {
+  min-height: 12rem;
+}
+
+/* 这里复刻雅集设计稿：三张活动卡横向陈列，右侧固定雅集须知。 */
+.events-board-layout {
+  align-items: start;
+}
+
+.events-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.events-card-image {
+  min-height: 10rem;
+  border: 1px solid rgba(184, 137, 66, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.58)),
+    url("/assets/guofeng-ui-20260509/illustrations/public/events-water-pavilion.png") center / cover;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.56);
+}
+
+.events-note-stack {
+  position: sticky;
+  top: 7rem;
+}
+
+.events-note-card {
+  min-height: 25rem;
+}
+
+/* 这里复刻山门介绍设计稿：三张书院卡、一个大门风榜和一排宗门台账。 */
+.about-feature-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.about-spirit-ledger {
+  min-height: 27rem;
+}
+
+.about-spirit-ledger::before {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.56), transparent 52%),
+    url("/assets/guofeng-ui-20260509/illustrations/public/about-courtyard-path.png") right bottom / auto 100% no-repeat;
+  opacity: 0.24;
+}
+
+.about-spirit-chip {
+  min-height: 8.5rem;
+}
+
+.about-role-card {
+  min-height: 15rem;
+}
+
+/* 这里复刻 404 设计稿：大图标题在上、返回面板居中，避免旧版窄卡片布局。 */
+.not-found-page-layout .section-title-block {
+  min-height: clamp(24rem, 42vw, 35rem);
+}
+
+.not-found-return-panel {
+  margin-top: -2rem;
+}
+
+/* 这里把小院和后台所有真实内容收进同一张宣纸工作区，贴合设计稿的稳定台账感。 */
+.workbench-content {
+  min-width: 0;
+}
+
+.workbench-content > div {
+  min-width: 0;
+}
+
+.workbench-content .section-title-block {
+  margin-bottom: 1.25rem;
+}
+
+.workbench-content .section-title-with-visual {
+  min-height: clamp(14rem, 20vw, 18rem);
+}
+
+.workbench-content .scroll-panel {
+  background:
+    linear-gradient(145deg, rgba(255, 253, 246, 0.94), rgba(250, 244, 232, 0.84)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 340px 340px;
+}
+
+.workbench-sidebar ~ * .workbench-surface {
+  border-color: rgba(248, 223, 157, 0.36);
+  background:
+    linear-gradient(145deg, rgba(255, 250, 236, 0.96), rgba(248, 241, 223, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 420px 420px;
+}
+
 /* 这里校准移动端，使图像、入口条、表单不会溢出 785 设计档位。 */
 @media (max-width: 785px) {
   .section-title-with-visual {
@@ -2663,6 +2789,16 @@ textarea {
 
   .cloud-lantern-form-panel {
     position: static;
+  }
+
+  .events-note-stack {
+    position: static;
+  }
+
+  .announcement-feature-panel,
+  .about-spirit-ledger,
+  .events-note-card {
+    min-height: auto;
   }
 
   .login-page-layout .section-title-block {

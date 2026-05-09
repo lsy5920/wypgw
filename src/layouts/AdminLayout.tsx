@@ -128,7 +128,7 @@ export function AdminLayout() {
 
         {/* 这里放置各个后台页面内容。 */}
         <main className="mx-auto max-w-[1540px] px-3 py-5 md:px-8 md:py-8">
-          <WorkbenchFrame>
+          <WorkbenchFrame subtitle="深青执事堂，护灯传道" title="问云后台管理端">
           <Outlet />
           </WorkbenchFrame>
         </main>

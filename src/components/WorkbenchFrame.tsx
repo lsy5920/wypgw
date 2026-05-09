@@ -5,12 +5,16 @@ import { Bell, Menu, UserRound } from 'lucide-react'
 interface WorkbenchFrameProps {
   // 工作台内部内容。
   children: ReactNode
+  // 顶部栏主标题。
+  title?: string
+  // 顶部栏副标题。
+  subtitle?: string
   // 额外样式类名。
   className?: string
 }
 
 // 这个函数渲染工作台外壳，入参是页面内容，返回值是统一的玉石宣纸背景容器。
-export function WorkbenchFrame({ children, className = '' }: WorkbenchFrameProps) {
+export function WorkbenchFrame({ children, title = '问云工作台', subtitle = '清明守序，灯火有回音', className = '' }: WorkbenchFrameProps) {
   return (
     <section className={`workbench-surface relative mx-auto min-h-[48vh] w-full max-w-[1500px] overflow-hidden rounded-lg p-4 md:min-h-[58vh] md:p-6 lg:min-h-[calc(100vh-6rem)] ${className}`}>
       {/* 这里绘制工作台内部的浅色经纬线，统一小院和后台每个页面的操作底盘。 */}
@@ -24,8 +28,8 @@ export function WorkbenchFrame({ children, className = '' }: WorkbenchFrameProps
             <Menu className="h-4 w-4" />
           </span>
           <div className="min-w-0">
-            <p className="workbench-inner-topbar-title truncate">问云工作台</p>
-            <p className="workbench-inner-topbar-subtitle">清明守序，灯火有回音</p>
+            <p className="workbench-inner-topbar-title truncate">{title}</p>
+            <p className="workbench-inner-topbar-subtitle">{subtitle}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -37,7 +41,8 @@ export function WorkbenchFrame({ children, className = '' }: WorkbenchFrameProps
           </span>
         </div>
       </div>
-      {children}
+      {/* 这里包住真实页面内容，便于统一复刻设计稿里的工作台内边距和表格宽度。 */}
+      <div className="workbench-content relative z-[2]">{children}</div>
     </section>
   )
 }
