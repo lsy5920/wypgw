@@ -81,9 +81,9 @@ export function JoinPage() {
   // 这个状态保存表单数据。
   const [form, setForm] = useState<JoinApplicationInput>(initialForm)
   // 这个状态控制登记入口是否展开。
-  const [formOpen, setFormOpen] = useState(false)
+  const [formOpen, setFormOpen] = useState(true)
   // 这个状态控制筛选条件是否展开。
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(true)
   // 这个状态保存前台名册搜索词。
   const [searchTerm, setSearchTerm] = useState('')
   // 这个状态保存前台辈分字筛选。

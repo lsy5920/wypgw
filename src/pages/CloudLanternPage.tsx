@@ -1,7 +1,6 @@
 ﻿import { Lamp } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
-import { EmptyState } from '../components/EmptyState'
 import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
 import { PageShell } from '../components/PageShell'
 import { ScrollPanel } from '../components/ScrollPanel'
@@ -19,6 +18,14 @@ const initialForm: CloudLanternInput = {
   mood: '',
   is_anonymous: true
 }
+
+// 这个数组保存云灯墙暂无真实数据时的展示卡片，入参为空，返回值用于保持设计稿右侧留言墙布局。
+const emptyLanternCards = [
+  { author_name: '清风', mood: '温暖', content: '愿每一位远行者，都能在这里找到一点安静。' },
+  { author_name: '山路', mood: '清明', content: '最近有些辛苦，幸好还能在灯火里见到方向。' },
+  { author_name: '匿名同门', mood: '守真', content: '愿你一路不必逞强，也不必独自走完。' },
+  { author_name: '小鹿', mood: '欢喜', content: '今日一灯，送给正在赶路的人，愿心中有光。' }
+]
 
 // 这个函数渲染云灯留言页，入参为空，返回值是留言表单和公开云灯列表。
 export function CloudLanternPage() {
@@ -145,19 +152,20 @@ export function CloudLanternPage() {
           </form>
         </ScrollPanel>
 
-        <div className="cloud-lantern-wall-panel grid gap-4">
-          {lanterns.length === 0 ? (
-            <EmptyState title="暂无公开云灯" message="待执事审核后，温暖的话会在这里亮起。" />
-          ) : (
-            lanterns.map((item) => (
-              <ScrollPanel key={item.id}>
+        <ScrollPanel className="cloud-lantern-wall-board">
+          <p className="text-sm font-semibold text-[#9e3d32]">云灯墙</p>
+          <h2 className="ink-title mt-2 text-3xl font-bold text-[#143044]">最新留言</h2>
+          <p className="mt-3 text-sm leading-7 text-[#526461]">审核后的云灯会在这里亮起。没有真实数据时，先以设计稿占位卡展示墙面结构。</p>
+          <div className="cloud-lantern-wall-panel mt-5 grid gap-4">
+            {(lanterns.length === 0 ? emptyLanternCards : lanterns).map((item, index) => (
+              <div className="cloud-lantern-message-card rounded-lg border border-[#c9a45c]/25 bg-white/65 p-5" key={'id' in item ? item.id : `${item.author_name}-${index}`}>
                 <p className="text-sm text-[#9e3d32]">一盏云灯 · {item.mood ?? '温暖'}</p>
                 <p className="mt-3 text-lg leading-8">{item.content}</p>
                 <p className="mt-4 text-sm text-[#7a6a48]">—— {item.author_name}</p>
-              </ScrollPanel>
-            ))
-          )}
-        </div>
+              </div>
+            ))}
+          </div>
+        </ScrollPanel>
       </div>
     </PageShell>
   )

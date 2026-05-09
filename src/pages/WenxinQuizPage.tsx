@@ -221,8 +221,7 @@ export function WenxinQuizPage() {
         ) : null}
       </div>
 
-      {profile ? (
-        <form className="quiz-answer-layout mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
+      <form className="quiz-answer-layout mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
           <ScrollPanel className="min-w-0 overflow-hidden p-5 md:p-8 seal-mark-bg">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-semibold text-[#9e3d32]">
@@ -317,8 +316,7 @@ export function WenxinQuizPage() {
               )}
             </div>
           </div>
-        </form>
-      ) : null}
+      </form>
     </PageShell>
   )
 }

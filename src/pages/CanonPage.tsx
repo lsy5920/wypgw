@@ -114,6 +114,7 @@ export function CanonPage() {
             <ScrollPanel key={`${section.title}-${index}`}>
               <article className="scroll-mt-32" id={`canon-${index}`}>
                 <h2 className="ink-title mb-6 border-b border-[#c9a45c]/25 pb-4 text-3xl font-bold text-[#143044]">{section.title}</h2>
+                {index === 0 ? <div aria-hidden="true" className="canon-section-illustration mb-6" /> : null}
                 <div className="space-y-3 text-base leading-9 text-[#40524f] md:text-lg">
                   {section.lines.map((line, lineIndex) => {
                     // 这里清理每一行，空行保留为段落间距。

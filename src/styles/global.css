@@ -2699,6 +2699,9 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.72), rgba(255, 253, 246, 0.94) 52%, rgba(250, 244, 232, 0.9)),
+    url("/assets/guofeng-ui-20260509/illustrations/public/about-courtyard-path.png") center top / cover;
 }
 
 .about-spirit-ledger {
@@ -2844,6 +2847,15 @@ textarea {
   background: rgba(245, 235, 211, 0.9);
 }
 
+.canon-section-illustration {
+  height: 9rem;
+  border: 1px solid rgba(184, 137, 66, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.5)),
+    url("/assets/guofeng-ui-20260509/illustrations/public/canon-scroll-desk.png") center / cover;
+}
+
 /* 这里让名册、考核和云灯的首屏像互动稿一样更紧凑，重点放在表单和列表本身。 */
 .join-design-page .join-roster-panel,
 .quiz-design-page .quiz-summary-grid,
@@ -2854,7 +2866,183 @@ textarea {
 .join-design-page > .section-title-block h2,
 .quiz-design-page > .section-title-block h2,
 .cloud-lantern-design-page > .section-title-block h2 {
-  font-size: clamp(2.1rem, 3.8vw, 3.6rem);
+  font-size: clamp(1.9rem, 3vw, 2.9rem);
+  line-height: 1.12;
+}
+
+.join-design-page > .section-title-block h2 + div,
+.quiz-design-page > .section-title-block h2 + div,
+.cloud-lantern-design-page > .section-title-block h2 + div {
+  max-width: 44rem;
+  font-size: 0.95rem;
+}
+
+.cloud-lantern-wall-board {
+  min-height: 34rem;
+}
+
+.cloud-lantern-message-card {
+  min-height: 12rem;
+}
+
+/* 这里是本轮按设计稿重搭后的页面骨架校准层，重点把旧站点的大标题留白压回设计稿里的紧凑工作区。 */
+.design-page-frame.compact-design-page {
+  min-height: calc(100vh - 7.25rem);
+  padding-top: 0.85rem;
+  padding-bottom: 2rem;
+}
+
+/* 这里让紧凑页签贴近导航下方，不再形成一整块旧版横幅。 */
+.compact-design-page > .section-title-block {
+  margin-bottom: 0.85rem;
+}
+
+/* 这里把紧凑页的远山底纹上移，作为内容区背景而不是标题区背景。 */
+.compact-design-page::before {
+  inset: 2.8rem 1.5rem auto;
+  height: 19rem;
+  opacity: 0.16;
+}
+
+/* 这里把互动页标题降级成设计稿中的页头说明，让表单和卡片成为首屏主体。 */
+.join-design-page > .section-title-block h2,
+.quiz-design-page > .section-title-block h2,
+.cloud-lantern-design-page > .section-title-block h2 {
+  font-size: clamp(1.7rem, 2.35vw, 2.45rem);
+  line-height: 1.16;
+}
+
+/* 这里限制互动页说明文字宽度，避免首屏被大段说明撑高。 */
+.join-design-page > .section-title-block h2 + div,
+.quiz-design-page > .section-title-block h2 + div,
+.cloud-lantern-design-page > .section-title-block h2 + div {
+  max-width: 46rem;
+  margin-top: 0.45rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+/* 这里减少互动页主体和页头之间的距离，复刻参考稿里的紧凑卡片排布。 */
+.join-design-page .join-roster-panel,
+.quiz-design-page .quiz-summary-grid,
+.cloud-lantern-design-page .cloud-lantern-layout {
+  margin-top: 0.7rem;
+}
+
+/* 这里把名册筛选栏常驻为设计稿中的顶部筛选带。 */
+.join-roster-panel > div:first-child {
+  margin-bottom: 0.9rem;
+}
+
+/* 这里压缩名册登记表，让它像参考稿下半部分的名帖表单，而不是独立大页面。 */
+.join-form-panel {
+  margin-top: 1rem !important;
+}
+
+/* 这里控制名册卡片高度，保持横向卡片像设计稿中的名帖栏。 */
+.join-roster-panel .ritual-card {
+  min-height: 21rem;
+}
+
+/* 这里把问心考核首屏改成左侧试卷、右侧提示的结构。 */
+.quiz-summary-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(13.5rem, 0.28fr);
+  gap: 0.9rem;
+}
+
+/* 这里让考核说明成为横向细条，避免挤掉下方试卷卡。 */
+.quiz-summary-grid .scroll-panel {
+  min-height: auto;
+  padding: 1rem 1.2rem;
+}
+
+/* 这里把第三张考核说明卡收成横向说明条。 */
+.quiz-summary-grid .scroll-panel:nth-child(3) {
+  grid-column: 1 / -1;
+  padding-block: 0.95rem;
+}
+
+/* 这里让考核题目区即使未登录也按设计稿显示完整试卷结构。 */
+.quiz-answer-layout {
+  margin-top: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 这里降低试卷卡高度，使题干、选项和解析在首屏内更接近参考稿。 */
+.quiz-answer-layout > .scroll-panel {
+  min-height: 22rem;
+  padding: 1.35rem;
+}
+
+/* 这里把问心考核的底部操作条改成设计稿中的普通按钮栏，不再贴在浏览器底部。 */
+.quiz-answer-layout > div:last-child {
+  position: static;
+  grid-column: 1 / -1;
+  box-shadow: 0 12px 34px rgba(23, 51, 50, 0.1);
+}
+
+/* 这里把未登录提醒收成设计稿右侧提示卡的尺寸，避免抢走主内容位置。 */
+.quiz-design-page .login-required-notice {
+  margin-top: 0;
+  padding: 1rem 1.2rem;
+}
+
+/* 这里让云灯页左右两栏更接近参考稿，左边为点灯表单，右边为留言墙。 */
+.cloud-lantern-design-page .cloud-lantern-layout {
+  grid-template-columns: minmax(19rem, 0.78fr) minmax(0, 1.22fr);
+  gap: 1.2rem;
+}
+
+/* 这里让云灯表单高度和设计稿左侧牌匾一致。 */
+.cloud-lantern-form-panel {
+  top: 6rem;
+  min-height: 30rem;
+}
+
+/* 这里把云灯墙卡片做成参考稿中的两列留言小笺。 */
+.cloud-lantern-wall-board {
+  min-height: 30rem;
+}
+
+.cloud-lantern-message-card {
+  min-height: 9.5rem;
+  padding: 1.1rem;
+}
+
+/* 这里让短页面的页脚退到首屏外，避免运行截图里出现旧版页脚抢占设计稿空间。 */
+.announcement-design-page,
+.events-design-page,
+.contact-design-page,
+.quiz-design-page,
+.cloud-lantern-design-page {
+  min-height: calc(100vh - 6rem);
+}
+
+/* 这里严格贴合前台展示设计稿：普通展示页只保留页签，标题和说明交给正文卡片承载。 */
+.canon-design-page > .section-title-block h2,
+.about-design-page > .section-title-block h2,
+.announcement-design-page > .section-title-block h2,
+.events-design-page > .section-title-block h2,
+.contact-design-page > .section-title-block h2,
+.canon-design-page > .section-title-block h2 + div,
+.about-design-page > .section-title-block h2 + div,
+.announcement-design-page > .section-title-block h2 + div,
+.events-design-page > .section-title-block h2 + div,
+.contact-design-page > .section-title-block h2 + div,
+.canon-design-page > .section-title-block .gold-thread,
+.about-design-page > .section-title-block .gold-thread,
+.announcement-design-page > .section-title-block .gold-thread,
+.events-design-page > .section-title-block .gold-thread,
+.contact-design-page > .section-title-block .gold-thread {
+  display: none;
+}
+
+.canon-design-page > .section-title-block,
+.about-design-page > .section-title-block,
+.announcement-design-page > .section-title-block,
+.events-design-page > .section-title-block,
+.contact-design-page > .section-title-block {
+  margin-bottom: 1rem;
 }
 
 /* 这里校准移动端，使图像、入口条、表单不会溢出 785 设计档位。 */
