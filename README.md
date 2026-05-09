@@ -4,14 +4,14 @@
 
 问云派官网是一座“线上山门”，用于展示问云派愿景、立派金典、问心考核、问云名册、云灯留言、门派公告、问云雅集、联系山门、问云小院与后台管理。
 
-网站核心气质是：清雅书院、线上山门、温暖港湾、来去自由、有界有礼。当前版本按 `draw-ui` 技能和用户提供的整站设计图做了全站级重构：新增 `public/visual-drawui/` 矢量插画素材，统一山门、云灯、小院、后台台账、宣纸远山和线描图标，让前台、问云小院和后台都贴近同一张参考设计图。
+网站核心气质是：清雅书院、线上山门、温暖港湾、来去自由、有界有礼。当前版本按 `draw-ui` 技能和用户提供的整站设计图继续全站复刻：当前主视觉使用 `public/assets/guofeng-ui-20260509/` 图片素材包，统一山门、云灯、小院、后台台账、宣纸远山、白底图标和页面级插画，让前台、问云小院和后台都按同一套参考设计稿展现。
 
 ## 视觉与移动端设计说明
 
 1. 全站视觉系统集中在 `src/styles/global.css`，统一维护参考图里的宣纸底、青绿主色、朱砂印、金线、8px 卡片、表单、表格、侧栏、按钮和移动端规则。
-2. 首页首屏按设计图还原为浅色山门大图：`visual-drawui/gate-landscape.svg` 铺底，中央展示问云派题字，底部保留五个居中显示、可点击跳转的线描入口图标，不再保留旧版右侧代码舞台和首屏行动按钮。
+2. 首页首屏按设计图还原为浅色山门大图：`public/assets/guofeng-ui-20260509/illustrations/public/home-hero-mountain-gate.png` 铺底，中央展示问云派题字，底部保留五个居中显示、可点击跳转的白底国风入口图标，不再保留旧版右侧代码舞台和首屏行动按钮。
 3. 首页内容改为紧凑的书院官网节奏：核心承诺、主要入口、门派精神、入册流程、云灯留言、山门近讯和最终行动，删除旧版“系统分工”展示舞台。
-4. 每一个前台页面、问云小院页面和后台管理页面都通过 `SectionTitle` 的 `visual` 配置接入 `public/visual-drawui/` 标题背景图，标题、说明、金线和朱印悬浮在真实图片层上。
+4. 每一个前台页面、问云小院页面和后台管理页面都通过 `SectionTitle` 的 `visual` 配置接入 `public/assets/guofeng-ui-20260509/` 下的页面级插图，标题、说明、金线和朱印悬浮在真实图片层上。
 5. 前台页面统一使用 `PageShell`、`SectionTitle`、`ScrollPanel`、`RitualCard`、`CloudButton`、`BrandMark` 和 `GeneratedIcon`；`GeneratedIcon` 已改为纯代码线描图标，不再裁切旧九宫格图片。
 6. 问云小院采用浅色书册侧栏和移动端横向导航，管理后台采用深青色执事堂侧栏和 `WorkbenchFrame` 台账外壳；工作台统一为参考图下半部分的卡片、表格和仪表盘质感。
 7. 动效优先使用位移、透明度和缩放，减少卡顿风险；如果用户系统开启“减少动态效果”，页面会自动降低动画强度。
@@ -533,7 +533,7 @@ https://你的用户名.github.io/仓库名/#/canon
 1. 前台官网采用“书院式线上山门”视觉方向，首页首屏必须第一眼看到问云派、生成山门背景、纯代码品牌印记和清晰阅读区；首屏不再放置三枚行动按钮，底部五个快捷入口保持居中、可点击，避免手机端下方按钮过密。
 2. 问云小院采用温暖但严整的浅色书册工作台风格，重点展示个人名帖、云灯、雅集、消息和问心考核状态。
 3. 管理后台采用深色“执事堂”风格，强调审核、秩序和危险操作分层，避免后台页面杂乱。
-4. 旧版公共视觉资产放在 `public/visual/`，二版插画资产放在 `public/visual-v2/`，旧内置生图素材放在 `public/visual-generated/`，这些都作为历史资产保留；当前页面主要使用 `public/visual-drawui/` 的山门、小院、云灯、后台台账和宣纸远山矢量素材。
+4. 旧版公共视觉资产放在 `public/visual/`，二版插画资产放在 `public/visual-v2/`，旧内置生图素材放在 `public/visual-generated/`，旧 draw-ui 矢量资产放在 `public/visual-drawui/`，这些都作为历史资产保留；当前页面主要使用 `public/assets/guofeng-ui-20260509/` 的页面插图、装饰纹样和白底国风图标。
 5. 公共视觉组件放在 `src/components/`，后续新增页面应优先复用 `PageShell`、`GateHero`、`RitualCard`、`WorkbenchFrame`、`BrandMark`、`SectionTitle` 和 `GeneratedIcon`；需要标题背景图时优先使用 `SectionTitle` 的 `visual` 入参，组件内部会用真实图片层铺底，避免手机端漏显背景。
 6. 新视觉稿和运行截图放在 `design-drafts/`，当前保留 `wenyun-all-pages-redesign-20260504.png` 作为整站总稿，并保留 `runtime-drawui-home-desktop-20260505.png`、`runtime-drawui-home-mobile-20260505.png`、`runtime-drawui-home-mobile-785-20260505.png`、`runtime-drawui-cloud-mobile-20260505.png` 等运行截图；最新古风国风页面设计稿放在 `design-drafts/guofeng-ui-20260508/`，按前台展示、前台互动、问云小院、后台管理四类归档。
 7. 古风国风 UI 图片素材包放在 `public/assets/guofeng-ui-20260509/`，包含原始素材板、页面插图、装饰纹样和 36 个白色底国风线描功能图标；后续页面重做时应优先引用裁切后的单张图片，不直接引用总板。
@@ -568,14 +568,14 @@ wypgw/
 │     ├─ wenyun-courtyard-reference-20260504.png # 小院、雅集和资料页背景图
 │     ├─ wenyun-lantern-ledger-reference-20260504.png # 云灯、流程和后台台账背景图
 │     └─ wenyun-icon-board-20260504.png # 首页入口使用的九宫格生成图标板
-│  ├─ visual-drawui/               # 按用户参考设计图重新生成的当前矢量视觉资产
+│  ├─ visual-drawui/               # 按旧版参考设计图生成的历史矢量视觉资产
 │     ├─ paper-mountains.svg       # 全站宣纸远山与底部金线参考素材
 │     ├─ gate-landscape.svg        # 首页山门和金典类标题背景图
 │     ├─ courtyard-landscape.svg   # 问云小院、雅集和资料类标题背景图
 │     ├─ lantern-ledger.svg        # 云灯、流程和公告类标题背景图
 │     └─ workbench-ledger.svg      # 后台和名册台账类标题背景图
 │  └─ assets/
-│     └─ guofeng-ui-20260509/      # 古风国风 UI 图片素材包
+│     └─ guofeng-ui-20260509/      # 当前古风国风 UI 图片素材包
 │        ├─ source-boards/         # 原始素材板，便于核对和重新裁切
 │        ├─ illustrations/         # 前台、问云小院和后台页面插图
 │        ├─ ornaments/             # 宣纸、云山、金线、印章和竹叶装饰纹样
@@ -1130,3 +1130,4 @@ npm run preview
 2026-05-08 22:53 【修复】修复在页面中部或底部点击菜单切换页面时，新页面仍停留在相同滚动位置的问题；新增路由切换自动回到顶部组件，覆盖前台、小院和后台页面，并同步更新 README 使用说明。
 2026-05-08 23:16 【新增】阅读并梳理全站 23 个主要页面结构，使用内置生图工具生成古风国风 UI 设计总稿，并按前台展示、前台互动、问云小院、后台管理四类归档到 `design-drafts/guofeng-ui-20260508/`，同步新增设计稿索引文档。
 2026-05-09 00:16 【新增】继续基于古风国风 UI 设计稿生成页面可用图片素材，新增 `public/assets/guofeng-ui-20260509/` 素材包，包含 6 张原始素材板、24 张页面插图、8 张装饰纹样和 36 个白色底功能图标，并补充素材索引文档。
+2026-05-09 10:54 【优化】严格按照 `design-drafts/guofeng-ui-20260508/` 设计稿继续复刻全站 UI，公告页改为左侧山门榜文加右侧公告索引，雅集页改为三张活动卡加须知侧栏，山门介绍页改为三栏书院卡、门风大榜和宗门台账；同步让 404 纳入截图验证，小院和后台工作台统一增加顶部栏与内容包裹层，并将 README 当前视觉说明更新为 `public/assets/guofeng-ui-20260509/` 主素材包。

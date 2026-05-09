@@ -23,6 +23,16 @@ guofeng-ui-20260509/
 4. `source-boards/admin-board.png`：后台管理页面插图总板。
 5. `source-boards/ornament-board.png`：装饰纹样总板。
 6. `source-boards/icon-board-white.png`：白色底功能图标总板。
+7. `source-boards/redraw-public-display-board.png`：按前台展示设计稿重新生成的页面插图总板。
+8. `source-boards/redraw-public-interaction-board.png`：按前台互动设计稿重新生成的页面插图总板。
+9. `source-boards/redraw-yard-board.png`：按问云小院设计稿重新生成的页面插图总板。
+10. `source-boards/redraw-admin-board.png`：按后台管理设计稿重新生成的页面插图总板。
+
+## 当前应用情况
+
+当前网站页面通过 `src/data/visualAssets.ts` 统一读取本素材包，前台展示、前台互动、问云小院和后台管理页面的标题背景、首页山门背景与白底功能图标均优先使用本目录下裁切后的单张图片。
+
+公告页、问云雅集页、山门介绍页、问云小院和后台工作台已经按 `design-drafts/guofeng-ui-20260508/` 参考稿继续复刻布局：复杂插画由本目录图片承载，榜文、表单、列表、卡片、按钮和工作台结构由前端代码还原。
 
 ## 页面插图分类
 

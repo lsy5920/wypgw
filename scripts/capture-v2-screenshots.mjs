@@ -24,7 +24,8 @@ const pages = [
   { name: '门派公告', path: '#/announcements' },
   { name: '问云雅集', path: '#/events' },
   { name: '联系山门', path: '#/contact' },
-  { name: '登录小院', path: '#/login' }
+  { name: '登录小院', path: '#/login' },
+  { name: '404页面', path: '#/missing-page' }
 ]
 
 // 这个数组保存截图规格，桌面端看宽屏首屏，移动端用 500 像素宽预览来避免 Chrome 命令行错误裁切。
