@@ -1,11 +1,9 @@
-﻿import { Lamp } from 'lucide-react'
+import { Lamp, Send } from 'lucide-react'
 import { FormEvent, useEffect, useState } from 'react'
-import { CloudButton } from '../components/CloudButton'
-import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
-import { PageShell } from '../components/PageShell'
-import { ScrollPanel } from '../components/ScrollPanel'
-import { SectionTitle } from '../components/SectionTitle'
+import { Link } from 'react-router-dom'
+import { GeneratedIcon } from '../components/GeneratedIcon'
 import { StatusNotice } from '../components/StatusNotice'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { useAuth } from '../hooks/useAuth'
 import { fetchApprovedLanterns, submitCloudLantern } from '../lib/services'
 import type { CloudLantern, CloudLanternInput } from '../lib/types'
@@ -19,26 +17,35 @@ const initialForm: CloudLanternInput = {
   is_anonymous: true
 }
 
-// 这个数组保存云灯墙暂无真实数据时的展示卡片，入参为空，返回值用于保持设计稿右侧留言墙布局。
+// 这个数组保存常用心情标签，返回值用于复刻设计稿中的单选小标签。
+const lanternMoodOptions = ['平静', '温暖', '悦己', '感恩', '祝愿', '其他']
+
+// 这个数组保存云灯墙暂无真实数据时的展示卡片，返回值用于保持设计稿右侧留言墙布局。
 const emptyLanternCards = [
   { author_name: '清风', mood: '温暖', content: '愿每一位远行者，都能在这里找到一点安静。' },
   { author_name: '山路', mood: '清明', content: '最近有些辛苦，幸好还能在灯火里见到方向。' },
   { author_name: '匿名同门', mood: '守真', content: '愿你一路不必逞强，也不必独自走完。' },
-  { author_name: '小鹿', mood: '欢喜', content: '今日一灯，送给正在赶路的人，愿心中有光。' }
+  { author_name: '小鹿', mood: '欢喜', content: '今日一灯，送给正在赶路的人，愿心中有光。' },
+  { author_name: '云边来客', mood: '安定', content: '把今天没说出口的话，暂且寄在这一盏灯里。' },
+  { author_name: '归舟', mood: '明朗', content: '愿明日仍有勇气，也仍有温柔。' }
 ]
 
-// 这个函数渲染云灯留言页，入参为空，返回值是留言表单和公开云灯列表。
+// 这个函数渲染云灯留言页，入参为空，返回值是按设计稿重写后的点灯表单和云灯墙。
 export function CloudLanternPage() {
   // 这里读取当前登录资料，云灯提交要求先进入问云小院。
   const { profile, loading: authLoading } = useAuth()
-  // 这个状态保存公开云灯。
+  // 这个状态保存公开云灯，返回值用于右侧云灯墙。
   const [lanterns, setLanterns] = useState<CloudLantern[]>([])
-  // 这个状态保存表单数据。
+  // 这个状态保存表单数据，返回值用于受控输入框。
   const [form, setForm] = useState<CloudLanternInput>(initialForm)
-  // 这个状态表示是否正在提交。
+  // 这个状态表示是否正在提交，返回值用于禁用点灯按钮。
   const [submitting, setSubmitting] = useState(false)
-  // 这个状态保存提示信息。
+  // 这个状态保存提示信息，返回值用于显示演示模式、校验错误或提交结果。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
+  // 这个变量保存云灯背景插图，返回值用于底部山水灯影装饰。
+  const lanternSceneImage = getGuofengVisualPath('cloudLantern')
+  // 这个变量保存最终展示的留言列表，返回值用于真实数据和空数据之间平滑切换。
+  const visibleLanterns = lanterns.length === 0 ? emptyLanternCards : lanterns
 
   useEffect(() => {
     // 这个函数读取公开云灯，入参为空，返回值为空。
@@ -89,84 +96,139 @@ export function CloudLanternPage() {
         setForm(initialForm)
       }
     } finally {
+      // 这里无论成功或失败都恢复提交状态，避免点灯按钮一直不可点。
       setSubmitting(false)
     }
   }
 
   return (
-    <PageShell className="compact-design-page cloud-lantern-design-page" size="wide">
-      <SectionTitle center eyebrow="云灯留言" title="点一盏云灯，照一段归途" visual="cloudLantern">
-        留下一句祝福、一段心情、一个问候。云灯默认先由执事审核，避免广告和恶意内容扰乱山门。
-      </SectionTitle>
-
-      <div className="cloud-lantern-layout grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-        <ScrollPanel className="cloud-lantern-form-panel seal-mark-bg">
-          {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-          {!profile ? (
-            <LoginRequiredNotice
-              title="点灯前请先登录"
-              message="云灯留言需要绑定到你的问云小院，审核结果会回到你自己的消息里。"
-            />
-          ) : null}
-          <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">署名</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                disabled={form.is_anonymous}
-                onChange={(event) => updateField('author_name', event.target.value)}
-                placeholder="匿名时不用填写"
-                value={form.author_name}
-              />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">心情标签</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => updateField('mood', event.target.value)}
-                placeholder="例如：温暖、清明、安静"
-                value={form.mood}
-              />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">云灯内容 *</span>
-              <textarea
-                className="min-h-36 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => updateField('content', event.target.value)}
-                placeholder="写给疲惫的人，也写给此刻的自己。"
-                value={form.content}
-              />
-            </label>
-            <label className="flex items-center gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
-              <input
-                checked={form.is_anonymous}
-                onChange={(event) => updateField('is_anonymous', event.target.checked)}
-                type="checkbox"
-              />
-              <span className="text-sm text-[#526461]">匿名展示为“匿名同门”</span>
-            </label>
-            <CloudButton disabled={submitting || authLoading || !profile} type="submit">
-              {submitting ? '正在点灯...' : '点亮云灯'}
-              <Lamp className="h-4 w-4" />
-            </CloudButton>
-          </form>
-        </ScrollPanel>
-
-        <ScrollPanel className="cloud-lantern-wall-board">
-          <p className="text-sm font-semibold text-[#9e3d32]">云灯墙</p>
-          <h2 className="ink-title mt-2 text-3xl font-bold text-[#143044]">最新留言</h2>
-          <p className="mt-3 text-sm leading-7 text-[#526461]">审核后的云灯会在这里亮起。没有真实数据时，先以设计稿占位卡展示墙面结构。</p>
-          <div className="cloud-lantern-wall-panel mt-5 grid gap-4">
-            {(lanterns.length === 0 ? emptyLanternCards : lanterns).map((item, index) => (
-              <div className="cloud-lantern-message-card rounded-lg border border-[#c9a45c]/25 bg-white/65 p-5" key={'id' in item ? item.id : `${item.author_name}-${index}`}>
-                <p className="text-sm text-[#9e3d32]">一盏云灯 · {item.mood ?? '温暖'}</p>
-                <p className="mt-3 text-lg leading-8">{item.content}</p>
-                <p className="mt-4 text-sm text-[#7a6a48]">—— {item.author_name}</p>
-              </div>
-            ))}
+    <section className="interaction-reference-page lantern-reference-page" aria-label="云灯留言">
+      <div className="interaction-paper-shell">
+        {/* 这里还原设计稿顶部标题，左侧表单和右侧云灯墙各自承担主内容。 */}
+        <header className="interaction-page-heading lantern-page-heading">
+          <div className="interaction-title-cluster">
+            <GeneratedIcon className="interaction-title-icon" name="lantern" />
+            <div>
+              <h1>云灯留言</h1>
+              <p>点一盏云灯，愿光照见</p>
+            </div>
           </div>
-        </ScrollPanel>
+          <p className="lantern-page-note">留言会先由执事审核，审核通过后公开展示。</p>
+        </header>
+
+        {notice ? (
+          <div className="interaction-notice-row">
+            <StatusNotice type={notice.type} title={notice.title} message={notice.message} />
+          </div>
+        ) : null}
+
+        <div className="lantern-reference-layout">
+          {/* 这里还原设计稿左侧点灯表单。 */}
+          <section className="interaction-corner-card lantern-form-card" aria-label="点一盏云灯">
+            <div className="lantern-form-heading">
+              <p>点一盏云灯</p>
+              <span>说出此刻心事，愿光照见</span>
+            </div>
+
+            {!profile ? (
+              <div className="interaction-state-card">
+                <Lamp className="h-5 w-5" />
+                <div>
+                  <strong>点灯前请先登录</strong>
+                  <p>云灯留言需要绑定到你的问云小院，审核结果会回到你自己的消息里。</p>
+                </div>
+                <Link className="interaction-small-link" to="/login">
+                  前往登录
+                </Link>
+              </div>
+            ) : null}
+
+            <form className="lantern-reference-form" onSubmit={handleSubmit}>
+              <label>
+                <span>署名</span>
+                <input disabled={form.is_anonymous} onChange={(event) => updateField('author_name', event.target.value)} placeholder="可填写昵称" value={form.author_name} />
+              </label>
+
+              <fieldset className="lantern-mood-field">
+                <legend>此刻心情 *</legend>
+                <div>
+                  {lanternMoodOptions.map((item) => (
+                    <button className={form.mood === item ? 'is-active' : ''} key={item} onClick={() => updateField('mood', item)} type="button">
+                      <span />
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <label>
+                <span>留言内容 *</span>
+                <textarea maxLength={300} onChange={(event) => updateField('content', event.target.value)} placeholder="想对问云派说的话..." value={form.content} />
+                <small>{form.content.length} / 300</small>
+              </label>
+
+              <label className="lantern-anonymous-switch">
+                <span>
+                  <strong>匿名留言</strong>
+                  <em>开启后不显示你的署名</em>
+                </span>
+                <input checked={form.is_anonymous} onChange={(event) => updateField('is_anonymous', event.target.checked)} type="checkbox" />
+                <i aria-hidden="true" />
+              </label>
+
+              <button className="interaction-seal-button lantern-submit-button" disabled={submitting || authLoading || !profile} type="submit">
+                {submitting ? '正在点灯...' : '点亮云灯'}
+                <Send className="h-4 w-4" />
+              </button>
+            </form>
+          </section>
+
+          {/* 这里还原设计稿右侧云灯墙，两列留言小笺在桌面端铺开。 */}
+          <section className="lantern-wall-card" aria-label="云灯墙">
+            <div className="lantern-wall-heading">
+              <div>
+                <p>云灯墙</p>
+                <h2>最新留言</h2>
+              </div>
+              <span>共 {visibleLanterns.length} 盏</span>
+            </div>
+
+            <div className="lantern-card-grid">
+              {visibleLanterns.map((item, index) => (
+                <article className="lantern-message-card" key={'id' in item ? item.id : `${item.author_name}-${index}`}>
+                  <div className="lantern-message-head">
+                    <GeneratedIcon className="lantern-card-icon" name="lantern" />
+                    <strong>{item.author_name || '匿名同门'}</strong>
+                    <span>{item.mood || '温暖'}</span>
+                  </div>
+                  <p>{item.content}</p>
+                  <div className="lantern-like-row">
+                    <span>灯火可见</span>
+                    <small>{index + 9}</small>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <button className="lantern-more-button" type="button">
+              加载更多
+              <ChevronDownLike />
+            </button>
+          </section>
+        </div>
+
+        {/* 这里使用页面级云灯插图做底部氛围层，避免背景只剩纯色宣纸。 */}
+        <img alt="" aria-hidden="true" className="lantern-bottom-scene" src={lanternSceneImage} />
       </div>
-    </PageShell>
+    </section>
+  )
+}
+
+// 这个函数渲染“加载更多”小箭头，入参为空，返回值是纯代码装饰图标。
+function ChevronDownLike() {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="m7 10 5 5 5-5" />
+    </svg>
   )
 }

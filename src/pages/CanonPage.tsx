@@ -1,147 +1,135 @@
-﻿import { ArrowUp } from 'lucide-react'
-import { PageShell } from '../components/PageShell'
-import { RitualCard } from '../components/RitualCard'
-import { ScrollPanel } from '../components/ScrollPanel'
-import { SectionTitle } from '../components/SectionTitle'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { canonText } from '../data/siteContent'
 
-// 这个接口描述金典章节，入参来自原始文本，返回值用于页面目录和正文。
-interface CanonSection {
+// 这个接口描述金典原文拆出的章节，title 是章节标题，lines 是该章节下的正文行。
+export interface CanonSection {
   // 章节标题。
   title: string
-  // 章节内容行。
+  // 章节正文行。
   lines: string[]
 }
 
-// 这个函数把原始金典文本拆成章节，入参是完整文本，返回值是章节数组。
+// 这个接口描述金典目录项，name 是目录文字，targetId 用来跳到对应真实章节。
+interface CanonMenuItem {
+  // 目录显示名称。
+  name: string
+  // 对应章节锚点。
+  targetId: string
+}
+
+// 这个函数把金典原文拆成章节，入参是完整文本，返回值是章节数组，供测试和后续长文阅读扩展继续使用。
 export function parseCanonSections(text: string): CanonSection[] {
-  // 这个数组用于保存拆分后的章节。
+  // 这个数组保存拆分后的章节结果。
   const sections: CanonSection[] = []
   // 这个变量保存当前正在收集的章节。
-  let current: CanonSection | null = null
+  let currentSection: CanonSection | null = null
 
-  // 这里逐行读取文本，遇到二级标题或一级总纲时新开章节。
+  // 这里逐行扫描原文，遇到标题时开启新章节。
   text.split(/\r?\n/).forEach((line) => {
-    const trimmed = line.trim()
-    const isSectionTitle = /^##\s+/.test(trimmed) || trimmed === '# 问云派总纲'
+    // 这里清理当前行首尾空格，便于判断是否为标题。
+    const trimmedLine = line.trim()
+    // 这里兼容一级总纲和二级章节标题，避免旧资料格式变化导致解析失败。
+    const isSectionTitle = /^##\s+/.test(trimmedLine) || trimmedLine === '# 问云派总纲'
 
     if (isSectionTitle) {
-      if (current) {
-        sections.push(current)
+      // 这里把上一章放进结果，保证章节切换时内容不丢失。
+      if (currentSection) {
+        sections.push(currentSection)
       }
-      current = { title: trimmed.replace(/^#+\s*/, '').replace(/\*\*/g, ''), lines: [] }
+
+      currentSection = { title: trimmedLine.replace(/^#+\s*/, '').replace(/\*\*/g, ''), lines: [] }
       return
     }
 
-    if (!current && trimmed) {
-      current = { title: '开篇', lines: [] }
+    // 这里处理原文开头没有标题但已经有正文的情况。
+    if (!currentSection && trimmedLine) {
+      currentSection = { title: '开篇', lines: [] }
     }
 
-    if (current) {
-      current.lines.push(line)
+    // 这里把普通正文行加入当前章节，空行也保留，方便后续阅读页还原段落。
+    if (currentSection) {
+      currentSection.lines.push(line)
     }
   })
 
-  // 这里把最后一个章节放入结果，避免尾部内容丢失。
-  if (current) {
-    sections.push(current)
+  // 这里收尾，把最后一章放入结果。
+  if (currentSection) {
+    sections.push(currentSection)
   }
 
   return sections
 }
 
-// 这个函数把 Markdown 装饰清理成可读文字，入参是原始行，返回值是页面展示文字。
-function cleanMarkdownLine(line: string): string {
+// 这个函数清理金典原文中的 Markdown 符号，入参是原始正文行，返回值是页面可直接展示的中文文本。
+function cleanCanonLine(line: string): string {
   return line.replace(/\*\*/g, '').replace(/^[-#]+\s*/, '').trim()
 }
 
-// 这个函数渲染立派金典页，入参为空，返回值是完整金典阅读页面。
+// 这个函数把章节标题转成稳定锚点，入参是章节序号，返回值是 HTML 元素编号。
+function createCanonSectionId(index: number): string {
+  return `canon-section-${index}`
+}
+
+// 这个函数渲染立派金典页面，入参为空，返回值是按设计稿复刻的卷轴目录和正文纸卡。
 export function CanonPage() {
-  // 这个常量保存拆分后的章节，页面刷新时从资料文件实时生成。
+  // 这个常量保存当前页面使用的横幅山水插图地址。
+  const canonImage = getGuofengVisualPath('canonBanner')
+  // 这个常量保存从真实金典原文拆出的章节，避免页面继续使用设计稿假文案。
   const sections = parseCanonSections(canonText)
-
-  // 这个函数滚动到指定章节，入参是章节序号，返回值为空。
-  const scrollToSection = (index: number) => {
-    try {
-      // 这里用浏览器原生滚动，不修改地址栏哈希，避免 HashRouter 把章节锚点误判成页面路由。
-      document.getElementById(`canon-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    } catch {
-      // 这里兜底处理少数旧浏览器不支持平滑滚动的情况，失败时不影响页面阅读。
-      document.getElementById(`canon-${index}`)?.scrollIntoView()
-    }
-  }
-
-  // 这个函数返回页面顶部，入参为空，返回值为空。
-  const scrollToTop = () => {
-    try {
-      // 这里不使用 href="#top"，避免破坏当前的 #/canon 路由。
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } catch {
-      // 这里兜底处理滚动异常，至少保证能回到顶部。
-      window.scrollTo(0, 0)
-    }
-  }
+  // 这个常量保存左侧真实目录，用原金典章节生成可点击锚点。
+  const canonMenuItems: CanonMenuItem[] = sections.map((section, index) => ({
+    name: section.title.replace(/^([一二三四五六七八九十]+)、/, ''),
+    targetId: createCanonSectionId(index)
+  }))
 
   return (
-    <PageShell className="compact-design-page canon-design-page" size="wide">
-      <SectionTitle center eyebrow="立派金典" title="问云派立派金典" visual="canon">
-        问云而来，栖心于此；乱世暂歇，同归一处。
-      </SectionTitle>
-
-      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        {/* 这里展示金典目录，方便长文快速跳转。 */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <RitualCard className="seal-mark-bg">
-            <p className="mb-4 font-semibold text-[#9e3d32]">金典目录</p>
-            <nav className="grid max-h-[70vh] gap-2 overflow-y-auto pr-1 text-sm">
-              {sections.map((section, index) => (
-                <button
-                  className="rounded-lg px-3 py-2 text-left text-[#40524f] transition hover:bg-[#edf3ef]"
-                  key={`${section.title}-${index}`}
-                  onClick={() => scrollToSection(index)}
-                  type="button"
-                >
-                  {section.title}
-                </button>
+    <section className="public-art-page canon-art-page" aria-label="立派金典">
+      <div className="canon-reference-layout">
+        {/* 这里还原左侧垂挂卷轴目录。 */}
+        <aside className="canon-scroll-menu" aria-label="金典目录">
+          <div className="canon-scroll-rod canon-scroll-rod-top" />
+          <div className="canon-scroll-paper">
+            <h2>金典目录</h2>
+            <nav>
+              {canonMenuItems.map((item) => (
+                <a href={`#${item.targetId}`} key={item.targetId}>
+                  {item.name}
+                </a>
               ))}
             </nav>
-          </RitualCard>
+          </div>
+          <div className="canon-scroll-rod canon-scroll-rod-bottom" />
+          <div className="canon-scroll-tassel" />
         </aside>
 
-        {/* 这里展示金典正文。 */}
-        <div className="grid gap-6">
-          {sections.map((section, index) => (
-            <ScrollPanel key={`${section.title}-${index}`}>
-              <article className="scroll-mt-32" id={`canon-${index}`}>
-                <h2 className="ink-title mb-6 border-b border-[#c9a45c]/25 pb-4 text-3xl font-bold text-[#143044]">{section.title}</h2>
-                {index === 0 ? <div aria-hidden="true" className="canon-section-illustration mb-6" /> : null}
-                <div className="space-y-3 text-base leading-9 text-[#40524f] md:text-lg">
+        {/* 这里还原右侧正文大纸卡，并写入之前完整的立派金典内容。 */}
+        <article className="canon-paper-card" id="canon-main">
+          <div className="public-card-corner public-card-corner-left-top" />
+          <div className="public-card-corner public-card-corner-right-top" />
+          <div className="public-card-corner public-card-corner-left-bottom" />
+          <div className="public-card-corner public-card-corner-right-bottom" />
+          <h1>问云派总纲 <span>问云印</span></h1>
+          <img alt="立派金典山水横幅" className="canon-banner-image" src={canonImage} />
+          <div className="canon-full-content">
+            {sections.map((section, sectionIndex) => (
+              <section className="canon-full-section" id={createCanonSectionId(sectionIndex)} key={`${section.title}-${sectionIndex}`}>
+                <h2>{section.title}</h2>
+                <div className="canon-text-flow">
                   {section.lines.map((line, lineIndex) => {
-                    // 这里清理每一行，空行保留为段落间距。
-                    const cleanLine = cleanMarkdownLine(line)
+                    const cleanLine = cleanCanonLine(line)
 
                     if (!cleanLine || cleanLine === '---') {
-                      return <div className="h-2" key={`${lineIndex}-${line}`} />
+                      return <div className="canon-paragraph-gap" key={`${section.title}-${lineIndex}`} />
                     }
 
-                    return <p key={`${lineIndex}-${line}`}>{cleanLine}</p>
+                    return <p key={`${section.title}-${lineIndex}`}>{cleanLine}</p>
                   })}
                 </div>
-              </article>
-            </ScrollPanel>
-          ))}
-        </div>
+              </section>
+            ))}
+          </div>
+        </article>
       </div>
-
-      {/* 这里提供返回顶部按钮，方便长文阅读。 */}
-      <button
-        className="fixed bottom-6 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#9e3d32] text-white shadow-xl"
-        onClick={scrollToTop}
-        type="button"
-        aria-label="返回顶部"
-      >
-        <ArrowUp className="h-5 w-5" />
-      </button>
-    </PageShell>
+    </section>
   )
 }

@@ -1,11 +1,10 @@
-﻿import { CheckCircle2, ChevronLeft, ChevronRight, RotateCcw, ScrollText, Send } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, ChevronRight, FileText, RotateCcw, Send, Star } from 'lucide-react'
 import { FormEvent, useMemo, useState } from 'react'
-import { CloudButton } from '../components/CloudButton'
-import { PageShell } from '../components/PageShell'
-import { ScrollPanel } from '../components/ScrollPanel'
-import { SectionTitle } from '../components/SectionTitle'
+import { Link } from 'react-router-dom'
+import { GeneratedIcon } from '../components/GeneratedIcon'
 import { StatusNotice } from '../components/StatusNotice'
 import { wenxinQuizQuestions, wenxinScoreLevels } from '../data/quizContent'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { useAuth } from '../hooks/useAuth'
 import { submitWenxinQuizResult } from '../lib/services'
 import type { WenxinQuizAnswerMap, WenxinQuizResult } from '../lib/types'
@@ -28,19 +27,19 @@ function getScoreAdvice(score: number): string {
   return wenxinScoreLevels.find((item) => score >= item.min && score <= item.max)?.text ?? wenxinScoreLevels[wenxinScoreLevels.length - 1].text
 }
 
-// 这个函数渲染问心考核页面，入参为空，返回值是逐题作答的自动计分试卷。
+// 这个函数渲染问心考核页面，入参为空，返回值是按设计稿重写后的试卷、须知和交卷区域。
 export function WenxinQuizPage() {
-  // 这里读取登录资料，考核结果必须绑定账号。
+  // 这里读取登录资料，考核结果必须绑定账号后才能保存。
   const { profile, loading } = useAuth()
   // 这个状态保存用户答案，键是题号，值是选择的选项。
   const [answers, setAnswers] = useState<WenxinQuizAnswerMap>({})
-  // 这个状态保存提交后的最新结果。
+  // 这个状态保存提交后的最新结果，返回值用于显示成绩。
   const [result, setResult] = useState<WenxinQuizResult | null>(null)
   // 这个状态保存当前正在作答的题目位置，从 0 开始计算。
   const [currentIndex, setCurrentIndex] = useState(0)
-  // 这个状态表示是否正在提交。
+  // 这个状态表示是否正在提交，返回值用于禁用交卷按钮。
   const [submitting, setSubmitting] = useState(false)
-  // 这个状态保存页面提示。
+  // 这个状态保存页面提示，返回值用于展示登录、漏答、提交结果。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
 
   // 这个变量保存已答题数，用于顶部进度展示。
@@ -57,7 +56,9 @@ export function WenxinQuizPage() {
   // 这个变量表示当前题目是否已经作答，返回值用于控制下一题按钮。
   const currentAnswered = currentAnswer.length > 0
   // 这个变量保存当前进度百分比，返回值用于顶部进度条宽度。
-  const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100)
+  const progressPercent = Math.round((answeredCount / totalQuestions) * 100)
+  // 这个变量保存题目背景插图，返回值用于题目解析卡片的右侧山水。
+  const quizSceneImage = getGuofengVisualPath('quiz')
 
   // 这个函数切换某题答案，入参是题号、题型和选项，返回值为空。
   function toggleAnswer(questionId: number, type: 'single' | 'multiple', optionKey: string) {
@@ -158,6 +159,7 @@ export function WenxinQuizPage() {
         message: saveResult.ok ? `${scoreSummary.score} 分，${getScoreAdvice(scoreSummary.score)}。` : saveResult.message
       })
     } finally {
+      // 这里无论保存成功或失败都恢复按钮状态，避免交卷按钮一直不可点。
       setSubmitting(false)
     }
   }
@@ -171,148 +173,139 @@ export function WenxinQuizPage() {
   }
 
   return (
-    <PageShell className="compact-design-page quiz-design-page overflow-x-hidden" size="normal">
-      <SectionTitle center eyebrow="问心考核" title="一题一问，照见门风" visual="quiz">
-        此卷共三十题，皆据《问云派立派金典》而设。逐题作答，答案皆可于金典中查得；最新成绩合格后，方可递交问云名帖。
-      </SectionTitle>
-
-      <div className="quiz-summary-grid grid gap-5 md:grid-cols-2">
-        <ScrollPanel className="md:col-span-1">
-          <ScrollText className="h-5 w-5 text-[#9e3d32]" />
-          <p className="mt-3 text-sm text-[#7a6a48]">题型</p>
-          <p className="mt-2 text-2xl font-bold text-[#143044]">30 题</p>
-          <p className="mt-2 text-sm leading-7 text-[#526461]">单选 25 题，每题 3 分；多选 5 题，每题 5 分。</p>
-        </ScrollPanel>
-        <ScrollPanel className="md:col-span-1">
-          <CheckCircle2 className="h-5 w-5 text-[#6f8f8b]" />
-          <p className="mt-3 text-sm text-[#7a6a48]">通过线</p>
-          <p className="mt-2 text-2xl font-bold text-[#143044]">80 分</p>
-          <p className="mt-2 text-sm leading-7 text-[#526461]">最新一次考核合格后，名册登记入口才会开放。</p>
-        </ScrollPanel>
-        <ScrollPanel className="md:col-span-2">
-          <p className="text-sm text-[#9e3d32]">考核说明</p>
-          <p className="mt-3 text-sm leading-7 text-[#526461]">
-            此考非为难新人，乃为使入门者先知问云之愿、问云之风、问云之规、问云之界。愿来者不添风浪，只添灯火。
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2 text-xs">
-            {wenxinScoreLevels.map((item) => (
-              <span className="rounded-full bg-white/70 px-3 py-1 text-[#526461]" key={item.text}>
-                {item.min}—{item.max} 分：{item.text}
-              </span>
-            ))}
+    <section className="interaction-reference-page quiz-reference-page" aria-label="问心考核">
+      <div className="interaction-paper-shell">
+        {/* 这里还原设计稿顶部标题、进度条和当前得分卡。 */}
+        <header className="interaction-page-heading quiz-page-heading">
+          <div className="interaction-title-cluster">
+            <GeneratedIcon className="interaction-title-icon" name="shield" />
+            <div>
+              <h1>问心考核</h1>
+              <p>以心明道，方可入派</p>
+            </div>
           </div>
-        </ScrollPanel>
-      </div>
+          <div className="quiz-progress-card">
+            <span>进度：{answeredCount} / {totalQuestions}</span>
+            <div>
+              <i style={{ width: `${progressPercent}%` }} />
+            </div>
+          </div>
+          <div className="quiz-score-card">
+            <span>当前得分</span>
+            <strong>{result ? result.score : '--'} 分</strong>
+          </div>
+        </header>
 
-      <div className="mt-6 grid gap-4">
-        {loading ? <StatusNotice title="正在读取登录状态" message="请稍候，系统正在确认你是否已经进入问云小院。" /> : null}
-        {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-        {result?.passed && profile ? (
-          <ScrollPanel className="border-[#7a8b6f]/35 bg-[#f1f7e9]/80">
-            <p className="text-lg font-semibold text-[#314434]">你已通过问心考核，可以前往问云名册递交登记。</p>
-            <CloudButton className="mt-4" to="/join" variant="seal">
-              前往登记入册
-            </CloudButton>
-          </ScrollPanel>
+        {notice ? (
+          <div className="interaction-notice-row">
+            <StatusNotice type={notice.type} title={notice.title} message={notice.message} />
+          </div>
         ) : null}
-      </div>
 
-      <form className="quiz-answer-layout mt-8 grid min-w-0 gap-5" onSubmit={handleSubmit}>
-          <ScrollPanel className="min-w-0 overflow-hidden p-5 md:p-8 seal-mark-bg">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-[#9e3d32]">
-                第 {currentQuestion.id} 题 · {currentQuestion.type === 'single' ? '单选题' : '多选题'} · {currentQuestion.score} 分
-              </p>
-              <p className="text-xs text-[#7a6a48]">{currentQuestion.source}</p>
-            </div>
+        <form className="quiz-reference-form" onSubmit={handleSubmit}>
+          <div className="quiz-reference-layout">
+            {/* 这里还原设计稿左侧大试卷卡。 */}
+            <main className="quiz-main-column">
+              <section className="interaction-corner-card quiz-question-card" aria-label="当前题目">
+                <div className="quiz-question-head">
+                  <p>
+                    第 {currentQuestion.id} 题 <span>({currentQuestion.type === 'single' ? '单选题' : '多选题'})</span>
+                  </p>
+                  <small>{currentQuestion.score} 分 · {currentQuestion.source}</small>
+                </div>
+                <h2>{currentQuestion.title}</h2>
+                <div className="quiz-option-grid">
+                  {currentQuestion.options.map((option) => {
+                    // 这个变量判断当前选项是否已经被选择，用于切换深青选中态。
+                    const selected = currentAnswer.includes(option.key)
 
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#edf3ef]">
-              <div className="h-full rounded-full bg-[#6f8f8b] transition-all" style={{ width: `${progressPercent}%` }} />
-            </div>
+                    return (
+                      <button className={`quiz-option-button ${selected ? 'is-selected' : ''}`} key={option.key} onClick={() => toggleAnswer(currentQuestion.id, currentQuestion.type, option.key)} type="button">
+                        <span>{option.key}.</span>
+                        <em>{option.text}</em>
+                        {selected ? <CheckCircle2 className="h-4 w-4" /> : null}
+                      </button>
+                    )
+                  })}
+                </div>
+              </section>
 
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#526461]">
-              <span>
-                进度 {currentIndex + 1} / {totalQuestions}
-              </span>
-              <span>
-                已答 {answeredCount} / {totalQuestions} 题
-              </span>
-            </div>
+              <section className="interaction-corner-card quiz-analysis-card" aria-label="题目解析">
+                <div>
+                  <p>题目解析（作答后可见）</p>
+                  <span>问云派倡导清明自守，行事有不争之界，也有互相照见之心。</span>
+                </div>
+                <img alt="" aria-hidden="true" src={quizSceneImage} />
+              </section>
+            </main>
 
-            <div className="mt-4 flex max-w-full gap-2 overflow-x-auto pb-2">
-              {wenxinQuizQuestions.map((question, index) => {
-                // 这里判断每个题号是否已经作答，用不同颜色帮助用户快速定位漏题。
-                const answered = (answers[String(question.id)] ?? []).length > 0
-                const current = index === currentIndex
-
-                return (
-                  <button
-                    className={`h-9 min-w-9 rounded-full border text-xs font-semibold transition ${
-                      current
-                        ? 'border-[#9e3d32] bg-[#9e3d32] text-white'
-                        : answered
-                          ? 'border-[#6f8f8b] bg-[#edf3ef] text-[#526461]'
-                          : 'border-[#c9a45c]/35 bg-white/70 text-[#7a6a48]'
-                    }`}
-                    key={question.id}
-                    onClick={() => goToQuestion(index)}
-                    type="button"
-                  >
-                    {question.id}
-                  </button>
-                )
-              })}
-            </div>
-
-            <h2 className="mt-5 break-words text-xl font-bold leading-9 text-[#143044] md:text-2xl">{currentQuestion.title}</h2>
-            <div className="mt-5 grid gap-3">
-              {currentQuestion.options.map((option) => {
-                const selected = currentAnswer.includes(option.key)
-
-                return (
-                  <button
-                    className={`w-full min-w-0 whitespace-normal break-words rounded-lg border px-4 py-3 text-left text-sm leading-7 transition ${
-                      selected ? 'border-[#6f8f8b] bg-[#edf3ef] text-[#143044]' : 'border-[#6f8f8b]/18 bg-white/70 text-[#526461]'
-                    }`}
-                    key={option.key}
-                    onClick={() => toggleAnswer(currentQuestion.id, currentQuestion.type, option.key)}
-                    type="button"
-                  >
-                    <span className="font-semibold">{option.key}. </span>
-                    {option.text}
-                  </button>
-                )
-              })}
-            </div>
-          </ScrollPanel>
-
-          <div className="sticky bottom-4 z-20 grid min-w-0 gap-3 rounded-lg border border-[#c9a45c]/35 bg-[#fffaf0]/92 p-4 shadow-2xl shadow-[#263238]/16 backdrop-blur md:flex md:flex-row md:items-center md:justify-between">
-            <p className="text-sm font-semibold text-[#526461]">
-              第 {currentIndex + 1} 题，共 {totalQuestions} 题
-            </p>
-            <div className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-              <CloudButton className="w-full px-3 sm:w-auto sm:px-5" onClick={resetAnswers} variant="ghost">
-                重新作答
-                <RotateCcw className="h-4 w-4" />
-              </CloudButton>
-              <CloudButton className="w-full px-3 sm:w-auto sm:px-5" disabled={currentIndex === 0} onClick={goPrevQuestion} variant="ghost">
-                上一题
-                <ChevronLeft className="h-4 w-4" />
-              </CloudButton>
-              {currentIndex < totalQuestions - 1 ? (
-                <CloudButton className="col-span-2 w-full px-3 sm:w-auto sm:px-5" disabled={!currentAnswered} onClick={goNextQuestion} variant="seal">
-                  下一题
-                  <ChevronRight className="h-4 w-4" />
-                </CloudButton>
-              ) : (
-                <CloudButton className="col-span-2 w-full px-3 sm:w-auto sm:px-5" disabled={submitting || !profile || answeredCount < totalQuestions} type="submit" variant="seal">
-                  {submitting ? '正在交卷...' : '交卷并记录成绩'}
-                  <Send className="h-4 w-4" />
-                </CloudButton>
-              )}
-            </div>
+            {/* 这里还原设计稿右侧须知和本次状态卡。 */}
+            <aside className="quiz-side-column" aria-label="考核须知">
+              <section className="interaction-corner-card quiz-rule-card">
+                <h2>考核须知</h2>
+                <ul>
+                  <li>共 {totalQuestions} 题，总分 100 分</li>
+                  <li>80 分及以上为合格</li>
+                  <li>可随时中断，下次继续</li>
+                  <li>交卷后不可修改本次答案</li>
+                </ul>
+              </section>
+              <section className="interaction-corner-card quiz-state-card">
+                <h2>本次状态</h2>
+                <strong>{answeredCount === totalQuestions ? '可以交卷' : '进行中'}</strong>
+                <p>还需作答 {Math.max(totalQuestions - answeredCount, 0)} 题</p>
+                {loading ? <p>正在读取登录状态...</p> : null}
+                {!loading && !profile ? (
+                  <Link className="interaction-small-link" to="/login">
+                    登录后保存成绩
+                  </Link>
+                ) : null}
+              </section>
+            </aside>
           </div>
-      </form>
-    </PageShell>
+
+          {/* 这里还原底部上一题、标记、下一题和交卷按钮。 */}
+          <div className="quiz-action-bar">
+            <button className="interaction-ghost-button" disabled={currentIndex === 0} onClick={goPrevQuestion} type="button">
+              <ChevronLeft className="h-4 w-4" />
+              上一题
+            </button>
+            <button className="interaction-ghost-button" onClick={resetAnswers} type="button">
+              <RotateCcw className="h-4 w-4" />
+              重做
+            </button>
+            <button className="interaction-ghost-button" type="button">
+              <Star className="h-4 w-4" />
+              标记本题
+            </button>
+            <button className="interaction-ghost-button" type="button">
+              <FileText className="h-4 w-4" />
+              错题记录
+            </button>
+            {currentIndex < totalQuestions - 1 ? (
+              <button className="interaction-primary-button" disabled={!currentAnswered} onClick={goNextQuestion} type="button">
+                下一题
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            ) : (
+              <button className="interaction-seal-button" disabled={submitting || !profile || answeredCount < totalQuestions} type="submit">
+                {submitting ? '正在交卷...' : '交卷'}
+                <Send className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {result?.passed && profile ? (
+            <div className="quiz-pass-card">
+              <CheckCircle2 className="h-5 w-5" />
+              <p>你已通过问心考核，可以前往问云名册递交登记。</p>
+              <Link className="interaction-small-link" to="/join">
+                前往登记
+              </Link>
+            </div>
+          ) : null}
+        </form>
+      </div>
+    </section>
   )
 }

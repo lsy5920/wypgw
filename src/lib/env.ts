@@ -77,3 +77,22 @@ export function isSupabaseConfigured(): boolean {
 
   return hasRealUrl && hasRealKey
 }
+
+// 这个函数判断是否启用本地演示数据，入参为空，返回值表示是否临时跳过真实 Supabase。
+export function isLocalDemoRequested(): boolean {
+  try {
+    // 这里只允许本机地址启用演示数据，避免线上站点被参数影响真实登录。
+    if (typeof window === 'undefined' || !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      return false
+    }
+
+    // 这里同时读取普通查询参数和哈希内容，兼容本项目使用的 HashRouter。
+    const searchText = window.location.search.toLowerCase()
+    const hashText = window.location.hash.toLowerCase()
+
+    return searchText.includes('demo-yard=1') || hashText.includes('demo-yard=1')
+  } catch {
+    // 这里兜底处理浏览器地址读取异常，异常时不启用演示数据。
+    return false
+  }
+}

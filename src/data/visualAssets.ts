@@ -2,11 +2,18 @@
 export type GuofengPageVisualKey =
   | 'homeHero'
   | 'canon'
+  | 'canonBanner'
   | 'about'
+  | 'aboutVision'
+  | 'aboutPavilion'
   | 'announcements'
+  | 'announcementBoard'
   | 'events'
+  | 'eventPavilion'
   | 'contact'
+  | 'contactNote'
   | 'notFound'
+  | 'notFoundScene'
   | 'roster'
   | 'quiz'
   | 'cloudLantern'
@@ -77,11 +84,18 @@ const guofengAssetBasePath = `${import.meta.env.BASE_URL}assets/guofeng-ui-20260
 const pageVisualPathByKey: Record<GuofengPageVisualKey, string> = {
   homeHero: 'illustrations/public/home-hero-mountain-gate.png',
   canon: 'illustrations/public/canon-scroll-desk.png',
+  canonBanner: 'illustrations/public/canon-banner-mountains-v2.png',
   about: 'illustrations/public/about-courtyard-path.png',
+  aboutVision: 'illustrations/public/about-vision-mountains-v2.png',
+  aboutPavilion: 'illustrations/public/about-pavilion-bamboo-v2.png',
   announcements: 'illustrations/public/announcements-wood-board.png',
+  announcementBoard: 'illustrations/public/announcements-board-landscape-v2.png',
   events: 'illustrations/public/events-water-pavilion.png',
+  eventPavilion: 'illustrations/public/events-pavilion-spring-v2.png',
   contact: 'illustrations/public/contact-letter-clouds.png',
+  contactNote: 'illustrations/public/contact-letter-note-v2.png',
   notFound: 'illustrations/public/not-found-cloud-path.png',
+  notFoundScene: 'illustrations/public/not-found-path-figure-v2.png',
   roster: 'illustrations/interaction/roster-namecards.png',
   quiz: 'illustrations/interaction/quiz-compass-scroll.png',
   cloudLantern: 'illustrations/interaction/cloud-lantern-river.png',

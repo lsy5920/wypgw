@@ -1,8 +1,8 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from './env'
+import { isLocalDemoRequested, isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from './env'
 
 // 这个常量表示当前是否启用真实 Supabase，返回值用于页面展示演示模式提示。
-export const supabaseReady = isSupabaseConfigured()
+export const supabaseReady = isSupabaseConfigured() && !isLocalDemoRequested()
 
 // 这个常量是全站共用的 Supabase 客户端，未配置环境变量时返回空值以进入演示模式。
 export const supabase: SupabaseClient | null = supabaseReady

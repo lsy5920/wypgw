@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabaseClient'
 import { fetchMyProfile } from '../lib/services'
 import type { Profile } from '../lib/types'
+import { mockProfile } from '../data/mockData'
 
 // 这个接口描述认证钩子的返回值，页面通过它判断登录、角色和加载状态。
 interface UseAuthResult {
@@ -25,6 +26,25 @@ export function isAdminProfile(profile: Profile | null): boolean {
   return profile?.role === 'admin' || profile?.role === 'founder'
 }
 
+// 这个函数判断当前是否请求本地小院演示模式，入参为空，返回值表示是否临时使用演示资料。
+function shouldUseLocalYardDemo(): boolean {
+  try {
+    // 这里只允许本机地址使用演示资料，避免线上真实站点被参数绕过登录。
+    if (typeof window === 'undefined' || !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      return false
+    }
+
+    // 这里同时支持普通查询参数和哈希里的参数，方便哈希路由页面截图调试。
+    const searchText = window.location.search.toLowerCase()
+    const hashText = window.location.hash.toLowerCase()
+
+    return searchText.includes('demo-yard=1') || hashText.includes('demo-yard=1')
+  } catch {
+    // 这里兜底处理浏览器地址读取异常，异常时不启用演示资料。
+    return false
+  }
+}
+
 // 这个函数读取当前登录用户和资料，入参为空，返回值是认证状态对象。
 export function useAuth(): UseAuthResult {
   // 这个状态保存 Supabase 用户。
@@ -38,12 +58,21 @@ export function useAuth(): UseAuthResult {
 
   // 这个函数负责从 Supabase 读取用户和资料，入参为空，返回值为空。
   const refresh = useCallback(async () => {
+    // 这里给本地 UI 复刻和截图验收提供演示资料，不影响真实环境登录。
+    if (shouldUseLocalYardDemo()) {
+      setUser(null)
+      setProfile(mockProfile)
+      setLoading(false)
+      setMessage('当前为本地问云小院演示资料。')
+      return
+    }
+
     // 这里处理未配置 Supabase 的情况，避免调用空客户端报错。
     if (!supabase) {
       setUser(null)
-      setProfile(null)
+      setProfile(mockProfile)
       setLoading(false)
-      setMessage('当前未配置 Supabase，问云小院登录需要先填写环境变量。')
+      setMessage('当前未配置 Supabase，正在使用问云小院演示资料。')
       return
     }
 

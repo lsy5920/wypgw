@@ -1,20 +1,16 @@
-﻿import { ChevronDown, ChevronUp, ClipboardPenLine, Search, Send, Shuffle, SlidersHorizontal, UsersRound } from 'lucide-react'
+import { ChevronDown, ChevronUp, ClipboardPenLine, MapPin, Search, Send, Shuffle, UserRound, UsersRound } from 'lucide-react'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CloudButton } from '../components/CloudButton'
-import { EmptyState } from '../components/EmptyState'
-import { LoginRequiredNotice } from '../components/LoginRequiredNotice'
-import { PageShell } from '../components/PageShell'
-import { RitualCard } from '../components/RitualCard'
-import { ScrollPanel } from '../components/ScrollPanel'
-import { SectionTitle } from '../components/SectionTitle'
+import { Link } from 'react-router-dom'
+import { GeneratedIcon } from '../components/GeneratedIcon'
 import { StatusNotice } from '../components/StatusNotice'
 import { applicationStatusLabels, genderOptions, memberRoleOptions } from '../data/siteContent'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { useAuth } from '../hooks/useAuth'
 import { fetchMyApplications, fetchMyLatestWenxinQuizResult, fetchPublicRoster, submitJoinApplication } from '../lib/services'
 import type { JoinApplication, JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizResult } from '../lib/types'
 import { validateJoinApplication } from '../lib/validators'
 
-// 这个常量保存名册登记表单初始值，返回值用于重置表单。
+// 这个常量保存名册登记表单初始值，返回值用于首次渲染和提交成功后的重置。
 const initialForm: JoinApplicationInput = {
   nickname: '',
   jianghu_name: '',
@@ -32,39 +28,44 @@ const initialForm: JoinApplicationInput = {
   accept_rules: false
 }
 
-// 这个函数格式化登记时间，入参是数据库时间字符串，返回值是中文日期。
+// 这个数组保存名册登记流程步骤，返回值用于折叠状态下给新同门看清先后顺序。
+const rosterJoinSteps = ['登录小院', '问心合格', '递交名帖', '执事审核']
+
+// 这个数组保存名册头像可复用插图，返回值用于让每张名帖有水墨头像而不是空白圆点。
+const rosterAvatarVisuals = ['roster', 'quiz', 'cloudLantern', 'login'] as const
+
+// 这个函数格式化登记时间，入参是数据库时间字符串，返回值是中文日期文字。
 function formatRosterDate(value: string | null): string {
   if (!value) {
     return '未记录'
   }
 
   try {
-    // 这里把数据库时间转成本地日期，便于手机端和桌面端阅读。
+    // 这里把数据库时间转成本地日期，方便普通访问者直接阅读。
     return new Date(value).toLocaleDateString('zh-CN')
   } catch {
-    // 这里兜底处理异常日期，避免页面因为时间格式问题报错。
+    // 这里兜底处理异常日期，避免一条脏数据拖垮整页名册。
     return value
   }
 }
 
-// 这个函数渲染一段可公开展示的文字，入参是文字，返回值是兜底后的展示文案。
+// 这个函数渲染可公开展示的文字，入参是可能为空的文字，返回值是兜底后的展示文案。
 function showText(value: string | null): string {
   return value?.trim() || '未填写'
 }
 
 // 这个函数格式化兴趣爱好，入参是兴趣爱好文字，返回值是统一展示文字。
 function formatHobbies(tags: string | null): string {
-  // 这里过滤空值，避免页面显示空白卡片。
   return tags?.trim() || '未填写'
 }
 
 // 这个函数生成稳定的随机排序权重，入参是名册条目和种子，返回值用于横向卡片随机展示。
 function createRosterWeight(item: RosterEntry, seed: number): number {
-  // 这里把编号和种子拼在一起，保证点击“换一组”时顺序会变。
+  // 这里把编号和种子拼在一起，保证点击“换一组”时顺序会变，但同一次渲染不会乱跳。
   const source = `${item.id}-${item.member_code}-${seed}`
   let hash = 0
 
-  // 这里用简单哈希生成排序值，避免每次渲染都重新乱跳。
+  // 这里用简单哈希生成排序值，避免每次渲染都重新打乱。
   for (let index = 0; index < source.length; index += 1) {
     hash = Math.imul(31, hash) + source.charCodeAt(index)
   }
@@ -72,35 +73,33 @@ function createRosterWeight(item: RosterEntry, seed: number): number {
   return Math.abs(hash)
 }
 
-// 这个函数渲染问云名册页，入参为空，返回值是折叠登记入口、折叠筛选和横向滑动资料卡片。
+// 这个函数渲染问云名册页，入参为空，返回值是按互动设计稿重写后的公开名册和递帖表单。
 export function JoinPage() {
-  // 这里读取当前登录资料，名帖登记要求先进入问云小院。
+  // 这里读取当前登录资料，名帖登记必须归属到具体问云小院账号。
   const { profile, loading: authLoading } = useAuth()
-  // 这个状态保存公开名册条目。
+  // 这个状态保存公开名册条目，返回值用于上方横向卡片展示。
   const [roster, setRoster] = useState<RosterEntry[]>([])
-  // 这个状态保存表单数据。
+  // 这个状态保存表单数据，返回值用于受控输入框。
   const [form, setForm] = useState<JoinApplicationInput>(initialForm)
-  // 这个状态控制登记入口是否展开。
+  // 这个状态控制登记表单是否展开，返回值用于模拟设计稿下方“递交名帖”区域。
   const [formOpen, setFormOpen] = useState(true)
-  // 这个状态控制筛选条件是否展开。
-  const [filtersOpen, setFiltersOpen] = useState(true)
-  // 这个状态保存前台名册搜索词。
+  // 这个状态保存前台名册搜索词，返回值用于按道名、江湖名或编号筛选。
   const [searchTerm, setSearchTerm] = useState('')
-  // 这个状态保存前台辈分字筛选。
+  // 这个状态保存前台辈分字筛选，返回值用于筛选公开名册。
   const [generationFilter, setGenerationFilter] = useState('')
-  // 这个状态保存前台性别筛选。
+  // 这个状态保存前台性别筛选，返回值用于筛选公开名册。
   const [genderFilter, setGenderFilter] = useState('')
-  // 这个状态保存前台身份筛选。
+  // 这个状态保存前台身份筛选，返回值用于筛选公开名册。
   const [roleFilter, setRoleFilter] = useState('')
-  // 这个状态保存随机展示种子。
+  // 这个状态保存随机展示种子，返回值用于“换一组”按钮。
   const [rosterSeed, setRosterSeed] = useState(() => Date.now())
-  // 这个状态保存当前用户最新一次问心考核结果。
+  // 这个状态保存当前用户最新一次问心考核结果，返回值用于判断是否能递帖。
   const [quizResult, setQuizResult] = useState<WenxinQuizResult | null>(null)
-  // 这个状态保存当前账号已经递交过的名帖，防止重复提交。
+  // 这个状态保存当前账号已经递交过的名帖，返回值用于阻止重复提交。
   const [existingApplication, setExistingApplication] = useState<JoinApplication | null>(null)
-  // 这个状态表示表单是否正在提交。
+  // 这个状态表示表单是否正在提交，返回值用于禁用按钮和显示提交中文字。
   const [submitting, setSubmitting] = useState(false)
-  // 这个状态保存页面提示。
+  // 这个状态保存页面提示，返回值用于显示读取失败、演示模式或提交结果。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
 
   // 这个函数读取公开名册，入参为空，返回值为空。
@@ -123,7 +122,7 @@ export function JoinPage() {
   }, [])
 
   useEffect(() => {
-    // 这个函数读取最新问心考核，入参为空，返回值为空。
+    // 这个函数读取当前用户的考核结果和递帖状态，入参为空，返回值为空。
     async function loadUserGateInfo() {
       if (!profile) {
         setQuizResult(null)
@@ -152,7 +151,7 @@ export function JoinPage() {
 
   // 这个变量保存筛选后的名册条目，返回值用于资料卡片展示。
   const filteredRoster = useMemo(() => {
-    // 这里先清理搜索词，避免前后空格影响搜索结果。
+    // 这里清理搜索词，避免前后空格影响搜索结果。
     const keyword = searchTerm.trim()
 
     return roster.filter((item) => {
@@ -178,7 +177,16 @@ export function JoinPage() {
     return [...filteredRoster].sort((left, right) => createRosterWeight(left, rosterSeed) - createRosterWeight(right, rosterSeed))
   }, [filteredRoster, rosterSeed])
 
-  // 这个函数更新文字字段，入参是字段名和值，返回值为空。
+  // 这个变量保存当前递帖门槛状态，返回值用于设计稿右侧小状态签。
+  const gateStatusText = !profile
+    ? '请先登录问云小院'
+    : existingApplication
+      ? `已递交名帖：${applicationStatusLabels[existingApplication.status]}`
+      : quizResult?.passed
+        ? `问心已合格：${quizResult.score} 分`
+        : '待完成问心考核'
+
+  // 这个函数更新文字或勾选字段，入参是字段名和值，返回值为空。
   function updateField(field: keyof JoinApplicationInput, value: string | boolean) {
     setForm((current) => ({ ...current, [field]: value }))
   }
@@ -242,407 +250,255 @@ export function JoinPage() {
         await loadRoster()
       }
     } finally {
+      // 这里无论成功失败都恢复按钮状态，避免按钮长期停在加载中。
       setSubmitting(false)
     }
   }
 
   return (
-    <PageShell className="compact-design-page join-design-page" size="wide">
-      <SectionTitle center eyebrow="问云名册" title="列名于册，问云为号" visual="roster">
-        先过问心考核，再递问云名帖。名册公开展示道名、江湖名、编号、性别、身份、所在城市、宣言、兴趣爱好、同行期待和入册时间。
-      </SectionTitle>
-
-      {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
-
-      <ScrollPanel className="join-form-panel mt-8 overflow-hidden seal-mark-bg">
-        <button
-          className="flex w-full flex-col gap-5 text-left md:flex-row md:items-center md:justify-between"
-          onClick={() => setFormOpen((current) => !current)}
-          type="button"
-        >
-          <span className="flex items-start gap-4">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[#9e3d32]/10 text-[#9e3d32]">
-              <ClipboardPenLine className="h-6 w-6" />
-            </span>
-            <span>
-              <span className="text-sm font-semibold text-[#9e3d32]">登记入口</span>
-              <span className="ink-title mt-2 block text-3xl font-bold text-[#143044]">递上问云名帖</span>
-              <span className="mt-2 block text-sm leading-7 text-[#526461]">
-                登记前需先完成问心考核，最新成绩达到 80 分以上后方可递帖；道名需以“云”字开头，身份默认同门。
-              </span>
-              <span className="mt-3 inline-flex rounded-full bg-[#edf3ef] px-3 py-1 text-xs font-semibold text-[#6f8f8b]">
-                {!profile
-                  ? '请先登录问云小院'
-                  : existingApplication
-                    ? `已递交名帖：${applicationStatusLabels[existingApplication.status]}`
-                    : quizResult?.passed
-                      ? `问心已合格：${quizResult.score} 分`
-                      : '待完成问心考核'}
-              </span>
-            </span>
-          </span>
-          <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-[#c9a45c]/45 bg-white/75 px-5 py-3 text-sm font-semibold text-[#7a6a48]">
-            {formOpen ? '收起名帖' : '展开填写'}
-            {formOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </span>
-        </button>
-
-        {!formOpen ? (
-          <div className="mt-6 grid gap-4 md:grid-cols-4">
-            {['登录小院', '问心合格', '递交名帖', '执事审核'].map((item, index) => (
-              <div className="rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4" key={item}>
-                <p className="text-xs font-semibold text-[#9e3d32]">第 {index + 1} 步</p>
-                <p className="ink-title mt-2 text-2xl font-bold text-[#143044]">{item}</p>
-                <p className="mt-2 text-xs leading-6 text-[#526461]">
-                  {index === 0
-                    ? '绑定自己的问云小院账号'
-                    : index === 1
-                      ? '最新成绩达到 80 分'
-                      : index === 2
-                        ? '填写道名与公开资料'
-                        : '通过后列入公开名册'}
-                </p>
-              </div>
-            ))}
+    <section className="interaction-reference-page roster-reference-page" aria-label="问云名册">
+      <div className="interaction-paper-shell">
+        {/* 这里还原设计稿顶部标题、云纹和搜索条。 */}
+        <header className="interaction-page-heading roster-page-heading">
+          <div className="interaction-title-cluster">
+            <GeneratedIcon className="interaction-title-icon" name="roster" />
+            <div>
+              <h1>问云名册</h1>
+              <p>同进相逢，名帖寄心</p>
+            </div>
           </div>
-        ) : (
-          <div className="mt-6 border-t border-[#c9a45c]/20 pt-6">
-            {!profile ? (
-              <LoginRequiredNotice
-                title="递交名帖前请先登录"
-                message="名帖登记需要绑定到你的问云小院，执事审核后你才能看到状态和提醒。"
-              />
-            ) : existingApplication ? (
-              <div className="mb-5 rounded-lg border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
-                <p className="font-semibold text-[#9e3d32]">你已经递交过名帖</p>
-                <p className="mt-1">
-                  每个账号只能提交一份名帖。当前状态为“{applicationStatusLabels[existingApplication.status]}”。
-                  如需修改资料，请到问云小院处理；道名和联系方式会进入管理员审核，其余可直接保存。
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <CloudButton to="/yard/profile" variant="seal">
-                    去小院修改资料
-                  </CloudButton>
-                  <CloudButton to="/yard/applications" variant="ghost">
-                    查看我的名帖
-                  </CloudButton>
-                </div>
-              </div>
-            ) : !quizResult?.passed ? (
-              <div className="mb-5 rounded-lg border border-[#c9a45c]/35 bg-[#fffaf0]/85 p-4 text-sm leading-7 text-[#526461]">
-                <p className="font-semibold text-[#9e3d32]">请先完成问心考核</p>
-                <p className="mt-1">
-                  登记入册需要最新问心考核达到 80 分以上。当前结果：
-                  {quizResult ? `${quizResult.score} 分，尚未达到登记门槛。` : '尚未参加考核。'}
-                </p>
-                <CloudButton className="mt-4 w-full sm:w-auto" to="/wenxin-quiz" variant="seal">
-                  前往问心考核
-                </CloudButton>
-              </div>
-            ) : null}
+          <label className="interaction-search-box" aria-label="搜索名册">
+            <Search className="h-4 w-4" />
+            <input onChange={(event) => setSearchTerm(event.target.value)} placeholder="搜索道名 / 江湖名 / 编号" value={searchTerm} />
+          </label>
+        </header>
 
-            {profile && quizResult?.passed && !existingApplication ? (
-            <form className="grid gap-5" onSubmit={handleSubmit}>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">道名 *</span>
-                <input
-                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateField('nickname', event.target.value)}
-                  placeholder="例如：云山、云灯、云初"
-                  value={form.nickname}
-                />
-              </label>
-
-              <div className="grid gap-5 md:grid-cols-2">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">江湖名</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => updateField('jianghu_name', event.target.value)}
-                    placeholder="例如：山月客、归舟"
-                    value={form.jianghu_name}
-                  />
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">真实姓名 *</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => updateField('real_name', event.target.value)}
-                    placeholder="仅后台可见"
-                    value={form.real_name}
-                  />
-                </label>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">联系方式 *</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => {
-                      updateField('legacy_contact', event.target.value)
-                      updateField('wechat_id', event.target.value)
-                    }}
-                    placeholder="微信、QQ、手机号等，仅后台可见"
-                    value={form.legacy_contact}
-                  />
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">所在城市</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => {
-                      updateField('public_region', event.target.value)
-                      updateField('city', event.target.value)
-                    }}
-                    placeholder="例如：上海、云深不知处"
-                    value={form.public_region}
-                  />
-                </label>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-3">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">性别 *</span>
-                  <select
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => updateGender(event.target.value as MemberGender)}
-                    value={form.gender}
-                  >
-                    {genderOptions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">出生年份</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    inputMode="numeric"
-                    maxLength={4}
-                    onChange={(event) => updateField('age_range', event.target.value.replace(/\D/g, '').slice(0, 4))}
-                    placeholder="例如：2003，仅后台可见"
-                    value={form.age_range}
-                  />
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">身份</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
-                    disabled
-                    value="同门"
-                  />
-                </label>
-              </div>
-
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">宣言 *</span>
-                <textarea
-                  className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateField('motto', event.target.value)}
-                  placeholder="写一句你想留在名册上的话。"
-                  value={form.motto}
-                />
-              </label>
-
-              <div className="grid gap-5 md:grid-cols-2">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">兴趣爱好</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => updateField('tags', event.target.value)}
-                    placeholder="例如：写文、摄影、饮茶"
-                    value={form.tags}
-                  />
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">同行期待</span>
-                  <input
-                    className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                    onChange={(event) => updateField('companion_expectation', event.target.value)}
-                    placeholder="想遇见怎样的同门"
-                    value={form.companion_expectation}
-                  />
-                </label>
-              </div>
-
-              <label className="flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
-                <input
-                  checked={form.accept_rules}
-                  className="mt-1 h-4 w-4"
-                  onChange={(event) => updateField('accept_rules', event.target.checked)}
-                  type="checkbox"
-                />
-                <span className="text-sm leading-7 text-[#526461]">
-                  我认可问云派门规：不恶语伤人，不借信任谋私利，不泄露同门隐私，不把山门变成广告与争斗之地。
-                </span>
-              </label>
-
-              <CloudButton disabled={submitting || authLoading || !profile || !quizResult?.passed} type="submit" variant="seal">
-                {submitting ? '正在送帖...' : '提交名册登记'}
-                <Send className="h-4 w-4" />
-              </CloudButton>
-            </form>
-            ) : null}
-          </div>
-        )}
-      </ScrollPanel>
-
-      <ScrollPanel className="join-roster-panel mt-8 overflow-hidden">
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-semibold text-[#9e3d32]">
-              <UsersRound className="h-4 w-4" />
-              名册展示
-            </p>
-            <h2 className="ink-title mt-2 text-3xl font-bold text-[#143044]">问云同门</h2>
-            <p className="mt-2 text-sm leading-7 text-[#526461]">资料卡片会随机排序，可在手机上左右滑动查看。</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#6f8f8b]/25 bg-white/75 px-4 text-sm font-semibold text-[#526461]"
-              onClick={() => setFiltersOpen((current) => !current)}
-              type="button"
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              筛选
-              {filtersOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </button>
-            <button
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#c9a45c]/35 bg-white/75 px-4 text-sm font-semibold text-[#7a6a48]"
-              onClick={() => setRosterSeed(Date.now())}
-              type="button"
-            >
-              <Shuffle className="h-4 w-4" />
-              换一组
-            </button>
-            <span className="inline-flex min-h-11 items-center rounded-full bg-[#edf3ef] px-4 text-sm text-[#6f8f8b]">
-              {filteredRoster.length} / {roster.length} 人
-            </span>
-          </div>
-        </div>
-
-        {filtersOpen ? (
-          <div className="mb-5 grid gap-3 rounded-lg border border-[#c9a45c]/25 bg-white/60 p-4 lg:grid-cols-[1.2fr_0.7fr_0.7fr_0.8fr_auto]">
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">搜索名册</span>
-              <span className="relative">
-                <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#6f8f8b]" />
-                <input
-                  className="w-full rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-10 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="道名、江湖名或编号"
-                  value={searchTerm}
-                />
-              </span>
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">辈分字</span>
-              <select
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setGenerationFilter(event.target.value)}
-                value={generationFilter}
-              >
-                <option value="">全部辈分</option>
-                {generationOptions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">性别</span>
-              <select
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setGenderFilter(event.target.value)}
-                value={genderFilter}
-              >
-                <option value="">全部性别</option>
-                {genderOptions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">身份</span>
-              <select
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/85 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setRoleFilter(event.target.value)}
-                value={roleFilter}
-              >
-                <option value="">全部身份</option>
-                {memberRoleOptions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              className="min-h-12 self-end rounded-full border border-[#c9a45c]/35 bg-white/75 px-4 text-sm font-semibold text-[#7a6a48]"
-              onClick={resetFilters}
-              type="button"
-            >
-              清空
-            </button>
+        {/* 这里集中展示读取、演示模式和提交提示，不压住核心名册区。 */}
+        {notice ? (
+          <div className="interaction-notice-row">
+            <StatusNotice type={notice.type} title={notice.title} message={notice.message} />
           </div>
         ) : null}
 
-        {roster.length === 0 ? (
-          <EmptyState title="名册暂空" message="待执事审核通过后，同门会列入问云名册。" />
-        ) : randomizedRoster.length === 0 ? (
-          <EmptyState title="暂无匹配同门" message="可以换一个道名、江湖名、编号或筛选条件再试。" />
-        ) : (
-          <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:thin]">
-            {randomizedRoster.map((item) => (
-              <RitualCard
-                className="min-w-[min(86vw,26rem)] snap-start p-5 md:min-w-[25rem]"
-                key={item.id}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold text-[#9e3d32]">{item.member_code}</p>
-                    <h3 className="ink-title mt-1 text-3xl font-bold text-[#143044]">{item.dao_name}</h3>
-                    <p className="mt-1 text-sm text-[#7a6a48]">江湖名：{showText(item.jianghu_name)}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-xs text-[#6f8f8b]">{item.member_role}</span>
-                    <span className="rounded-full bg-[#fff1ee] px-3 py-1 text-xs text-[#9e3d32]">{item.gender}</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 grid gap-3 text-sm leading-7 text-[#526461]">
-                  <p>城市：{showText(item.public_region ?? item.city)}</p>
-                  <p>入册：{formatRosterDate(item.joined_at ?? item.created_at)}</p>
-                </div>
-
-                <p className="mt-4 rounded-lg border border-[#c9a45c]/20 bg-[#fffaf0]/65 p-4 text-sm leading-7 text-[#526461]">
-                  <span className="font-semibold text-[#143044]">宣言：</span>
-                  {showText(item.motto)}
-                </p>
-
-                <p className="mt-4 rounded-lg border border-[#6f8f8b]/18 bg-[#edf3ef]/55 p-4 text-sm leading-7 text-[#526461]">
-                  <span className="font-semibold text-[#143044]">兴趣爱好：</span>
-                  {formatHobbies(item.tags)}
-                </p>
-
-                <p className="mt-4 text-sm leading-7 text-[#526461]">同行期待：{showText(item.companion_expectation)}</p>
-                <p className="mt-2 text-xs text-[#7a6a48]">状态：{applicationStatusLabels[item.status]}</p>
-              </RitualCard>
-            ))}
+        {/* 这里复刻设计稿上半部分：筛选条和横向名册卡片。 */}
+        <section className="interaction-corner-card roster-wall-card" aria-label="公开名册">
+          <div className="roster-filter-strip">
+            <button className={`interaction-filter-pill ${!searchTerm && !generationFilter && !genderFilter && !roleFilter ? 'is-active' : ''}`} onClick={resetFilters} type="button">
+              全部
+            </button>
+            <select aria-label="辈分字筛选" onChange={(event) => setGenerationFilter(event.target.value)} value={generationFilter}>
+              <option value="">辈分</option>
+              {generationOptions.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <select aria-label="性别筛选" onChange={(event) => setGenderFilter(event.target.value)} value={genderFilter}>
+              <option value="">性别</option>
+              {genderOptions.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <select aria-label="身份筛选" onChange={(event) => setRoleFilter(event.target.value)} value={roleFilter}>
+              <option value="">身份</option>
+              {memberRoleOptions.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <button className="interaction-filter-pill" onClick={() => setRosterSeed(Date.now())} type="button">
+              <Shuffle className="h-4 w-4" />
+              换一组
+            </button>
+            <span className="interaction-count-pill">{filteredRoster.length} / {roster.length} 人</span>
           </div>
-        )}
-      </ScrollPanel>
-    </PageShell>
+
+          {roster.length === 0 ? (
+            <div className="interaction-empty-card">
+              <UsersRound className="h-7 w-7" />
+              <p>名册暂空，待执事审核通过后，同门会列入问云名册。</p>
+            </div>
+          ) : randomizedRoster.length === 0 ? (
+            <div className="interaction-empty-card">
+              <Search className="h-7 w-7" />
+              <p>暂无匹配同门，可以换一个道名、江湖名、编号或筛选条件再试。</p>
+            </div>
+          ) : (
+            <div className="roster-card-row">
+              {randomizedRoster.map((item, index) => {
+                // 这个变量保存当前卡片头像插图，避免所有名帖头像完全一样。
+                const avatarImage = getGuofengVisualPath(rosterAvatarVisuals[index % rosterAvatarVisuals.length])
+
+                return (
+                  <article className="roster-reference-card" key={item.id}>
+                    <div className="roster-card-avatar">
+                      <img alt="" aria-hidden="true" src={avatarImage} />
+                    </div>
+                    <div className="roster-card-body">
+                      <p className="roster-card-code">{item.member_code}</p>
+                      <h2>{item.dao_name}</h2>
+                      <p className="roster-card-meta">
+                        {item.member_role} <span>|</span> {showText(item.jianghu_name)}
+                      </p>
+                      <p className="roster-card-location">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {showText(item.public_region ?? item.city)}
+                      </p>
+                      <p className="roster-card-motto">宜言：{showText(item.motto)}</p>
+                      <p className="roster-card-tags">兴趣：{formatHobbies(item.tags)}</p>
+                    </div>
+                    <button className="roster-card-button" type="button">
+                      查看名帖
+                    </button>
+                  </article>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* 这里复刻设计稿下半部分：递交名帖表单和当前门槛状态。 */}
+        <section className="interaction-corner-card roster-submit-card" aria-label="递交名帖">
+          <div className="roster-submit-heading">
+            <div>
+              <p className="interaction-section-kicker">
+                <ClipboardPenLine className="h-4 w-4" />
+                递交名帖
+              </p>
+              <h2>新成员登记入口</h2>
+              <p>第一次来的同门，请先完成问心考核，再填写可公开与仅后台核对的资料。</p>
+            </div>
+            <div className="roster-submit-actions">
+              <span>{gateStatusText}</span>
+              <button className="interaction-filter-pill" onClick={() => setFormOpen((current) => !current)} type="button">
+                {formOpen ? '收起表单' : '展开表单'}
+                {formOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          {!formOpen ? (
+            <div className="roster-step-grid">
+              {rosterJoinSteps.map((item, index) => (
+                <div className="roster-step-card" key={item}>
+                  <span>第 {index + 1} 步</span>
+                  <strong>{item}</strong>
+                  <p>{index === 0 ? '绑定自己的账号' : index === 1 ? '最新成绩满 80 分' : index === 2 ? '填写公开资料' : '通过后列入名册'}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="roster-form-region">
+              {!profile ? (
+                <div className="interaction-state-card">
+                  <UserRound className="h-5 w-5" />
+                  <div>
+                    <strong>递交名帖前请先登录</strong>
+                    <p>名帖登记需要绑定到你的问云小院，执事审核后你才能看到状态和提醒。</p>
+                  </div>
+                  <Link className="interaction-small-link" to="/login">
+                    前往登录
+                  </Link>
+                </div>
+              ) : existingApplication ? (
+                <div className="interaction-state-card">
+                  <ClipboardPenLine className="h-5 w-5" />
+                  <div>
+                    <strong>你已经递交过名帖</strong>
+                    <p>当前状态为“{applicationStatusLabels[existingApplication.status]}”。如需修改资料，请到问云小院处理。</p>
+                  </div>
+                  <Link className="interaction-small-link" to="/yard/profile">
+                    去小院修改
+                  </Link>
+                </div>
+              ) : !quizResult?.passed ? (
+                <div className="interaction-state-card">
+                  <GeneratedIcon className="interaction-state-icon" name="shield" />
+                  <div>
+                    <strong>请先完成问心考核</strong>
+                    <p>当前结果：{quizResult ? `${quizResult.score} 分，尚未达到登记门槛。` : '尚未参加考核。'}</p>
+                  </div>
+                  <Link className="interaction-small-link" to="/wenxin-quiz">
+                    去考核
+                  </Link>
+                </div>
+              ) : null}
+
+              {profile && quizResult?.passed && !existingApplication ? (
+                <form className="roster-reference-form" onSubmit={handleSubmit}>
+                  <label>
+                    <span>道名（昵称）*</span>
+                    <input onChange={(event) => updateField('nickname', event.target.value)} placeholder="请输入后能长留的名字" value={form.nickname} />
+                  </label>
+                  <label>
+                    <span>江湖名</span>
+                    <input onChange={(event) => updateField('jianghu_name', event.target.value)} placeholder="可填写你行走群中的称呼" value={form.jianghu_name} />
+                  </label>
+                  <label>
+                    <span>真实姓名 *</span>
+                    <input onChange={(event) => updateField('real_name', event.target.value)} placeholder="请输入真实姓名" value={form.real_name} />
+                  </label>
+                  <fieldset className="roster-gender-field">
+                    <legend>性别 *</legend>
+                    {genderOptions.map((item) => (
+                      <label key={item}>
+                        <input checked={form.gender === item} onChange={() => updateGender(item)} type="radio" />
+                        <span>{item}</span>
+                      </label>
+                    ))}
+                  </fieldset>
+                  <label>
+                    <span>联系方式（微信号）*</span>
+                    <input
+                      onChange={(event) => {
+                        updateField('legacy_contact', event.target.value)
+                        updateField('wechat_id', event.target.value)
+                      }}
+                      placeholder="用于联系与审核"
+                      value={form.legacy_contact}
+                    />
+                  </label>
+                  <label>
+                    <span>出生年份</span>
+                    <input inputMode="numeric" maxLength={4} onChange={(event) => updateField('age_range', event.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="例如：1995" value={form.age_range} />
+                  </label>
+                  <label className="roster-wide-field">
+                    <span>宣言 / 自我介绍 *</span>
+                    <input onChange={(event) => updateField('motto', event.target.value)} placeholder="写下你来到问云的第一句话" value={form.motto} />
+                  </label>
+                  <label>
+                    <span>所在城市</span>
+                    <input
+                      onChange={(event) => {
+                        updateField('public_region', event.target.value)
+                        updateField('city', event.target.value)
+                      }}
+                      placeholder="例如：杭州"
+                      value={form.public_region}
+                    />
+                  </label>
+                  <label className="roster-wide-field">
+                    <span>兴趣 / 自我介绍</span>
+                    <input onChange={(event) => updateField('tags', event.target.value)} placeholder="写下爱好或擅长方向" value={form.tags} />
+                  </label>
+                  <label className="roster-rule-check">
+                    <input checked={form.accept_rules} onChange={(event) => updateField('accept_rules', event.target.checked)} type="checkbox" />
+                    <span>我已阅读并认可问云门规，愿意守住边界，不伤人、不泄密、不广告。</span>
+                  </label>
+                  <button className="interaction-primary-button roster-form-submit" disabled={submitting || authLoading || !profile || !quizResult?.passed} type="submit">
+                    {submitting ? '正在送帖...' : '提交名帖'}
+                    <Send className="h-4 w-4" />
+                  </button>
+                </form>
+              ) : null}
+            </div>
+          )}
+        </section>
+      </div>
+    </section>
   )
 }

@@ -1,30 +1,28 @@
-﻿import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound, UsersRound } from 'lucide-react'
-import { Link, NavLink, Outlet, Navigate } from 'react-router-dom'
-import { BrandMark } from '../components/BrandMark'
+import { BarChart3, FileText, Home, Lamp, LogOut, Megaphone, Settings, ShieldCheck, UserRound, UsersRound } from 'lucide-react'
+import { Link, Navigate, NavLink, Outlet } from 'react-router-dom'
 import { StatusNotice } from '../components/StatusNotice'
-import { WorkbenchFrame } from '../components/WorkbenchFrame'
 import { isAdminProfile, useAuth } from '../hooks/useAuth'
 
-// 这个数组保存后台导航项，返回值用于侧栏和移动端后台入口。
+// 这个数组保存后台导航项，入参来自路由路径，返回值用于桌面侧栏和移动端横向导航。
 const adminNavItems = [
-  { label: '后台总览', path: '/admin', icon: BarChart3 },
-  { label: '名册管理', path: '/admin/applications', icon: ShieldCheck },
-  { label: '云灯审核', path: '/admin/lanterns', icon: Lamp },
-  { label: '公告管理', path: '/admin/announcements', icon: Megaphone },
-  { label: '活动管理', path: '/admin/events', icon: FileText },
-  { label: '执事管理', path: '/admin/stewards', icon: UsersRound },
-  { label: '站点设置', path: '/admin/settings', icon: Settings }
+  { label: '总览', fullLabel: '后台总览', path: '/admin', icon: BarChart3 },
+  { label: '名册', fullLabel: '名册管理', path: '/admin/applications', icon: ShieldCheck },
+  { label: '云灯', fullLabel: '云灯审核', path: '/admin/lanterns', icon: Lamp },
+  { label: '公告', fullLabel: '公告管理', path: '/admin/announcements', icon: Megaphone },
+  { label: '活动', fullLabel: '活动管理', path: '/admin/events', icon: FileText },
+  { label: '执事', fullLabel: '执事管理', path: '/admin/stewards', icon: UsersRound },
+  { label: '设置', fullLabel: '站点设置', path: '/admin/settings', icon: Settings }
 ]
 
-// 这个函数渲染后台管理布局，入参为空，返回值是带权限保护的后台框架。
+// 这个函数渲染后台管理布局，入参为空，返回值是带权限保护的国风后台框架。
 export function AdminLayout() {
-  // 这里读取当前登录和角色信息。
+  // 这里读取当前登录资料和退出登录方法，用于后台访问保护与顶部操作。
   const { profile, loading, message, signOut } = useAuth()
 
-  // 这里加载中时展示友好提示，避免页面闪烁。
+  // 这里加载中时展示稳定提示，避免权限状态未确认时页面闪动。
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f6f4ef] p-6">
+      <main className="min-h-screen bg-[#f7f0df] p-6">
         <StatusNotice title="正在验明身份" message="请稍候，正在读取登录状态与后台权限。" />
       </main>
     )
@@ -35,87 +33,70 @@ export function AdminLayout() {
     return <Navigate to="/login" replace state={{ message }} />
   }
 
-  // 这里已登录但不是管理员时进入问云小院，避免普通成员看到管理后台数据。
+  // 这里已登录但没有后台身份时跳回问云小院，避免普通成员看到管理数据。
   if (!isAdminProfile(profile)) {
     return <Navigate to="/yard" replace />
   }
 
   return (
-    <div className="wenyun-shell min-h-screen bg-[#eef3ef] text-[#172b2c]">
-      <aside className="workbench-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#f6f4ef] backdrop-blur-xl lg:block">
-        {/* 这里展示后台品牌信息。 */}
-        <Link className="mb-8 flex items-center gap-3" to="/">
-          <BrandMark className="border-[#f8df9d]/45 shadow-lg shadow-[#07171d]/20" size="normal" />
+    <div className="admin-reference-app min-h-screen text-[#1f2f2d]">
+      {/* 这里绘制桌面端固定深青侧栏，复刻设计稿中每一屏左侧的管理导航。 */}
+      <aside className="admin-reference-sidebar">
+        <Link className="admin-sidebar-brand" to="/">
+          <span aria-hidden="true">问</span>
           <div>
-            <p className="ink-title text-xl font-bold text-[#fff8e8]">问云后台</p>
-            <p className="text-xs text-[#f8df9d]">护灯、守门、安放归心</p>
+            <strong>问云后台</strong>
+            <p>深青执事堂</p>
           </div>
         </Link>
 
-        {/* 这里展示后台侧栏导航。 */}
-        <nav className="grid gap-2">
+        <nav className="admin-sidebar-nav">
           {adminNavItems.map((item) => {
+            // 这里把图标组件取出，方便每一项渲染同样结构。
             const Icon = item.icon
 
             return (
               <NavLink
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition ${
-                    isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : 'text-[#f4efe0] hover:bg-white/10'
-                  }`
-                }
+                className={({ isActive }) => (isActive ? 'admin-sidebar-link admin-sidebar-link-active' : 'admin-sidebar-link')}
                 end={item.path === '/admin'}
                 key={item.path}
                 to={item.path}
               >
                 <Icon className="h-4 w-4" />
-                {item.label}
+                {item.fullLabel}
               </NavLink>
             )
           })}
         </nav>
 
-        {/* 这里展示问云小院入口和退出登录按钮，管理员也可以回到自己的用户后台。 */}
-        <div className="absolute bottom-5 left-5 right-5 grid gap-3">
-          <Link className="flex items-center justify-center gap-2 rounded-lg border border-[#f8df9d]/28 bg-white/8 px-4 py-3 text-sm text-[#fff8e8]" to="/yard">
+        <div className="admin-sidebar-footer">
+          <Link className="admin-sidebar-ghost" to="/yard">
             <UserRound className="h-4 w-4" />
             返回问云小院
           </Link>
-          <button
-            className="flex items-center justify-center gap-2 rounded-lg border border-[#f8df9d]/24 bg-[#a83b32]/86 px-4 py-3 text-sm text-white"
-            onClick={() => void signOut()}
-            type="button"
-          >
+          <button className="admin-sidebar-danger" onClick={() => void signOut()} type="button">
             <LogOut className="h-4 w-4" />
             退出后台
           </button>
         </div>
       </aside>
 
-      <div className="lg:pl-72">
-        {/* 这里展示移动端后台顶部导航。 */}
-        <header className="workbench-topbar sticky top-0 z-30 px-4 py-3 text-[#fff8e8] lg:hidden">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Link className="flex items-center gap-2" to="/">
-                <Home className="h-4 w-4" />
-                返回官网
-              </Link>
-              <Link className="flex items-center gap-1 text-sm text-[#f8df9d]" to="/yard">
-                <UserRound className="h-4 w-4" />
-                小院
-              </Link>
-            </div>
-            <button className="text-sm text-[#f8df9d]" onClick={() => void signOut()} type="button">
+      <div className="admin-reference-main">
+        {/* 这里渲染移动端顶部栏，让窄屏也能完整切换后台页面。 */}
+        <header className="admin-mobile-topbar">
+          <div className="admin-mobile-topbar-row">
+            <Link className="inline-flex items-center gap-2" to="/">
+              <Home className="h-4 w-4" />
+              官网
+            </Link>
+            <button onClick={() => void signOut()} type="button">
               退出
             </button>
           </div>
-          <nav className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          <nav className="admin-mobile-nav">
             {adminNavItems.map((item) => (
               <NavLink
-                className={({ isActive }) =>
-                  `shrink-0 rounded-full px-3 py-2 text-xs font-semibold shadow-sm ${isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-[#07171d]/18' : 'bg-white/12 text-[#fff8e8]'}`
-                }
+                className={({ isActive }) => (isActive ? 'admin-mobile-link admin-mobile-link-active' : 'admin-mobile-link')}
                 end={item.path === '/admin'}
                 key={item.path}
                 to={item.path}
@@ -126,11 +107,9 @@ export function AdminLayout() {
           </nav>
         </header>
 
-        {/* 这里放置各个后台页面内容。 */}
-        <main className="mx-auto max-w-[1540px] px-3 py-5 md:px-8 md:py-8">
-          <WorkbenchFrame subtitle="深青执事堂，护灯传道" title="问云后台管理端">
+        {/* 这里放置后台页面内容，所有页面都重写为设计稿中的宣纸台账风格。 */}
+        <main className="admin-reference-canvas">
           <Outlet />
-          </WorkbenchFrame>
         </main>
       </div>
     </div>

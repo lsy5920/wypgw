@@ -1,10 +1,8 @@
-﻿import { CheckCheck, Mail } from 'lucide-react'
+import { CheckCheck, Mail } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { CloudButton } from '../../components/CloudButton'
-import { EmptyState } from '../../components/EmptyState'
-import { ScrollPanel } from '../../components/ScrollPanel'
-import { SectionTitle } from '../../components/SectionTitle'
 import { StatusNotice } from '../../components/StatusNotice'
+import { YardEmptyBox, YardPageBanner, YardPaperCard, YardStatusPill } from '../../components/YardGuofengFrame'
+import { getFriendlyErrorMessage } from '../../lib/errorMessage'
 import { fetchMyNotifications, markNotificationRead } from '../../lib/services'
 import type { NotificationEmailStatus, UserNotification } from '../../lib/types'
 
@@ -19,6 +17,7 @@ function formatDateTime(value: string): string {
       minute: '2-digit'
     })
   } catch {
+    // 这里时间异常时返回原始内容，避免单条提醒破坏整页。
     return value
   }
 }
@@ -35,24 +34,47 @@ function formatEmailStatus(status: NotificationEmailStatus): string {
   return labels[status]
 }
 
+// 这个函数把提醒业务类型转成中文，入参是类型，返回值是中文标签。
+function formatNotificationKind(kind: UserNotification['kind']): string {
+  if (kind === 'application') {
+    return '名帖'
+  }
+
+  if (kind === 'lantern') {
+    return '云灯'
+  }
+
+  return '雅集'
+}
+
 // 这个函数渲染消息提醒页，入参为空，返回值是站内提醒列表。
 export function YardNotificationsPage() {
   // 这个状态保存提醒列表。
   const [notifications, setNotifications] = useState<UserNotification[]>([])
   // 这个状态保存正在操作的提醒编号。
   const [workingId, setWorkingId] = useState('')
+  // 这个状态保存页面是否正在读取。
+  const [loading, setLoading] = useState(true)
   // 这个状态保存页面提示。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
 
   // 这个函数读取提醒列表，入参为空，返回值为空。
   async function loadNotifications() {
-    const result = await fetchMyNotifications()
-    setNotifications(result.data)
+    try {
+      const result = await fetchMyNotifications()
+      setNotifications(result.data)
 
-    if (!result.ok) {
-      setNotice({ type: 'error', title: '读取失败', message: result.message })
-    } else if (result.demoMode) {
-      setNotice({ type: 'info', title: '演示模式提示', message: result.message })
+      if (!result.ok) {
+        setNotice({ type: 'error', title: '读取失败', message: result.message })
+      } else if (result.demoMode) {
+        setNotice({ type: 'info', title: '演示模式提示', message: result.message })
+      }
+    } catch (error) {
+      // 这里捕获读取异常，让提醒页在网络不稳时仍有可理解提示。
+      setNotice({ type: 'error', title: '读取失败', message: getFriendlyErrorMessage(error) })
+    } finally {
+      // 这里结束加载状态，保证空提醒可以正常显示。
+      setLoading(false)
     }
   }
 
@@ -74,52 +96,80 @@ export function YardNotificationsPage() {
       if (result.ok) {
         await loadNotifications()
       }
+    } catch (error) {
+      // 这里捕获标记已读异常，避免操作失败后按钮一直卡住。
+      setNotice({ type: 'error', title: '操作失败', message: getFriendlyErrorMessage(error) })
     } finally {
       setWorkingId('')
     }
   }
 
+  // 这个变量保存未读提醒数量，返回值用于页签统计。
+  const unreadCount = notifications.filter((item) => !item.read_at).length
+  // 这个变量保存雅集提醒数量，返回值用于页签统计。
+  const eventCount = notifications.filter((item) => item.kind === 'event').length
+  // 这个变量保存名帖提醒数量，返回值用于页签统计。
+  const applicationCount = notifications.filter((item) => item.kind === 'application').length
+  // 这个变量保存云灯提醒数量，返回值用于页签统计。
+  const lanternCount = notifications.filter((item) => item.kind === 'lantern').length
+
   return (
-    <div>
-      <SectionTitle eyebrow="消息提醒" title="小院来信，灯火有回音" visual="yardNotifications">
-        名帖、云灯和雅集状态变化会写入这里。若 SMTP 已配置，也会同步尝试发送邮件。
-      </SectionTitle>
+    <div className="yard-page-stack">
+      <YardPageBanner
+        indexLabel="6 消息提醒"
+        subtitle="名帖、云灯和雅集状态变化会写入这里，重要回音不会走丢。"
+        title="小院来信，灯火有回音"
+        visual="yardNotifications"
+      />
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
+      {loading ? <StatusNotice title="正在读取提醒" message="请稍候，正在整理小院来信。" /> : null}
 
-      <div className="mt-8 grid gap-5">
-        {notifications.length === 0 ? (
-          <EmptyState title="暂无消息" message="等山门有回音，消息会在这里出现。" />
+      <YardPaperCard className="yard-filter-card">
+        <div className="yard-filter-tabs" aria-label="消息类型统计">
+          <span className="yard-filter-tab-active">全部 {notifications.length}</span>
+          <span>未读 {unreadCount}</span>
+          <span>雅集 {eventCount}</span>
+          <span>名帖 {applicationCount}</span>
+          <span>云灯 {lanternCount}</span>
+        </div>
+
+        {!loading && notifications.length === 0 ? (
+          <YardEmptyBox title="暂无消息" message="等山门有回音，消息会在这里出现。" />
         ) : (
-          notifications.map((item) => (
-            <ScrollPanel key={item.id}>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs text-[#9e3d32]">{formatDateTime(item.created_at)}</p>
-                  <h2 className="mt-2 text-2xl font-bold text-[#143044]">{item.title}</h2>
+          <div className="yard-notice-timeline">
+            {notifications.map((item) => (
+              <article className={`yard-notice-row ${item.read_at ? 'yard-notice-row-read' : ''}`} key={item.id}>
+                <span className="yard-notice-dot" />
+                <div className="yard-notice-content">
+                  <div className="yard-notice-head">
+                    <div>
+                      <YardStatusPill tone={item.read_at ? 'muted' : 'seal'}>{item.read_at ? '已读' : '未读'}</YardStatusPill>
+                      <YardStatusPill tone="gold">{formatNotificationKind(item.kind)}</YardStatusPill>
+                    </div>
+                    <time>{formatDateTime(item.created_at)}</time>
+                  </div>
+                  <h2>{item.title}</h2>
+                  <p>{item.content}</p>
+                  <div className="yard-notice-foot">
+                    <span>
+                      <Mail className="h-4 w-4" />
+                      邮件状态：{formatEmailStatus(item.email_status)}
+                    </span>
+                    {item.email_error ? <strong>失败原因：{item.email_error}</strong> : null}
+                    {!item.read_at ? (
+                      <button className="yard-mini-button" disabled={workingId === item.id} onClick={() => void handleRead(item.id)} type="button">
+                        {workingId === item.id ? '正在标记...' : '标记已读'}
+                        <CheckCheck className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
-                <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-sm text-[#6f8f8b]">
-                  {item.read_at ? '已读' : '未读'}
-                </span>
-              </div>
-              <p className="mt-4 leading-8 text-[#526461]">{item.content}</p>
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#c9a45c]/25 bg-white/55 p-4 text-sm text-[#526461]">
-                <p className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-[#c9a45c]" />
-                  邮件状态：{formatEmailStatus(item.email_status)}
-                </p>
-                {item.email_error ? <p className="text-[#9e3d32]">失败原因：{item.email_error}</p> : null}
-                {!item.read_at ? (
-                  <CloudButton className="min-h-10 px-4 py-2" disabled={workingId === item.id} onClick={() => void handleRead(item.id)}>
-                    {workingId === item.id ? '正在标记...' : '标记已读'}
-                    <CheckCheck className="h-4 w-4" />
-                  </CloudButton>
-                ) : null}
-              </div>
-            </ScrollPanel>
-          ))
+              </article>
+            ))}
+          </div>
         )}
-      </div>
+      </YardPaperCard>
     </div>
   )
 }

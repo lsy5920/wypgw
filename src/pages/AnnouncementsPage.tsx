@@ -1,163 +1,138 @@
-import { Clock3, Megaphone, Pin, ScrollText } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CloudButton } from '../components/CloudButton'
-import { PageShell } from '../components/PageShell'
-import { ScrollPanel } from '../components/ScrollPanel'
-import { SectionTitle } from '../components/SectionTitle'
-import { StatusNotice } from '../components/StatusNotice'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { fetchPublishedAnnouncements } from '../lib/services'
 import type { Announcement } from '../lib/types'
 
-// 这个函数格式化日期，入参是时间字符串，返回值是适合中文页面展示的日期。
-function formatDate(value: string | null): string {
+// 这个数组保存置顶公告下方的分页圆点，返回值用于模拟设计稿的轮播提示。
+const announcementDots = [0, 1, 2]
+
+// 这个函数把数据库时间格式化为年月日，入参是时间字符串，返回值是页面展示日期。
+function formatAnnouncementDate(value: string | null): string {
   if (!value) {
-    return '暂未发布'
+    return '待发布'
   }
 
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date(value))
+  try {
+    return new Intl.DateTimeFormat('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    })
+      .format(new Date(value))
+      .replace(/\//g, '-')
+  } catch {
+    // 这里兜底处理异常时间，避免单条坏数据导致整页报错。
+    return '时间待确认'
+  }
 }
 
-// 这个数组保存暂无公告时的榜文占位内容，入参为空，返回值用于保持设计稿里的右侧公告索引。
-const emptyAnnouncementRows = [
-  { title: '门规修订', text: '若有新的门规说明，执事会在这里写清缘由与影响范围。' },
-  { title: '雅集通知', text: '线上清谈、线下相逢与报名变化，会按发布时间排列。' },
-  { title: '金典校订', text: '金典文字若有调整，会同步说明调整位置与阅读建议。' }
-]
+// 这个函数生成公告摘要，入参是公告对象，返回值是优先使用摘要、其次截取正文的短文本。
+function getAnnouncementSummary(item: Announcement | null): string {
+  if (!item) {
+    return '山门暂未发布公开公告。'
+  }
 
-// 这个函数渲染公告列表页，入参为空，返回值是公开公告列表。
+  const sourceText = item.summary?.trim() || item.content.trim()
+  return sourceText.length > 86 ? `${sourceText.slice(0, 86)}……` : sourceText
+}
+
+// 这个函数渲染门派公告页面，入参为空，返回值是左侧真实置顶公告和右侧真实公告列表。
 export function AnnouncementsPage() {
-  // 这个状态保存公告数据。
+  // 这个状态保存从服务层读取的真实公开公告。
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  // 这个状态保存提示信息。
-  const [notice, setNotice] = useState('')
+  // 这个状态保存读取过程是否完成，用于无数据时给出稳定提示。
+  const [loaded, setLoaded] = useState(false)
+  // 这个常量保存公告页底部水墨插图地址。
+  const announcementImage = getGuofengVisualPath('announcementBoard')
 
   useEffect(() => {
-    // 这个函数读取公告，入参为空，返回值为空。
-    async function loadAnnouncements() {
-      const result = await fetchPublishedAnnouncements()
-      setAnnouncements(result.data)
+    // 这个变量记录组件是否仍然挂载，避免慢请求返回后更新已经离开的页面。
+    let alive = true
+    // 这里设置读取超时，避免网络长期无响应时页面一直停在“正在读取”。
+    const timeoutId = window.setTimeout(() => {
+      if (alive) {
+        setLoaded(true)
+      }
+    }, 3200)
 
-      if (result.demoMode) {
-        setNotice('当前为演示公告，配置 Supabase 后会读取后台发布的真实公告。')
+    // 这个函数读取真实公告数据，入参为空，返回值为空。
+    async function loadAnnouncements() {
+      try {
+        const result = await fetchPublishedAnnouncements()
+        if (alive) {
+          setAnnouncements(result.data)
+        }
+      } finally {
+        // 这里无论成功失败都结束加载态，服务层失败时已经提供兜底数据或空数据。
+        if (alive) {
+          window.clearTimeout(timeoutId)
+          setLoaded(true)
+        }
       }
     }
 
     void loadAnnouncements()
+
+    return () => {
+      alive = false
+      window.clearTimeout(timeoutId)
+    }
   }, [])
 
-  // 这个变量保存置顶公告或最新公告，返回值用于左侧大榜文。
-  const featuredAnnouncement = announcements.find((item) => item.is_pinned) ?? announcements[0] ?? null
-  // 这个变量保存重点公告之外的短公告，返回值用于设计稿右侧和下方列表。
-  const sideAnnouncements = featuredAnnouncement
-    ? announcements.filter((item) => item.id !== featuredAnnouncement.id)
-    : announcements
+  // 这个常量保存置顶公告，优先使用数据库标记的置顶记录。
+  const featuredAnnouncement = useMemo(
+    () => announcements.find((item) => item.is_pinned) ?? announcements[0] ?? null,
+    [announcements]
+  )
+  // 这个常量保存右侧公告列表，最多展示五条真实记录。
+  const listAnnouncements = announcements.slice(0, 5)
+  // 这个常量保存置顶公告封面，数据库有封面时优先使用数据库图片。
+  const featuredImage = featuredAnnouncement?.cover_url?.trim() || announcementImage
 
   return (
-    <PageShell className="compact-design-page announcement-design-page" size="wide">
-      <SectionTitle center eyebrow="门派公告" title="山门有讯，灯火相传" visual="announcements">
-        山门公告、门规更新、活动通知与金典修订都会在这里发布。
-      </SectionTitle>
-
-      {notice ? <StatusNotice title="演示模式提示" message={notice} /> : null}
-
-      <div className="announcement-board-layout mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.42fr)]">
-        <ScrollPanel className="announcement-feature-panel seal-mark-bg">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#fff8e8] px-3 py-1 text-sm font-semibold text-[#9e3d32]">
-              <Megaphone className="h-4 w-4" />
-              山门榜文
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#c9a45c]/35 bg-white/70 px-3 py-1 text-sm text-[#7a6a48]">
-              <Clock3 className="h-4 w-4" />
-              {featuredAnnouncement ? formatDate(featuredAnnouncement.published_at) : '静候发布'}
-            </span>
+    <section className="public-art-page announcement-art-page" aria-label="门派公告">
+      <div className="announcement-reference-layout">
+        {/* 这里还原左侧置顶公告纸卡，内容来自真实公告数据。 */}
+        <article className="announcement-feature-card">
+          <span className="announcement-red-label">{featuredAnnouncement?.is_pinned ? '置顶公告' : '最新公告'}</span>
+          <h1>
+            {featuredAnnouncement?.title ?? (loaded ? '暂无公开公告' : '正在读取公告')}
+            {featuredAnnouncement?.is_pinned ? <em>置顶</em> : null}
+          </h1>
+          <time dateTime={featuredAnnouncement?.published_at ?? undefined}>
+            {formatAnnouncementDate(featuredAnnouncement?.published_at ?? null)}
+          </time>
+          <p>{getAnnouncementSummary(featuredAnnouncement)}</p>
+          <img alt="公告水墨山景" className="announcement-feature-image" src={featuredImage} />
+          <div className="announcement-dots" aria-hidden="true">
+            {announcementDots.map((dot) => (
+              <i className={dot === 1 ? 'is-active' : ''} key={dot} />
+            ))}
           </div>
+        </article>
 
-          {featuredAnnouncement ? (
-            <>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-sm text-[#6f8f8b]">{featuredAnnouncement.category}</span>
-                {featuredAnnouncement.is_pinned ? (
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#9e3d32] px-3 py-1 text-sm text-white">
-                    <Pin className="h-4 w-4" />
-                    置顶
-                  </span>
-                ) : null}
-              </div>
-              <h2 className="ink-title mt-6 text-balance text-4xl font-bold leading-tight text-[#143044] md:text-5xl">
-                {featuredAnnouncement.title}
-              </h2>
-              <p className="mt-5 max-w-3xl text-lg leading-9 text-[#526461]">{featuredAnnouncement.summary}</p>
-              <p className="mt-6 border-t border-[#c9a45c]/25 pt-6 leading-9 text-[#40524f]">{featuredAnnouncement.content}</p>
-            </>
-          ) : (
-            <div className="announcement-empty-ledger mt-8">
-              <ScrollText className="h-10 w-10 text-[#6f8f8b]" />
-              <h2 className="ink-title mt-5 text-4xl font-bold text-[#143044]">暂无山门公告</h2>
-              <p className="mt-4 max-w-2xl leading-8 text-[#526461]">待后台发布公告后，榜文会在这里铺开；当前先保留完整公告版式，方便查看页面设计。</p>
-            </div>
-          )}
-        </ScrollPanel>
-
-        <aside className="announcement-side-stack grid gap-4">
-          <ScrollPanel className="announcement-side-card">
-            <p className="text-sm font-semibold text-[#9e3d32]">公告索引</p>
-            <h2 className="ink-title mt-2 text-2xl font-bold text-[#143044]">近讯总览</h2>
-            <p className="mt-3 text-sm leading-7 text-[#526461]">置顶、门规、雅集和金典修订都会先在这里汇总，便于同门快速确认。</p>
-            <div className="mt-5 grid gap-2">
-              {announcements.length > 0 ? (
-                announcements.map((item) => (
-                  <div className="rounded-lg border border-[#c9a45c]/25 bg-white/60 p-3" key={item.id}>
-                    <p className="text-sm font-semibold text-[#143044]">{item.title}</p>
-                    <p className="mt-1 text-xs text-[#7a6a48]">
-                      {item.category} · {formatDate(item.published_at)}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                emptyAnnouncementRows.map((item) => (
-                  <div className="rounded-lg border border-dashed border-[#c9a45c]/35 bg-white/55 p-3" key={item.title}>
-                    <p className="text-sm font-semibold text-[#143044]">{item.title}</p>
-                    <p className="mt-1 text-xs leading-6 text-[#526461]">{item.text}</p>
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollPanel>
-
-          <ScrollPanel className="announcement-side-card">
-            <p className="text-sm font-semibold text-[#9e3d32]">山门提醒</p>
-            <p className="mt-3 leading-8 text-[#526461]">公告只写确定之事。若内容涉及报名、规则或联系信息，请以此页最新榜文为准。</p>
-            <CloudButton className="mt-5 w-full" to="/contact" variant="ghost">
-              联系山门确认
-            </CloudButton>
-          </ScrollPanel>
+        {/* 这里还原右侧公告列表表格，行内容全部来自真实公告数据。 */}
+        <aside className="announcement-list-card">
+          <h2>公告列表</h2>
+          <div className="announcement-list-rows">
+            {listAnnouncements.length > 0 ? (
+              listAnnouncements.map((row) => (
+                <a className="announcement-list-row" href="#/announcements" key={row.id}>
+                  <span>{row.category || '公告'}</span>
+                  <strong>{row.title}</strong>
+                  <time dateTime={row.published_at ?? undefined}>{formatAnnouncementDate(row.published_at)}</time>
+                </a>
+              ))
+            ) : (
+              <p className="announcement-empty-text">{loaded ? '暂无公开公告。' : '正在读取真实公告……'}</p>
+            )}
+          </div>
+          <CloudButton className="announcement-more-button" to="/announcements" variant="ghost">
+            查看更多公告
+          </CloudButton>
         </aside>
       </div>
-
-      {sideAnnouncements.length > 0 ? (
-        <div className="announcement-list-strip mt-6 grid gap-4 md:grid-cols-2">
-          {sideAnnouncements.map((item) => (
-            <ScrollPanel key={item.id}>
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#edf3ef] px-3 py-1 text-sm text-[#6f8f8b]">
-                  <Megaphone className="h-4 w-4" />
-                  {item.category}
-                </span>
-                <span className="text-sm text-[#7a6a48]">{formatDate(item.published_at)}</span>
-              </div>
-              <h2 className="mt-4 text-2xl font-bold text-[#143044]">{item.title}</h2>
-              <p className="mt-4 leading-8 text-[#526461]">{item.summary}</p>
-            </ScrollPanel>
-          ))}
-        </div>
-      ) : null}
-    </PageShell>
+    </section>
   )
 }

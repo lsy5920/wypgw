@@ -1,16 +1,15 @@
-﻿import { FormEvent, useEffect, useState } from 'react'
+import { Eye, EyeOff, KeyRound, Mail, Smartphone } from 'lucide-react'
+import { FormEvent, useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { CloudButton } from '../components/CloudButton'
-import { PageShell } from '../components/PageShell'
-import { ScrollPanel } from '../components/ScrollPanel'
-import { SectionTitle } from '../components/SectionTitle'
+import { BrandMark } from '../components/BrandMark'
 import { StatusNotice } from '../components/StatusNotice'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { useAuth } from '../hooks/useAuth'
 import { getPasswordRecoveryRedirectUrl, translateSupabaseAuthError } from '../lib/authMessages'
 import { supabase } from '../lib/supabaseClient'
 import type { Profile } from '../lib/types'
 
-// 这个类型描述路由传来的状态，入参来自 Navigate，返回值用于显示登录原因。
+// 这个类型描述路由传来的状态，入参来自页面跳转，返回值用于显示登录原因。
 interface LocationState {
   // 跳转前传来的中文提示。
   message?: string
@@ -18,6 +17,9 @@ interface LocationState {
 
 // 这个类型描述登录页当前表单模式，返回值用于决定展示登录、注册、找回或重置密码。
 type LoginMode = 'login' | 'signup' | 'forgot' | 'reset'
+
+// 这个类型描述登录方式标签，返回值用于切换邮箱登录和旧编号登录。
+type LoginKind = 'email' | 'legacy'
 
 // 这个函数用邮箱生成默认昵称，入参是邮箱，返回值是邮箱前缀或兜底昵称。
 function createDefaultNickname(email: string): string {
@@ -109,7 +111,7 @@ async function ensureProfile(userId: string, email: string): Promise<Profile | n
   return data as Profile
 }
 
-// 这个函数渲染问云小院登录页，入参为空，返回值是登录和注册表单。
+// 这个函数渲染问云小院登录页，入参为空，返回值是按设计稿重写的山门登录画面。
 export function LoginPage() {
   // 这里读取当前认证状态，用于已登录时自动进入问云小院。
   const { profile, loading, refresh } = useAuth()
@@ -123,12 +125,16 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   // 这个状态保存当前是登录、注册、找回密码还是重置密码。
   const [mode, setMode] = useState<LoginMode>(() => (isPasswordRecoveryUrl() ? 'reset' : 'login'))
+  // 这个状态保存当前登录方式，返回值用于切换邮箱登录和旧编号登录的占位提示。
+  const [loginKind, setLoginKind] = useState<LoginKind>('email')
   // 这个状态保存找回密码邮箱。
   const [recoveryEmail, setRecoveryEmail] = useState('')
   // 这个状态保存重置密码时输入的新密码。
   const [newPassword, setNewPassword] = useState('')
   // 这个状态保存重置密码时再次确认的新密码。
   const [confirmPassword, setConfirmPassword] = useState('')
+  // 这个状态控制密码是否明文显示，返回值用于眼睛按钮。
+  const [passwordVisible, setPasswordVisible] = useState(false)
   // 这个状态表示是否正在提交。
   const [submitting, setSubmitting] = useState(false)
   // 这个状态保存表单提示。
@@ -137,6 +143,10 @@ export function LoginPage() {
   const stateMessage = (location.state as LocationState | null)?.message
   // 这个变量表示当前是否处于找回邮件回来的重置流程。
   const inResetMode = mode === 'reset'
+  // 这个变量保存登录页左侧小院山门图，返回值用于铺满设计稿左半屏。
+  const loginSceneImage = getGuofengVisualPath('login')
+  // 这个变量保存账号输入框占位文案，返回值跟随登录方式变化。
+  const accountPlaceholder = loginKind === 'legacy' ? '请输入旧编号，如 001' : '请输入邮箱'
 
   useEffect(() => {
     // 这里监听 Supabase 发出的找回密码事件，用户从邮件回来时切到新密码表单。
@@ -179,7 +189,7 @@ export function LoginPage() {
         type: 'error',
         title: '问云小院暂未启用',
         message:
-          '请先配置 Supabase：本地填写 .env.local；GitHub Pages 部署请在仓库 Actions 密钥中填写 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
+          '请先配置 Supabase：本地填写 .env.local；线上部署请在仓库密钥中填写 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。'
       })
       return
     }
@@ -196,7 +206,7 @@ export function LoginPage() {
       return
     }
 
-    // 这里只检查密码是否为空，最少位数不再由前端限制。
+    // 这里只检查密码是否为空，最少位数交给 Supabase 规则处理。
     if (!password) {
       setNotice({ type: 'error', title: '请检查账号信息', message: '密码不能为空。' })
       return
@@ -204,7 +214,7 @@ export function LoginPage() {
 
     try {
       setSubmitting(true)
-      // 这里把 001 这类旧编号转换为 Supabase Auth 能识别的内部邮箱。
+      // 这里把 001 这类旧编号转换为 Supabase 认证能识别的内部邮箱。
       const loginEmail = normalizeLoginAccount(email)
       // 这里根据模式调用登录或注册接口。
       const result =
@@ -229,7 +239,7 @@ export function LoginPage() {
         setNotice({
           type: 'error',
           title: '注册被邮箱确认拦住了',
-          message: '请到 Supabase 后台关闭邮箱确认后再注册：Authentication → Sign In / Providers → 关闭邮箱确认。'
+          message: '请到 Supabase 后台关闭邮箱确认后再注册。'
         })
         return
       }
@@ -256,6 +266,7 @@ export function LoginPage() {
       const message = translateSupabaseAuthError(error)
       setNotice({ type: 'error', title: '操作失败', message })
     } finally {
+      // 这里恢复按钮状态，避免网络异常后按钮一直显示处理中。
       setSubmitting(false)
     }
   }
@@ -290,7 +301,7 @@ export function LoginPage() {
 
     try {
       setSubmitting(true)
-      // 这里调用 Supabase 找回密码邮件，回跳地址使用根路径参数以兼容 GitHub Pages 哈希路由。
+      // 这里调用 Supabase 找回密码邮件，回跳地址使用根路径参数以兼容静态托管哈希路由。
       const { error } = await supabase.auth.resetPasswordForEmail(emailValue, {
         redirectTo: getPasswordRecoveryRedirectUrl()
       })
@@ -308,6 +319,7 @@ export function LoginPage() {
       // 这里捕获邮件发送异常，常见原因是 Supabase 邮件设置或频率限制。
       setNotice({ type: 'error', title: '发送失败', message: translateSupabaseAuthError(error) })
     } finally {
+      // 这里恢复按钮状态，避免邮件接口异常后按钮一直转圈。
       setSubmitting(false)
     }
   }
@@ -322,7 +334,7 @@ export function LoginPage() {
       return
     }
 
-    // 这里只要求密码不为空，不再限制最少位数。
+    // 这里只要求密码不为空，具体密码规则交给 Supabase 处理。
     if (!newPassword) {
       setNotice({ type: 'error', title: '请填写新密码', message: '新密码不能为空。' })
       return
@@ -366,131 +378,143 @@ export function LoginPage() {
       // 这里捕获恢复链接过期、密码不合规等异常并转成中文提示。
       setNotice({ type: 'error', title: '重置失败', message: translateSupabaseAuthError(error) })
     } finally {
+      // 这里恢复按钮状态，避免保存失败后按钮一直不可点。
       setSubmitting(false)
     }
   }
 
   return (
-    <PageShell className="login-page-layout" size="wide">
-      <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院" visual="login">
-        同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事也有自己的小院，并可从小院进入管理后台。
-      </SectionTitle>
+    <section className="interaction-reference-page login-reference-page" aria-label="问云小院登录">
+      {/* 这里复刻设计稿左侧山门大图和竖向题字。 */}
+      <div className="login-reference-scene">
+        <img alt="" aria-hidden="true" src={loginSceneImage} />
+        <div className="login-scene-mask" aria-hidden="true" />
+        <div className="login-scene-title">
+          <h1>问云小院</h1>
+          <BrandMark className="login-scene-seal" size="normal" />
+          <p>一方净地，同心同行</p>
+        </div>
+      </div>
 
-      <ScrollPanel className="login-form-panel relative overflow-hidden seal-mark-bg">
-        <div className="pointer-events-none absolute right-6 top-6 h-28 w-28 rounded-full border border-[#c9a45c]/30 bg-[#edf3ef]/70" />
+      {/* 这里复刻设计稿右侧登录纸卡。 */}
+      <aside className="interaction-corner-card login-reference-card">
         {stateMessage ? <StatusNotice title="访问提示" message={stateMessage} /> : null}
         {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
-        <div className="mt-6 grid grid-cols-2 rounded-full bg-[#edf3ef] p-1">
-          <button
-            className={`rounded-full px-4 py-2 text-sm ${mode === 'login' ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#263238]'}`}
-            onClick={() => setMode('login')}
-            type="button"
-          >
-            登录
-          </button>
-          <button
-            className={`rounded-full px-4 py-2 text-sm ${mode === 'signup' ? 'bg-[#143044] !text-white shadow-md shadow-[#143044]/12' : 'text-[#263238]'}`}
-            onClick={() => setMode('signup')}
-            type="button"
-          >
-            注册账号
-          </button>
-        </div>
+        {mode === 'login' ? (
+          <div className="login-mode-tabs" role="tablist" aria-label="登录方式">
+            <button className={loginKind === 'email' ? 'is-active' : ''} onClick={() => setLoginKind('email')} type="button">
+              <Mail className="h-4 w-4" />
+              邮箱登录
+            </button>
+            <button className={loginKind === 'legacy' ? 'is-active' : ''} onClick={() => setLoginKind('legacy')} type="button">
+              <KeyRound className="h-4 w-4" />
+              旧编号登录
+            </button>
+          </div>
+        ) : null}
 
         {mode === 'forgot' ? (
-          <form className="mt-6 grid gap-5" onSubmit={handleRecoverySubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">已绑定邮箱</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setRecoveryEmail(event.target.value)}
-                placeholder="填写你绑定到账号上的真实邮箱"
-                type="email"
-                value={recoveryEmail}
-              />
+          <form className="login-reference-form" onSubmit={handleRecoverySubmit}>
+            <div className="login-form-title">
+              <h2>找回密码</h2>
+              <p>填写已经绑定到账号上的真实邮箱。</p>
+            </div>
+            <label>
+              <span>已绑定邮箱</span>
+              <input onChange={(event) => setRecoveryEmail(event.target.value)} placeholder="请输入真实邮箱" type="email" value={recoveryEmail} />
             </label>
-            <CloudButton disabled={submitting} type="submit" variant="seal">
+            <button className="interaction-primary-button login-main-button" disabled={submitting} type="submit">
               {submitting ? '正在发送...' : '发送重置密码邮件'}
-            </CloudButton>
-            <button className="text-sm font-semibold text-[#6f8f8b]" onClick={() => setMode('login')} type="button">
+            </button>
+            <button className="login-plain-button" onClick={() => setMode('login')} type="button">
               想起来了，返回登录
             </button>
           </form>
         ) : null}
 
         {mode === 'reset' ? (
-          <form className="mt-6 grid gap-5" onSubmit={handleResetSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">新密码</span>
-              <input
-                autoComplete="new-password"
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setNewPassword(event.target.value)}
-                placeholder="输入新的登录密码"
-                type="password"
-                value={newPassword}
-              />
+          <form className="login-reference-form" onSubmit={handleResetSubmit}>
+            <div className="login-form-title">
+              <h2>设置新密码</h2>
+              <p>找回密码链接已打开，请输入新密码。</p>
+            </div>
+            <label>
+              <span>新密码</span>
+              <input autoComplete="new-password" onChange={(event) => setNewPassword(event.target.value)} placeholder="输入新的登录密码" type="password" value={newPassword} />
             </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">确认新密码</span>
-              <input
-                autoComplete="new-password"
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                placeholder="再输入一次新密码"
-                type="password"
-                value={confirmPassword}
-              />
+            <label>
+              <span>确认新密码</span>
+              <input autoComplete="new-password" onChange={(event) => setConfirmPassword(event.target.value)} placeholder="再输入一次新密码" type="password" value={confirmPassword} />
             </label>
-            <CloudButton disabled={submitting} type="submit" variant="seal">
+            <button className="interaction-primary-button login-main-button" disabled={submitting} type="submit">
               {submitting ? '正在重置...' : '确认重置密码'}
-            </CloudButton>
-            <button className="text-sm font-semibold text-[#6f8f8b]" onClick={() => setMode('forgot')} type="button">
+            </button>
+            <button className="login-plain-button" onClick={() => setMode('forgot')} type="button">
               链接失效，重新发送邮件
             </button>
           </form>
         ) : null}
 
         {mode === 'login' || mode === 'signup' ? (
-          <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">邮箱或编号</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="新用户填邮箱，旧名册可填 001"
-                type="text"
-                value={email}
-              />
+          <form className="login-reference-form" onSubmit={handleSubmit}>
+            <div className="login-form-title">
+              <h2>{mode === 'login' ? '登录小院' : '注册小院'}</h2>
+              <p>{mode === 'login' ? '输入账号与密码，进入自己的问云小院。' : '新同门使用邮箱注册后即可进入小院。'}</p>
+            </div>
+
+            <label>
+              <span>{loginKind === 'legacy' && mode === 'login' ? '旧名册编号' : '邮箱或编号'}</span>
+              <div className="login-input-with-icon">
+                {loginKind === 'legacy' && mode === 'login' ? <KeyRound className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
+                <input inputMode={loginKind === 'legacy' && mode === 'login' ? 'numeric' : 'email'} onChange={(event) => setEmail(event.target.value)} placeholder={mode === 'signup' ? '请输入邮箱' : accountPlaceholder} type="text" value={email} />
+              </div>
             </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">密码</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="邮箱密码或旧名册生日密码"
-                type="password"
-                value={password}
-              />
-            </label>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <CloudButton disabled={submitting} type="submit" variant="seal">
-                {submitting ? '正在处理...' : mode === 'login' ? '进入问云小院' : '注册并进入小院'}
-              </CloudButton>
-              {mode === 'login' ? (
-                <button className="text-sm font-semibold text-[#6f8f8b]" onClick={() => setMode('forgot')} type="button">
-                  忘记密码，用绑定邮箱找回
+
+            <label>
+              <span>密码</span>
+              <div className="login-input-with-icon">
+                <KeyRound className="h-4 w-4" />
+                <input onChange={(event) => setPassword(event.target.value)} placeholder={loginKind === 'legacy' && mode === 'login' ? '生日年份或编号密码' : '请输入密码'} type={passwordVisible ? 'text' : 'password'} value={password} />
+                <button aria-label={passwordVisible ? '隐藏密码' : '显示密码'} onClick={() => setPasswordVisible((current) => !current)} type="button">
+                  {passwordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
-              ) : null}
+              </div>
+            </label>
+
+            {mode === 'login' ? (
+              <div className="login-form-row">
+                <label className="login-remember-check">
+                  <input type="checkbox" />
+                  <span>记住我</span>
+                </label>
+                <button className="login-plain-button" onClick={() => setMode('forgot')} type="button">
+                  忘记密码？
+                </button>
+              </div>
+            ) : null}
+
+            <button className="interaction-primary-button login-main-button" disabled={submitting} type="submit">
+              {submitting ? '正在处理...' : mode === 'login' ? '登录小院' : '注册并进入小院'}
+            </button>
+
+            <div className="login-switch-row">
+              <span>{mode === 'login' ? '还没有小院账号？' : '已有小院账号？'}</span>
+              <button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')} type="button">
+                {mode === 'login' ? '立即注册' : '返回登录'}
+              </button>
             </div>
           </form>
         ) : null}
 
-        <div className="mt-6 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4 text-sm leading-7 text-[#526461]">
-          新用户按“邮箱 + 密码”直接注册登录；旧名册同门可用 001 这类短编号登录，密码优先使用出生年份，没有年份时使用短编号本身。001 已绑定超级管理员邮箱，需使用该邮箱账号当前密码。请在 Supabase 后台关闭邮箱确认，否则注册后会被 Supabase 拦住。
+        <div className="login-tip-card">
+          <div>
+            <Smartphone className="h-5 w-5" />
+            <strong>温馨提示</strong>
+          </div>
+          <p>旧编号账号可使用 001 这类短编号登录；新用户请使用邮箱和密码注册。无法登录时，请先确认账号是否已绑定真实邮箱。</p>
         </div>
-      </ScrollPanel>
-    </PageShell>
+      </aside>
+    </section>
   )
 }

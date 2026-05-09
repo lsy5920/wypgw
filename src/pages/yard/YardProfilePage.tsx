@@ -1,9 +1,9 @@
-﻿import { KeyRound, Mail, Save, ShieldCheck, UserRound } from 'lucide-react'
-import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CloudButton } from '../../components/CloudButton'
-import { ScrollPanel } from '../../components/ScrollPanel'
-import { SectionTitle } from '../../components/SectionTitle'
+import { KeyRound, Mail, Save, ShieldCheck, UserRound } from 'lucide-react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { StatusNotice } from '../../components/StatusNotice'
+import { YardPageBanner, YardPaperCard, YardStatusPill } from '../../components/YardGuofengFrame'
+import { genderOptions } from '../../data/siteContent'
+import { getFriendlyErrorMessage } from '../../lib/errorMessage'
 import {
   bindMyEmail,
   fetchMyAccountSecurity,
@@ -22,7 +22,6 @@ import type {
   ProfileUpdateInput,
   RosterProfileUpdateInput
 } from '../../lib/types'
-import { genderOptions } from '../../data/siteContent'
 
 // 这个常量保存资料表单初始值，返回值用于页面加载前兜底。
 const initialForm: ProfileUpdateInput = {
@@ -65,11 +64,11 @@ const initialRosterForm: RosterProfileUpdateInput = {
 
 // 这个函数把账号邮箱转成中文展示，入参是账号安全信息，返回值是页面显示的账号文字。
 function formatAccountEmail(account: AccountSecurityInfo): string {
-  // 这里把旧编号内部邮箱隐藏起来，避免用户误以为这是自己真正邮箱。
   if (!account.email) {
     return '尚未读取到登录邮箱'
   }
 
+  // 这里把旧编号内部邮箱隐藏起来，避免用户误以为这是自己真正邮箱。
   if (account.is_legacy_email) {
     return '旧编号账号，尚未绑定真实邮箱'
   }
@@ -79,7 +78,6 @@ function formatAccountEmail(account: AccountSecurityInfo): string {
 
 // 这个函数把名帖转换成小院可编辑表单，入参是名帖，返回值是用户资料草稿。
 function createRosterForm(application: JoinApplication | null): RosterProfileUpdateInput {
-  // 这里没有名帖时返回空表单，避免页面初次加载时报错。
   if (!application) {
     return initialRosterForm
   }
@@ -111,7 +109,9 @@ export function YardProfilePage() {
   const [applications, setApplications] = useState<JoinApplication[]>([])
   // 这个状态保存名册资料表单。
   const [rosterForm, setRosterForm] = useState<RosterProfileUpdateInput>(initialRosterForm)
-  // 这个状态保存是否正在保存。
+  // 这个状态保存页面是否正在读取。
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  // 这个状态保存是否正在保存小院展示资料。
   const [saving, setSaving] = useState(false)
   // 这个状态保存名册资料是否正在保存。
   const [savingRoster, setSavingRoster] = useState(false)
@@ -128,28 +128,35 @@ export function YardProfilePage() {
   }, [applications])
 
   useEffect(() => {
-    // 这个函数读取个人资料，入参为空，返回值为空。
+    // 这个函数读取个人资料、账号安全和名帖资料，入参为空，返回值为空。
     async function loadProfile() {
-      const [result, accountResult, applicationResult] = await Promise.all([fetchMyProfile(), fetchMyAccountSecurity(), fetchMyApplications()])
+      try {
+        const [result, accountResult, applicationResult] = await Promise.all([fetchMyProfile(), fetchMyAccountSecurity(), fetchMyApplications()])
 
-      setForm({
-        avatar_url: result.data.avatar_url ?? '',
-        bio: result.data.bio ?? '',
-        is_public: result.data.is_public
-      })
+        setForm({
+          avatar_url: result.data.avatar_url ?? '',
+          bio: result.data.bio ?? '',
+          is_public: result.data.is_public
+        })
+        setAccountInfo(accountResult.data)
+        setApplications(applicationResult.data)
+        setRosterForm(createRosterForm(applicationResult.data.find((item) => ['approved', 'contacted'].includes(item.status)) ?? applicationResult.data[0] ?? null))
 
-      setAccountInfo(accountResult.data)
-      setApplications(applicationResult.data)
-      setRosterForm(createRosterForm(applicationResult.data.find((item) => ['approved', 'contacted'].includes(item.status)) ?? applicationResult.data[0] ?? null))
-
-      if (!result.ok) {
-        setNotice({ type: 'error', title: '读取失败', message: result.message })
-      } else if (!accountResult.ok) {
-        setNotice({ type: 'error', title: '读取账号失败', message: accountResult.message })
-      } else if (!applicationResult.ok) {
-        setNotice({ type: 'error', title: '读取名册失败', message: applicationResult.message })
-      } else if (result.demoMode) {
-        setNotice({ type: 'info', title: '演示模式提示', message: result.message })
+        if (!result.ok) {
+          setNotice({ type: 'error', title: '读取失败', message: result.message })
+        } else if (!accountResult.ok) {
+          setNotice({ type: 'error', title: '读取账号失败', message: accountResult.message })
+        } else if (!applicationResult.ok) {
+          setNotice({ type: 'error', title: '读取名册失败', message: applicationResult.message })
+        } else if (result.demoMode) {
+          setNotice({ type: 'info', title: '演示模式提示', message: result.message })
+        }
+      } catch (error) {
+        // 这里捕获资料读取异常，避免网络波动导致页面白屏。
+        setNotice({ type: 'error', title: '读取失败', message: getFriendlyErrorMessage(error) })
+      } finally {
+        // 这里结束加载状态，保证失败时也能看到表单和提示。
+        setLoadingProfile(false)
       }
     }
 
@@ -188,6 +195,9 @@ export function YardProfilePage() {
         title: result.ok ? '资料已保存' : '保存失败',
         message: result.message
       })
+    } catch (error) {
+      // 这里捕获保存异常，提示用户刷新或稍后重试。
+      setNotice({ type: 'error', title: '保存失败', message: getFriendlyErrorMessage(error) })
     } finally {
       setSaving(false)
     }
@@ -203,18 +213,15 @@ export function YardProfilePage() {
     }
 
     try {
-      // 这里进入保存状态，避免重复提交。
       setSavingRoster(true)
       const result = await updateMyRosterProfile({ ...rosterForm, application_id: currentApplication.id })
 
       if (result.ok && result.data) {
-        // 这里保存成功后重新读取数据库，确保页面展示的是触发器和权限函数真正落库后的结果。
+        // 这里保存成功后重新读取数据库，确保页面展示的是权限函数真正落库后的结果。
         const latestApplications = await fetchMyApplications()
 
         if (latestApplications.ok) {
-          const nextApplication =
-            latestApplications.data.find((item) => item.id === result.data?.id) ?? latestApplications.data[0] ?? result.data
-
+          const nextApplication = latestApplications.data.find((item) => item.id === result.data?.id) ?? latestApplications.data[0] ?? result.data
           setApplications(latestApplications.data)
           setRosterForm(createRosterForm(nextApplication))
         } else {
@@ -228,8 +235,10 @@ export function YardProfilePage() {
         title: result.ok ? '名册资料已保存' : '保存失败',
         message: result.message
       })
+    } catch (error) {
+      // 这里捕获名册保存异常，避免按钮一直停在保存中。
+      setNotice({ type: 'error', title: '保存失败', message: getFriendlyErrorMessage(error) })
     } finally {
-      // 这里无论成功失败都恢复按钮可用。
       setSavingRoster(false)
     }
   }
@@ -239,7 +248,6 @@ export function YardProfilePage() {
     event.preventDefault()
 
     try {
-      // 这里进入提交状态，避免用户重复点击绑定按钮。
       setBindingEmail(true)
       const result = await bindMyEmail(emailForm)
 
@@ -253,8 +261,10 @@ export function YardProfilePage() {
         title: result.ok ? '邮箱已处理' : '绑定失败',
         message: result.message
       })
+    } catch (error) {
+      // 这里捕获邮箱绑定异常，提示用户检查邮箱或稍后重试。
+      setNotice({ type: 'error', title: '绑定失败', message: getFriendlyErrorMessage(error) })
     } finally {
-      // 这里无论成功失败都结束提交状态，保证按钮恢复可用。
       setBindingEmail(false)
     }
   }
@@ -264,7 +274,6 @@ export function YardProfilePage() {
     event.preventDefault()
 
     try {
-      // 这里进入提交状态，避免用户连续提交多个密码修改请求。
       setChangingPassword(true)
       const result = await updateMyPassword(passwordForm)
 
@@ -277,194 +286,132 @@ export function YardProfilePage() {
         title: result.ok ? '密码已修改' : '修改失败',
         message: result.message
       })
+    } catch (error) {
+      // 这里捕获密码修改异常，避免用户误以为已经保存。
+      setNotice({ type: 'error', title: '修改失败', message: getFriendlyErrorMessage(error) })
     } finally {
-      // 这里无论成功失败都结束提交状态，保证按钮恢复可用。
       setChangingPassword(false)
     }
   }
 
   return (
-    <div>
-      <SectionTitle eyebrow="我的资料" title="小院名片，自己掌灯" visual="yardProfile">
-        这里可维护登录安全、小院展示资料和名册资料。名册中的道名与联系方式改动需管理员审核。
-      </SectionTitle>
+    <div className="yard-page-stack">
+      <YardPageBanner
+        indexLabel="2 我的资料"
+        subtitle="登录安全、小院名片和名册公开资料，都在这一页细细整理。"
+        title="小院名片，自己掌灯"
+        visual="yardProfile"
+      />
 
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
+      {loadingProfile ? <StatusNotice title="正在读取资料" message="请稍候，正在整理账号、安全和名册资料。" /> : null}
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        <ScrollPanel>
-          <div className="flex items-start gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#6f8f8b]/12 text-[#6f8f8b]">
+      <div className="yard-profile-layout">
+        <YardPaperCard subtitle="旧编号账号可在这里绑定真实邮箱，绑定后可用邮箱登录。" title="账号与安全">
+          <div className="yard-account-card">
+            <div className="yard-account-icon">
               <Mail className="h-5 w-5" />
-            </span>
+            </div>
             <div>
-              <h2 className="ink-title text-2xl font-bold text-[#143044]">绑定登录邮箱</h2>
-              <p className="mt-2 text-sm leading-7 text-[#526461]">旧编号账号可在这里绑定真实邮箱，绑定后可用邮箱和当前密码登录。</p>
+              <p>当前登录邮箱</p>
+              <strong>{formatAccountEmail(accountInfo)}</strong>
+              {accountInfo.pending_email ? <span>待确认邮箱：{accountInfo.pending_email}</span> : null}
             </div>
+            <YardStatusPill tone={accountInfo.is_legacy_email ? 'gold' : 'jade'}>{accountInfo.is_legacy_email ? '待绑定' : '已绑定'}</YardStatusPill>
           </div>
 
-          <div className="mt-5 rounded-lg border border-[#c9a45c]/30 bg-white/65 p-4 text-sm leading-7 text-[#526461]">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-semibold text-[#263238]">当前登录邮箱</span>
-              <span className="rounded-full bg-[#edf3ef] px-3 py-1 text-xs text-[#526461]">
-                {accountInfo.is_legacy_email ? '待绑定' : '已绑定'}
-              </span>
-            </div>
-            <p className="mt-2 break-all text-[#143044]">{formatAccountEmail(accountInfo)}</p>
-            {accountInfo.pending_email ? <p className="mt-2 break-all text-[#9e3d32]">待确认邮箱：{accountInfo.pending_email}</p> : null}
-          </div>
-
-          <form className="mt-5 grid gap-4" onSubmit={handleEmailSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">真实邮箱</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => updateEmailField(event.target.value)}
-                placeholder="例如：name@qq.com"
-                type="email"
-                value={emailForm.email}
-              />
+          <form className="yard-form-grid" onSubmit={handleEmailSubmit}>
+            <label>
+              <span>真实邮箱</span>
+              <input className="yard-input" onChange={(event) => updateEmailField(event.target.value)} placeholder="例如：name@qq.com" type="email" value={emailForm.email} />
             </label>
-            <p className="text-xs leading-6 text-[#7a6a48]">
-              如 Supabase 后台仍开启邮箱确认或安全邮箱变更，绑定可能需要到新邮箱确认；旧编号邮箱无法收信时，请关闭安全邮箱变更。
-            </p>
-            <CloudButton disabled={bindingEmail} type="submit">
+            <button className="yard-action-button" disabled={bindingEmail} type="submit">
               {bindingEmail ? '正在绑定...' : accountInfo.is_legacy_email ? '绑定邮箱' : '更换邮箱'}
               <Mail className="h-4 w-4" />
-            </CloudButton>
+            </button>
           </form>
-        </ScrollPanel>
 
-        <ScrollPanel>
-          <div className="flex items-start gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#9e3d32]/10 text-[#9e3d32]">
-              <KeyRound className="h-5 w-5" />
-            </span>
-            <div>
-              <h2 className="ink-title text-2xl font-bold text-[#143044]">修改登录密码</h2>
-              <p className="mt-2 text-sm leading-7 text-[#526461]">密码修改后会立即生效，下次进入小院请使用新密码。</p>
-            </div>
-          </div>
-
-          <div className="mt-5 flex items-start gap-3 rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/70 p-4 text-sm leading-7 text-[#526461]">
-            <ShieldCheck className="mt-1 h-4 w-4 shrink-0 text-[#6f8f8b]" />
-            <p>请设置新的登录密码。旧编号账号修改后，原来的生日或编号密码将不再作为主要登录密码。</p>
-          </div>
-
-          <form className="mt-5 grid gap-4" onSubmit={handlePasswordSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">新密码</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => updatePasswordField('new_password', event.target.value)}
-                placeholder="输入新密码"
-                type="password"
-                value={passwordForm.new_password}
-              />
+          <form className="yard-form-grid yard-form-grid-password" onSubmit={handlePasswordSubmit}>
+            <label>
+              <span>新密码</span>
+              <input className="yard-input" onChange={(event) => updatePasswordField('new_password', event.target.value)} placeholder="输入新密码" type="password" value={passwordForm.new_password} />
             </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">确认新密码</span>
-              <input
-                className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => updatePasswordField('confirm_password', event.target.value)}
-                placeholder="再输入一次新密码"
-                type="password"
-                value={passwordForm.confirm_password}
-              />
+            <label>
+              <span>确认新密码</span>
+              <input className="yard-input" onChange={(event) => updatePasswordField('confirm_password', event.target.value)} placeholder="再输入一次新密码" type="password" value={passwordForm.confirm_password} />
             </label>
-            <CloudButton disabled={changingPassword} type="submit" variant="seal">
+            <button className="yard-action-button-muted" disabled={changingPassword} type="submit">
               {changingPassword ? '正在修改...' : '修改密码'}
               <KeyRound className="h-4 w-4" />
-            </CloudButton>
+            </button>
           </form>
-        </ScrollPanel>
+        </YardPaperCard>
+
+        <YardPaperCard subtitle="这张名片用于快速查看你在小院里的公开形象。" title="小院名片">
+          <div className="yard-namecard-preview">
+            <div className="yard-namecard-avatar">
+              {form.avatar_url ? <img alt="" src={form.avatar_url} /> : <UserRound className="h-10 w-10" />}
+            </div>
+            <div>
+              <p>清风明月</p>
+              <h3>{currentApplication?.nickname ?? '尚未递帖'}</h3>
+              <span>{currentApplication?.member_role ?? '同门'} · {currentApplication?.public_region ?? currentApplication?.city ?? '未填写城市'}</span>
+            </div>
+          </div>
+          <div className="yard-quiet-callout">
+            <ShieldCheck className="h-5 w-5" />
+            <div>
+              <strong>资料公开状态</strong>
+              <p>{form.is_public ? '当前允许公开展示头像、自述和基础资料。' : '当前未公开展示小院资料，外部不会看到你的个人资料。'}</p>
+            </div>
+          </div>
+        </YardPaperCard>
       </div>
 
-      <ScrollPanel className="mt-8">
-        <div className="flex items-start gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#6f8f8b]/12 text-[#6f8f8b]">
-            <UserRound className="h-5 w-5" />
-          </span>
-          <div>
-            <h2 className="ink-title text-2xl font-bold text-[#143044]">名册资料</h2>
-            <p className="mt-2 text-sm leading-7 text-[#526461]">真实姓名、出生年份和身份只读展示；道名与联系方式改动会先送管理员审核，其他资料会直接保存。</p>
-          </div>
-        </div>
-
+      <YardPaperCard subtitle="真实姓名、出生年份和身份只读展示；道名与联系方式改动需管理员审核。" title="名册资料（公开信息）">
         {!currentApplication ? (
-          <div className="mt-5 rounded-lg border border-[#c9a45c]/30 bg-white/65 p-4 text-sm leading-7 text-[#526461]">
-            你还没有名帖。请先到问云名册递交登记，通过后会在这里维护公开资料。
+          <div className="yard-empty-box">
+            <strong>你还没有名帖</strong>
+            <p>请先到问云名册递交登记，通过后会在这里维护公开资料。</p>
           </div>
         ) : (
-          <form className="mt-5 grid gap-5" onSubmit={handleRosterSubmit}>
-            <div className="grid gap-5 md:grid-cols-3">
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">真实姓名</span>
-                <input
-                  className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
-                  disabled
-                  value={currentApplication.real_name ?? '未填写'}
-                />
+          <form className="yard-roster-form" onSubmit={handleRosterSubmit}>
+            <div className="yard-form-columns-3">
+              <label>
+                <span>真实姓名</span>
+                <input className="yard-input yard-input-readonly" disabled value={currentApplication.real_name ?? '未填写'} />
               </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">出生年份</span>
-                <input
-                  className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
-                  disabled
-                  value={currentApplication.age_range ?? '未填写'}
-                />
+              <label>
+                <span>出生年份</span>
+                <input className="yard-input yard-input-readonly" disabled value={currentApplication.age_range ?? '未填写'} />
               </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">身份</span>
-                <input
-                  className="rounded-lg border border-[#6f8f8b]/20 bg-[#edf3ef]/75 px-4 py-3 text-[#7a6a48] outline-none"
-                  disabled
-                  value={currentApplication.member_role ?? '同门'}
-                />
+              <label>
+                <span>身份</span>
+                <input className="yard-input yard-input-readonly" disabled value={currentApplication.member_role ?? '同门'} />
               </label>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">道名</span>
-                <input
-                  className="rounded-lg border border-[#c9a45c]/35 bg-white/80 px-4 py-3 outline-none focus:border-[#c9a45c]"
-                  onChange={(event) => updateRosterField('requested_nickname', event.target.value)}
-                  value={rosterForm.requested_nickname}
-                />
-                <span className="text-xs leading-6 text-[#7a6a48]">
-                  当前道名：{currentApplication.nickname}。改动后需管理员审核。
-                </span>
+            <div className="yard-form-columns-2">
+              <label>
+                <span>道名</span>
+                <input className="yard-input" onChange={(event) => updateRosterField('requested_nickname', event.target.value)} value={rosterForm.requested_nickname} />
+                <small>当前道名：{currentApplication.nickname}。改动后需管理员审核。</small>
               </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">联系方式</span>
-                <input
-                  className="rounded-lg border border-[#c9a45c]/35 bg-white/80 px-4 py-3 outline-none focus:border-[#c9a45c]"
-                  onChange={(event) => updateRosterField('requested_legacy_contact', event.target.value)}
-                  value={rosterForm.requested_legacy_contact}
-                />
-                <span className="text-xs leading-6 text-[#7a6a48]">
-                  当前联系方式：{currentApplication.legacy_contact ?? currentApplication.wechat_id}。改动后需管理员审核。
-                </span>
+              <label>
+                <span>联系方式</span>
+                <input className="yard-input" onChange={(event) => updateRosterField('requested_legacy_contact', event.target.value)} value={rosterForm.requested_legacy_contact} />
+                <small>当前联系方式：{currentApplication.legacy_contact ?? currentApplication.wechat_id}。改动后需管理员审核。</small>
               </label>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">江湖名</span>
-                <input
-                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateRosterField('jianghu_name', event.target.value)}
-                  value={rosterForm.jianghu_name}
-                />
+            <div className="yard-form-columns-3">
+              <label>
+                <span>江湖名</span>
+                <input className="yard-input" onChange={(event) => updateRosterField('jianghu_name', event.target.value)} value={rosterForm.jianghu_name} />
               </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">性别</span>
-                <select
-                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateRosterField('gender', event.target.value as MemberGender)}
-                  value={rosterForm.gender}
-                >
+              <label>
+                <span>性别</span>
+                <select className="yard-input" onChange={(event) => updateRosterField('gender', event.target.value as MemberGender)} value={rosterForm.gender}>
                   {genderOptions.map((item) => (
                     <option key={item} value={item}>
                       {item}
@@ -472,102 +419,63 @@ export function YardProfilePage() {
                   ))}
                 </select>
               </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">所在城市</span>
-                <input
-                  className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateRosterField('city', event.target.value)}
-                  value={rosterForm.city}
-                />
+              <label>
+                <span>所在城市</span>
+                <input className="yard-input" onChange={(event) => updateRosterField('city', event.target.value)} value={rosterForm.city} />
               </label>
             </div>
 
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">宣言</span>
-              <textarea
-                className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                onChange={(event) => updateRosterField('motto', event.target.value)}
-                value={rosterForm.motto}
-              />
+            <label>
+              <span>宣言</span>
+              <textarea className="yard-input yard-textarea" onChange={(event) => updateRosterField('motto', event.target.value)} value={rosterForm.motto} />
             </label>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">兴趣爱好</span>
-                <textarea
-                  className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateRosterField('hobbies', event.target.value)}
-                  placeholder="例如：写文、摄影、饮茶"
-                  value={rosterForm.hobbies}
-                />
+            <div className="yard-form-columns-2">
+              <label>
+                <span>兴趣爱好</span>
+                <textarea className="yard-input yard-textarea" onChange={(event) => updateRosterField('hobbies', event.target.value)} placeholder="例如：写文、摄影、饮茶" value={rosterForm.hobbies} />
               </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">同行期待</span>
-                <textarea
-                  className="min-h-24 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-                  onChange={(event) => updateRosterField('companion_expectation', event.target.value)}
-                  value={rosterForm.companion_expectation}
-                />
+              <label>
+                <span>同行期待</span>
+                <textarea className="yard-input yard-textarea" onChange={(event) => updateRosterField('companion_expectation', event.target.value)} value={rosterForm.companion_expectation} />
               </label>
             </div>
 
             {(currentApplication.requested_nickname || currentApplication.requested_legacy_contact) && currentApplication.requested_at ? (
-              <div className="rounded-lg border border-[#9e3d32]/20 bg-[#fff1ee]/70 p-4 text-sm leading-7 text-[#526461]">
-                已有待审核修改，提交时间：{new Date(currentApplication.requested_at).toLocaleString('zh-CN', { hour12: false })}。
-              </div>
+              <div className="yard-warning-line">已有待审核修改，提交时间：{new Date(currentApplication.requested_at).toLocaleString('zh-CN', { hour12: false })}。</div>
             ) : null}
 
-            <CloudButton disabled={savingRoster} type="submit" variant="seal">
+            <button className="yard-action-button yard-form-submit" disabled={savingRoster} type="submit">
               {savingRoster ? '正在保存...' : '保存名册资料'}
               <Save className="h-4 w-4" />
-            </CloudButton>
+            </button>
           </form>
         )}
-      </ScrollPanel>
+      </YardPaperCard>
 
-      <ScrollPanel className="mt-8">
-        <form className="grid gap-5" onSubmit={handleSubmit}>
-          <div>
-            <p className="text-sm font-semibold text-[#9e3d32]">小院展示资料</p>
-            <p className="mt-2 text-sm leading-7 text-[#526461]">这里保存头像、自述和资料公开开关；道名、城市等名册资料请在上方名册资料区维护。</p>
-          </div>
-
-          <label className="grid gap-2">
-            <span className="text-sm font-semibold">头像地址</span>
-            <input
-              className="rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 outline-none focus:border-[#6f8f8b]"
-              onChange={(event) => updateField('avatar_url', event.target.value)}
-              placeholder="可填写图片链接"
-              value={form.avatar_url}
-            />
+      <YardPaperCard subtitle="这里保存头像、自述和资料公开开关；道名、城市等名册资料请在上方维护。" title="小院展示资料">
+        <form className="yard-roster-form" onSubmit={handleSubmit}>
+          <label>
+            <span>头像地址</span>
+            <input className="yard-input" onChange={(event) => updateField('avatar_url', event.target.value)} placeholder="可填写图片链接" value={form.avatar_url} />
           </label>
 
-          <label className="grid gap-2">
-            <span className="text-sm font-semibold">小院自述</span>
-            <textarea
-              className="min-h-32 rounded-lg border border-[#6f8f8b]/25 bg-white/80 px-4 py-3 leading-7 outline-none focus:border-[#6f8f8b]"
-              onChange={(event) => updateField('bio', event.target.value)}
-              placeholder="写一点你想让同门知道的话。"
-              value={form.bio}
-            />
+          <label>
+            <span>小院自述</span>
+            <textarea className="yard-input yard-textarea" onChange={(event) => updateField('bio', event.target.value)} placeholder="写一点你想让同门知道的话。" value={form.bio} />
           </label>
 
-          <label className="flex items-start gap-3 rounded-lg border border-[#c9a45c]/35 bg-white/60 p-4">
-            <input
-              checked={form.is_public}
-              className="mt-1 h-4 w-4"
-              onChange={(event) => updateField('is_public', event.target.checked)}
-              type="checkbox"
-            />
-            <span className="text-sm leading-7 text-[#526461]">允许公开展示我的资料。公开资料只包含昵称、城市、简介和头像，不包含邮箱。</span>
+          <label className="yard-check-row">
+            <input checked={form.is_public} onChange={(event) => updateField('is_public', event.target.checked)} type="checkbox" />
+            <span>允许公开展示我的资料。公开资料只包含昵称、城市、简介和头像，不包含邮箱。</span>
           </label>
 
-          <CloudButton disabled={saving} type="submit" variant="seal">
+          <button className="yard-action-button yard-form-submit" disabled={saving} type="submit">
             {saving ? '正在保存...' : '保存资料'}
             <Save className="h-4 w-4" />
-          </CloudButton>
+          </button>
         </form>
-      </ScrollPanel>
+      </YardPaperCard>
     </div>
   )
 }

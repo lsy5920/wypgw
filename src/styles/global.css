@@ -3274,3 +3274,5777 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 这里是前台展示总稿复刻层，目标是让七个公开页面按设计稿的一屏画框、绿色页签和宣纸卡片重新排版。 */
+.public-display-page {
+  padding-top: 0.85rem !important;
+  padding-bottom: 2.25rem !important;
+}
+
+/* 这里覆盖通用页面外壳的装饰线，避免旧版标题线影响设计稿画框。 */
+.public-display-page > .gold-thread,
+.public-display-page > .page-shell-weave {
+  display: none;
+}
+
+/* 这里统一公开展示页的宣纸画框，承载除首页外的六张设计稿。 */
+.public-display-board {
+  position: relative;
+  min-height: clamp(34rem, 67vh, 42rem);
+  overflow: hidden;
+  border: 1px solid rgba(184, 137, 66, 0.52);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 16% 24%, rgba(111, 143, 139, 0.16), transparent 21rem),
+    radial-gradient(circle at 86% 18%, rgba(201, 164, 92, 0.12), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 252, 245, 0.88), rgba(246, 239, 221, 0.9)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 34rem auto;
+  box-shadow: 0 18px 44px rgba(23, 51, 50, 0.1);
+}
+
+/* 这里给画框加一层远山淡影，使空白区更接近设计稿的水墨底。 */
+.public-display-board::before {
+  position: absolute;
+  inset: auto -4% -12% -4%;
+  height: 18rem;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+  opacity: 0.22;
+}
+
+/* 这里还原设计稿顶部居中的深绿色页签。 */
+.public-design-ribbon {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  z-index: 5;
+  min-width: 13.5rem;
+  transform: translateX(-50%);
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, #0f4a45, #0b3735);
+  color: #fff8e8;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.1rem, 1.35vw, 1.45rem);
+  font-weight: 700;
+  line-height: 2.35rem;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 61, 62, 0.22);
+}
+
+/* 这里统一公开展示页纸卡角标，用很轻的金色折角还原设计稿纸张细节。 */
+.public-card-corner {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-color: rgba(201, 164, 92, 0.54);
+}
+
+.public-card-corner-left-top {
+  top: 1rem;
+  left: 1rem;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.public-card-corner-right-top {
+  top: 1rem;
+  right: 1rem;
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.public-card-corner-left-bottom {
+  bottom: 1rem;
+  left: 1rem;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.public-card-corner-right-bottom {
+  right: 1rem;
+  bottom: 1rem;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+/* 这里重写首页为设计稿第一张的山门首屏，入口卡固定居中贴近底部。 */
+.home-display-design-hero {
+  min-height: clamp(39rem, 86vh, 49rem);
+  margin: 0 auto;
+  border-bottom: 0;
+}
+
+.home-display-design-hero .site-hero-image {
+  object-position: center 44%;
+}
+
+.home-display-design-hero .site-hero-art {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.18) 52%, rgba(242, 236, 218, 0.65)),
+    radial-gradient(circle at 78% 22%, rgba(201, 164, 92, 0.18), transparent 9rem);
+}
+
+.home-display-design-hero .site-hero-overlay {
+  background: linear-gradient(90deg, rgba(255, 250, 240, 0.32), rgba(255, 250, 240, 0.08) 48%, rgba(255, 250, 240, 0.18));
+}
+
+.home-display-design-hero .site-hero-content {
+  display: flex;
+  min-height: clamp(39rem, 86vh, 49rem);
+  max-width: 1440px;
+  align-items: center;
+  justify-content: center;
+  padding: 7.4rem 1.5rem 8.5rem;
+}
+
+.home-display-design-hero .site-hero-copy {
+  display: flex;
+  max-width: 46rem;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+
+.home-display-design-hero .brand-mark {
+  width: 4.2rem;
+  height: 4.2rem;
+  margin-bottom: 0.7rem;
+}
+
+.home-display-design-hero .site-hero-copy > p {
+  margin-bottom: 0.9rem;
+  border-color: rgba(201, 164, 92, 0.46);
+  background: rgba(255, 252, 245, 0.88);
+  color: #9e3d32;
+  font-size: 1.04rem;
+}
+
+.home-display-design-hero h1 {
+  color: #073f3f;
+  font-size: clamp(4.8rem, 9vw, 8.8rem);
+  line-height: 0.95;
+  text-shadow: 0 9px 24px rgba(23, 51, 50, 0.18);
+}
+
+.home-display-design-hero .site-hero-copy div:not(.hero-proof-grid) {
+  margin-top: 1rem;
+  color: #40524f;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.home-display-design-hero .hero-proof-grid {
+  position: absolute;
+  bottom: 2.15rem;
+  left: 50%;
+  width: min(78rem, calc(100% - 7rem));
+  max-width: none;
+  margin: 0;
+  transform: translateX(-50%);
+  border-color: rgba(201, 164, 92, 0.46);
+  background: rgba(255, 252, 245, 0.88);
+  box-shadow: 0 16px 34px rgba(23, 51, 50, 0.14);
+}
+
+.home-display-design-hero .hero-proof-card {
+  min-height: 7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-color: rgba(201, 164, 92, 0.28);
+}
+
+.home-display-design-hero .hero-proof-card:hover {
+  background: rgba(246, 239, 221, 0.68);
+}
+
+.home-display-design-hero .hero-proof-card p {
+  color: #40524f;
+  font-size: clamp(0.92rem, 1vw, 1.04rem);
+}
+
+/* 这里还原立派金典页的左卷轴和右正文纸卡。 */
+.canon-reference-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  min-height: inherit;
+  padding: 5rem clamp(2rem, 5vw, 5rem) 2.75rem;
+}
+
+.canon-scroll-menu {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+.canon-scroll-paper {
+  width: min(100%, 12.2rem);
+  min-height: 20.5rem;
+  padding: 2.2rem 1rem;
+  border-right: 1px solid rgba(139, 95, 43, 0.42);
+  border-left: 1px solid rgba(139, 95, 43, 0.42);
+  background:
+    linear-gradient(90deg, rgba(120, 79, 39, 0.08), transparent 18%, transparent 82%, rgba(120, 79, 39, 0.08)),
+    rgba(250, 244, 230, 0.86);
+  box-shadow: inset 0 0 24px rgba(120, 79, 39, 0.1), 0 14px 26px rgba(23, 51, 50, 0.08);
+  text-align: center;
+}
+
+.canon-scroll-paper h2 {
+  margin-bottom: 1rem;
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.canon-scroll-paper nav {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.canon-scroll-paper a {
+  min-height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #526461;
+  font-size: 0.98rem;
+  line-height: 2.25rem;
+  text-decoration: none;
+}
+
+.canon-scroll-paper a.is-active,
+.canon-scroll-paper a:hover {
+  border-color: rgba(201, 164, 92, 0.52);
+  background: rgba(255, 250, 240, 0.8);
+  color: #7f432a;
+}
+
+.canon-scroll-rod {
+  width: 13.5rem;
+  height: 0.72rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5d3b25, #b88a4d 18%, #6b472b 52%, #2f3230 100%);
+  box-shadow: 0 4px 12px rgba(23, 51, 50, 0.18);
+}
+
+.canon-scroll-tassel {
+  width: 0.72rem;
+  height: 3.4rem;
+  border-radius: 999px 999px 45% 45%;
+  background: linear-gradient(180deg, #6b2f25, #b85a3f 54%, #5d2a23);
+  box-shadow: 0 7px 14px rgba(80, 34, 28, 0.2);
+}
+
+.canon-paper-card {
+  position: relative;
+  min-height: 27.4rem;
+  padding: clamp(2.2rem, 4vw, 3rem) clamp(2.2rem, 5vw, 4rem);
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.88);
+  box-shadow: 0 18px 36px rgba(23, 51, 50, 0.1);
+}
+
+.canon-paper-card h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #132f31;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(2.4rem, 3.5vw, 3.45rem);
+  font-weight: 800;
+}
+
+.canon-paper-card h1 span {
+  display: inline-flex;
+  min-width: 2rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #b8473f;
+  color: #fff8e8;
+  font-size: 0.82rem;
+  line-height: 1.1;
+  writing-mode: vertical-rl;
+}
+
+.canon-banner-image {
+  width: 100%;
+  height: 6.35rem;
+  margin-top: 1.5rem;
+  object-fit: cover;
+  object-position: center 36%;
+  opacity: 0.88;
+}
+
+.canon-text-flow {
+  max-width: 48rem;
+  margin-top: 1.35rem;
+  color: #40524f;
+  font-size: 0.98rem;
+  line-height: 2.15;
+}
+
+.canon-text-flow p + p {
+  margin-top: 0.55rem;
+}
+
+.canon-ink-lines {
+  display: grid;
+  max-width: 42rem;
+  gap: 0.62rem;
+  margin-top: 1.2rem;
+}
+
+.canon-ink-lines i {
+  height: 0.13rem;
+  border-radius: 999px;
+  background: rgba(120, 96, 72, 0.2);
+}
+
+/* 这里还原山门介绍页的三张宣纸卡片。 */
+.about-reference-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.1rem, 2vw, 1.7rem);
+  align-items: stretch;
+  padding: 4.9rem clamp(2rem, 5vw, 4rem) 2.25rem;
+}
+
+.about-reference-card {
+  position: relative;
+  min-height: 25rem;
+  overflow: hidden;
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.86);
+  box-shadow: 0 16px 30px rgba(23, 51, 50, 0.09);
+  text-align: center;
+}
+
+.about-card-cloud-mark {
+  width: 5rem;
+  height: 1.25rem;
+  margin: 1.5rem auto 0.65rem;
+  border-top: 2px solid rgba(201, 164, 92, 0.32);
+  border-bottom: 1px solid rgba(201, 164, 92, 0.2);
+  border-radius: 50%;
+}
+
+.about-reference-card h1 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.8rem, 2.5vw, 2.55rem);
+  font-weight: 800;
+}
+
+.about-reference-card p {
+  margin-top: 0.45rem;
+  color: #40524f;
+  font-size: 1rem;
+}
+
+.about-reference-image {
+  width: calc(100% - 3rem);
+  height: 12.6rem;
+  margin: 1.25rem auto 0;
+  object-fit: cover;
+  opacity: 0.86;
+}
+
+.about-card-lines {
+  display: grid;
+  width: 62%;
+  gap: 0.42rem;
+  margin: 1.1rem auto 0;
+}
+
+.about-card-lines i {
+  height: 0.16rem;
+  border-radius: 999px;
+  background: rgba(120, 96, 72, 0.14);
+}
+
+.about-structure-chart {
+  display: grid;
+  justify-items: center;
+  margin: 1.55rem auto 0;
+  padding-inline: 1.4rem;
+}
+
+.structure-root,
+.structure-node-grid span {
+  min-width: 4.8rem;
+  border: 1px solid rgba(201, 164, 92, 0.46);
+  border-radius: 5px;
+  background: rgba(246, 239, 221, 0.82);
+  color: #40524f;
+  font-size: 0.95rem;
+  line-height: 2.05rem;
+  text-align: center;
+}
+
+.structure-root {
+  color: #7f432a;
+  font-weight: 700;
+}
+
+.structure-branches {
+  width: 73%;
+  height: 2.8rem;
+  border-top: 1px solid rgba(120, 96, 72, 0.32);
+  border-right: 1px solid rgba(120, 96, 72, 0.22);
+  border-left: 1px solid rgba(120, 96, 72, 0.22);
+}
+
+.structure-node-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+/* 这里还原门派公告页的左公告和右列表。 */
+.announcement-reference-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  padding: 4.8rem clamp(2rem, 5vw, 4rem) 2.25rem;
+}
+
+.announcement-feature-card,
+.announcement-list-card {
+  min-height: 24rem;
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.88);
+  box-shadow: 0 16px 32px rgba(23, 51, 50, 0.09);
+}
+
+.announcement-feature-card {
+  position: relative;
+  padding: 2rem 2.2rem 1.5rem;
+}
+
+.announcement-red-label {
+  display: inline-flex;
+  border-radius: 4px;
+  background: #b8473f;
+  color: #fff8e8;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.95rem;
+  padding-inline: 0.9rem;
+}
+
+.announcement-feature-card h1 {
+  max-width: 29rem;
+  margin-top: 1.1rem;
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.45rem, 2.25vw, 2.05rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.announcement-feature-card h1 em {
+  display: inline-flex;
+  margin-left: 0.45rem;
+  border-radius: 3px;
+  background: #b8473f;
+  color: #fff8e8;
+  font-size: 0.75rem;
+  font-style: normal;
+  line-height: 1.35rem;
+  padding-inline: 0.45rem;
+  vertical-align: middle;
+}
+
+.announcement-feature-card time {
+  display: block;
+  margin-top: 0.75rem;
+  color: #526461;
+  font-size: 0.92rem;
+}
+
+.announcement-feature-card p {
+  max-width: 26rem;
+  margin-top: 0.75rem;
+  color: #526461;
+  line-height: 1.9;
+}
+
+.announcement-feature-image {
+  position: absolute;
+  right: 0;
+  bottom: 1.6rem;
+  left: 0;
+  width: 100%;
+  height: 8.8rem;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0.62;
+}
+
+.announcement-dots {
+  position: absolute;
+  right: 0;
+  bottom: 1rem;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.announcement-dots i {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: rgba(120, 96, 72, 0.35);
+}
+
+.announcement-dots i.is-active {
+  background: #7f432a;
+}
+
+.announcement-list-card {
+  padding: 1.7rem 2rem 1.5rem;
+}
+
+.announcement-list-card h2 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.announcement-list-rows {
+  display: grid;
+  margin-top: 1rem;
+}
+
+.announcement-list-row {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr) 7.2rem;
+  gap: 0.7rem;
+  align-items: center;
+  min-height: 3rem;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.24);
+  color: #40524f;
+  text-decoration: none;
+}
+
+.announcement-list-row span {
+  border-radius: 4px;
+  background: #0f4a45;
+  color: #fff8e8;
+  font-size: 0.82rem;
+  line-height: 1.55rem;
+  text-align: center;
+}
+
+.announcement-list-row strong {
+  overflow: hidden;
+  font-size: 0.98rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-list-row time {
+  color: #7a6a48;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.announcement-more-button {
+  width: min(13rem, 100%);
+  margin: 1.3rem auto 0;
+}
+
+/* 这里还原问云雅集页的三张活动卡和右侧须知。 */
+.events-reference-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.32fr);
+  gap: 1.4rem;
+  padding: 4.8rem clamp(1.8rem, 4vw, 3.2rem) 2.2rem;
+}
+
+.events-reference-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.event-reference-card,
+.events-note-card-reference {
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.9);
+  box-shadow: 0 16px 30px rgba(23, 51, 50, 0.09);
+}
+
+.event-reference-card {
+  min-height: 26rem;
+  padding: 0.82rem 0.82rem 1rem;
+}
+
+.event-card-image-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 12.2rem;
+  border-radius: 6px;
+}
+
+.event-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.88;
+}
+
+.event-card-image-wrap span {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  border-radius: 4px;
+  background: #0f4a45;
+  color: #fff8e8;
+  font-size: 0.78rem;
+  line-height: 1.55rem;
+  padding-inline: 0.62rem;
+}
+
+.event-reference-card h1 {
+  min-height: 3.25rem;
+  margin-top: 0.9rem;
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.22rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.event-reference-card dl {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+  color: #526461;
+  font-size: 0.82rem;
+}
+
+.event-reference-card dl div {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: 0.4rem;
+  align-items: start;
+}
+
+.event-reference-card svg {
+  width: 0.88rem;
+  height: 0.88rem;
+  margin-top: 0.18rem;
+  color: #a86f33;
+}
+
+.event-card-button {
+  width: 100%;
+  margin-top: 0.9rem;
+  min-height: 2.55rem;
+}
+
+.events-note-card-reference {
+  min-height: 26rem;
+  padding: 2rem 1.55rem;
+}
+
+.events-note-card-reference h2 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.events-note-card-reference ul {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  padding-left: 1.2rem;
+  color: #526461;
+  line-height: 1.8;
+}
+
+.events-note-button {
+  width: 100%;
+  margin-top: 1.6rem;
+}
+
+/* 这里还原联系山门页的红色印信、联系列表和安全提示。 */
+.contact-reference-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.34fr) minmax(0, 1fr) minmax(16rem, 0.48fr);
+  gap: 1.35rem;
+  align-items: stretch;
+  padding: 4.9rem clamp(1.8rem, 4vw, 3.5rem) 2.35rem;
+}
+
+.contact-seal-panel,
+.contact-info-card,
+.contact-safe-card {
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.88);
+  box-shadow: 0 16px 30px rgba(23, 51, 50, 0.09);
+}
+
+.contact-seal-panel {
+  display: grid;
+  min-height: 24rem;
+  place-items: center;
+  align-content: center;
+  gap: 0.35rem;
+  color: #b8473f;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+}
+
+.contact-seal-panel strong,
+.contact-seal-panel span {
+  display: block;
+  width: 5.1rem;
+  border: 4px solid #b8473f;
+  color: #b8473f;
+  text-align: center;
+}
+
+.contact-seal-panel span {
+  border-bottom: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 3.2rem;
+}
+
+.contact-seal-panel span:last-child {
+  border-top: 0;
+  border-bottom: 4px solid #b8473f;
+}
+
+.contact-seal-panel strong {
+  border-block: 0;
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1.05;
+  writing-mode: vertical-rl;
+}
+
+.contact-info-card {
+  min-height: 24rem;
+  padding: 2.15rem 2.4rem;
+}
+
+.contact-info-card h1 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 800;
+}
+
+.contact-info-card > p {
+  margin-top: 0.8rem;
+  color: #526461;
+  line-height: 1.9;
+}
+
+.contact-info-card dl {
+  display: grid;
+  gap: 0.78rem;
+  margin-top: 1.55rem;
+}
+
+.contact-info-card dl div {
+  display: grid;
+  grid-template-columns: 1.5rem 5.2rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  color: #40524f;
+}
+
+.contact-info-card svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #0f4a45;
+}
+
+.contact-info-card dt {
+  color: #263238;
+  font-weight: 700;
+}
+
+.contact-info-card dd {
+  color: #526461;
+}
+
+.contact-safe-card {
+  position: relative;
+  min-height: 24rem;
+  overflow: hidden;
+  padding: 2rem 1.6rem;
+}
+
+.contact-safe-card h2 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.contact-safe-card ul {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.2rem;
+  padding-left: 1.2rem;
+  color: #526461;
+  line-height: 1.8;
+}
+
+.contact-safe-image {
+  position: absolute;
+  right: -2.4rem;
+  bottom: -1.8rem;
+  width: 17rem;
+  height: 10rem;
+  object-fit: cover;
+  opacity: 0.52;
+}
+
+/* 这里还原 404 页面横向空山归路画面。 */
+.notfound-reference-page .public-display-board {
+  min-height: clamp(28rem, 58vh, 35rem);
+}
+
+.notfound-reference-scene {
+  position: relative;
+  z-index: 2;
+  min-height: inherit;
+  overflow: hidden;
+}
+
+.notfound-scene-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0.74;
+}
+
+.notfound-reference-scene::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, rgba(255, 252, 245, 0.42), rgba(255, 252, 245, 0.18) 56%, rgba(255, 252, 245, 0.34));
+}
+
+.notfound-copy {
+  position: relative;
+  z-index: 3;
+  width: min(36rem, 58%);
+  padding: 9.5rem 0 0 clamp(3rem, 8vw, 7rem);
+}
+
+.notfound-copy h1 {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(2.4rem, 4.3vw, 4rem);
+  font-weight: 900;
+}
+
+.notfound-copy p {
+  margin-top: 0.9rem;
+  color: #40524f;
+  font-size: 1.1rem;
+}
+
+.notfound-return-button {
+  margin-top: 2rem;
+  min-width: 10rem;
+}
+
+.notfound-reference-scene > strong {
+  position: absolute;
+  z-index: 2;
+  right: 25%;
+  bottom: 2.6rem;
+  color: rgba(120, 96, 72, 0.16);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(6rem, 12vw, 11rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.notfound-crane {
+  position: absolute;
+  z-index: 3;
+  top: 5.4rem;
+  right: 9%;
+  width: 7rem;
+  height: 4rem;
+  border-top: 2px solid rgba(127, 67, 42, 0.44);
+  border-radius: 50%;
+  transform: rotate(-16deg);
+}
+
+.notfound-crane::before,
+.notfound-crane::after {
+  position: absolute;
+  top: 0.15rem;
+  content: "";
+  border-top: 2px solid rgba(127, 67, 42, 0.38);
+  border-radius: 50%;
+}
+
+.notfound-crane::before {
+  left: 1rem;
+  width: 4rem;
+  height: 2rem;
+  transform: rotate(26deg);
+}
+
+.notfound-crane::after {
+  right: -2.2rem;
+  width: 3.8rem;
+  height: 2.2rem;
+  transform: rotate(-28deg);
+}
+
+/* 这里给公开展示页做移动端完整适配，避免画框和三栏卡片在窄屏溢出。 */
+@media (max-width: 1024px) {
+  .public-display-board {
+    min-height: auto;
+  }
+
+  .canon-reference-layout,
+  .announcement-reference-layout,
+  .events-reference-layout,
+  .contact-reference-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-reference-grid,
+  .events-reference-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .canon-scroll-menu {
+    order: 2;
+  }
+
+  .canon-scroll-paper {
+    width: min(100%, 28rem);
+  }
+
+  .contact-seal-panel {
+    min-height: 13rem;
+  }
+}
+
+@media (max-width: 785px) {
+  .home-display-design-hero .site-hero-content {
+    min-height: 42rem;
+    padding: 6.6rem 1rem 11rem;
+  }
+
+  .home-display-design-hero h1 {
+    font-size: clamp(4rem, 18vw, 5.4rem);
+  }
+
+  .home-display-design-hero .hero-proof-grid {
+    bottom: 1rem;
+    width: calc(100% - 2rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-display-design-hero .hero-proof-card {
+    min-height: 4.9rem;
+  }
+
+  .home-display-design-hero .hero-proof-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .public-display-page {
+    padding-inline: 0.75rem !important;
+    padding-top: 0.4rem !important;
+  }
+
+  .public-design-ribbon {
+    min-width: 10.8rem;
+    font-size: 1rem;
+    line-height: 2.05rem;
+  }
+
+  .canon-reference-layout,
+  .about-reference-grid,
+  .announcement-reference-layout,
+  .events-reference-layout,
+  .contact-reference-layout {
+    padding: 3.6rem 1rem 1rem;
+  }
+
+  .canon-paper-card,
+  .announcement-feature-card,
+  .announcement-list-card,
+  .contact-info-card,
+  .contact-safe-card {
+    padding: 1.4rem;
+  }
+
+  .announcement-list-row {
+    grid-template-columns: 3.6rem minmax(0, 1fr);
+  }
+
+  .announcement-list-row time {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .contact-info-card dl div {
+    grid-template-columns: 1.35rem minmax(0, 1fr);
+  }
+
+  .contact-info-card dd {
+    grid-column: 2;
+  }
+
+  .notfound-copy {
+    width: auto;
+    padding: 7rem 1.4rem 9rem;
+  }
+
+  .notfound-reference-scene > strong {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+
+/* 这里是导航栏复刻层，把全站顶部导航压成设计稿里的薄宣纸条。 */
+header:has(.site-header-bar) {
+  top: 1rem;
+  right: 1.35rem;
+  left: 1.35rem;
+}
+
+.site-header-bar {
+  width: min(1500px, calc(100vw - 2.7rem)) !important;
+  height: 3.95rem !important;
+  padding: 0 0.9rem !important;
+  border: 1px solid rgba(184, 137, 66, 0.32) !important;
+  border-radius: 8px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.96), rgba(250, 244, 232, 0.91)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 360px 360px !important;
+  box-shadow: 0 12px 28px rgba(23, 51, 50, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+}
+
+.site-header-shell::before {
+  right: 1rem;
+  bottom: 0.35rem;
+  left: 1rem;
+  opacity: 0.44;
+}
+
+.site-header-bar .brand-mark {
+  width: 3.05rem;
+  height: 3.05rem;
+  border-radius: 8px;
+}
+
+.site-header-bar a:first-child {
+  gap: 0.7rem;
+}
+
+.site-header-bar a:first-child p:first-child {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.site-header-bar a:first-child p:last-child {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+}
+
+.site-header-bar nav {
+  gap: 0.15rem !important;
+}
+
+.site-header-bar nav a {
+  min-height: 2.35rem;
+  border-radius: 6px;
+  padding: 0.55rem 0.78rem !important;
+  color: #173332 !important;
+  font-size: 0.86rem !important;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.site-header-bar nav a[aria-current="page"] {
+  background: #0f3d3e !important;
+  color: #fffaf0 !important;
+  box-shadow: 0 8px 17px rgba(15, 61, 62, 0.2);
+}
+
+.site-header-bar .cloud-button {
+  min-height: 2.65rem;
+  border-radius: 8px;
+  padding-inline: 1.1rem;
+  font-size: 0.9rem;
+}
+
+.mobile-menu-button-inline {
+  width: 2.65rem;
+  height: 2.65rem;
+  flex-basis: 2.65rem;
+}
+
+@media (max-width: 1280px) {
+  .site-header-bar {
+    height: 3.8rem !important;
+  }
+}
+
+@media (max-width: 785px) {
+  header:has(.site-header-bar) {
+    top: 0.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .site-header-bar {
+    width: calc(100vw - 1.5rem) !important;
+    height: 3.75rem !important;
+  }
+
+  .site-header-bar .brand-mark {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+}
+
+/* 这里修正公开页外层：取消设计稿说明用的大背景卡片，只保留真实内容卡片与整页水墨背景融合。 */
+.public-display-page {
+  max-width: none !important;
+  padding: 7.35rem clamp(1.25rem, 3vw, 3.4rem) 2.25rem !important;
+}
+
+.public-display-board {
+  min-height: calc(100vh - 9.5rem);
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.public-display-board::before,
+.public-design-ribbon {
+  display: none !important;
+}
+
+.canon-reference-layout,
+.about-reference-grid,
+.announcement-reference-layout,
+.events-reference-layout,
+.contact-reference-layout {
+  padding-top: 1.1rem !important;
+}
+
+.notfound-reference-page .public-display-board {
+  min-height: calc(100vh - 9.5rem);
+}
+
+/* 这里让导航栏取消独立白色背景，变成浮在同一张水墨背景上的透明导航。 */
+.site-header-bar {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.site-header-shell::before {
+  display: none !important;
+}
+
+.site-header-bar nav a {
+  background: transparent;
+  text-shadow: 0 1px 0 rgba(255, 250, 240, 0.72);
+}
+
+.site-header-bar nav a[aria-current="page"] {
+  background: #0f3d3e !important;
+  text-shadow: none;
+}
+
+.site-header-bar .cloud-button {
+  box-shadow: 0 12px 24px rgba(15, 61, 62, 0.2);
+}
+
+/* 这里补充完整金典正文样式，让原有长文在新纸卡中稳定阅读。 */
+.canon-full-content {
+  display: grid;
+  gap: 1.8rem;
+  margin-top: 1.6rem;
+}
+
+.canon-full-section {
+  scroll-margin-top: 6rem;
+}
+
+.canon-full-section h2 {
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.26);
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  font-weight: 800;
+}
+
+.canon-paragraph-gap {
+  height: 0.5rem;
+}
+
+@media (max-width: 785px) {
+  .public-display-page {
+    padding: 5.95rem 0.9rem 1.25rem !important;
+  }
+
+  .canon-reference-layout,
+  .about-reference-grid,
+  .announcement-reference-layout,
+  .events-reference-layout,
+  .contact-reference-layout {
+    padding-top: 0.75rem !important;
+  }
+}
+
+/* 这里是首页重写复刻层：不再使用旧首页组件，整屏直接由山门水墨图、中央标题和底部入口组成。 */
+.home-reference-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  color: #173332;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 250, 240, 0.48), transparent 25rem),
+    linear-gradient(180deg, rgba(248, 241, 224, 0.55), rgba(233, 242, 238, 0.92));
+}
+
+/* 这里放置首页主背景图，让导航、标题和入口都融入同一张图，而不是分成独立区域。 */
+.home-reference-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  filter: saturate(0.94) contrast(1.04);
+}
+
+/* 这里添加轻雾遮罩，保证大标题和底部入口在复杂山水图上仍然清楚。 */
+.home-reference-soft-mask {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.5), rgba(255, 250, 240, 0.08) 32%, rgba(255, 250, 240, 0.22) 65%, rgba(236, 245, 241, 0.78)),
+    radial-gradient(circle at 50% 45%, rgba(255, 250, 240, 0.2), rgba(255, 250, 240, 0.58) 34%, transparent 60%);
+}
+
+/* 这里复刻设计稿中部标题组的位置和层级。 */
+.home-reference-center {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  padding: clamp(8.2rem, 16vh, 10.5rem) 1.5rem 0;
+  text-align: center;
+}
+
+.home-reference-seal {
+  width: clamp(3.4rem, 5vw, 4.55rem);
+  height: clamp(3.4rem, 5vw, 4.55rem);
+  margin-bottom: 0.72rem;
+  box-shadow: 0 12px 28px rgba(127, 51, 71, 0.2);
+}
+
+.home-reference-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.55rem;
+  border: 1px solid rgba(201, 164, 92, 0.45);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.82);
+  color: #9e3d32;
+  font-size: clamp(0.98rem, 1.2vw, 1.12rem);
+  font-weight: 800;
+  padding-inline: 1.35rem;
+  box-shadow: 0 12px 24px rgba(23, 51, 50, 0.1);
+}
+
+.home-reference-center h1 {
+  margin-top: 0.8rem;
+  color: #073f3f;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(5.2rem, 10vw, 9.4rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.95;
+  text-shadow: 0 10px 28px rgba(23, 51, 50, 0.2);
+}
+
+.home-reference-subtitle {
+  margin-top: 0.65rem;
+  color: rgba(23, 51, 50, 0.72);
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.25rem, 2.1vw, 1.75rem);
+}
+
+/* 这里复刻设计稿底部五个入口卡片，并保证整排真正水平居中。 */
+.home-reference-entry-row {
+  position: absolute;
+  z-index: 3;
+  right: 50%;
+  bottom: clamp(2.3rem, 7vh, 4.8rem);
+  display: grid;
+  width: min(72rem, calc(100% - 7rem));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  transform: translateX(50%);
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.9), rgba(250, 244, 232, 0.82)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 320px 320px;
+  box-shadow: 0 18px 36px rgba(23, 51, 50, 0.14);
+  backdrop-filter: blur(5px);
+}
+
+.home-reference-entry-card {
+  display: grid;
+  min-height: 6.9rem;
+  place-items: center;
+  align-content: center;
+  gap: 0.28rem;
+  border-right: 1px solid rgba(201, 164, 92, 0.24);
+  color: #40524f;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-reference-entry-card:last-child {
+  border-right: 0;
+}
+
+.home-reference-entry-card:hover {
+  background: rgba(246, 239, 221, 0.6);
+  transform: translateY(-0.12rem);
+}
+
+.home-reference-entry-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.home-reference-entry-card strong {
+  color: #40524f;
+  font-size: 1.03rem;
+  font-weight: 800;
+}
+
+.home-reference-entry-card span {
+  color: #7a6a48;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+/* 这里适配手机端：首页仍然先看到山门标题，再看到完整入口。 */
+@media (max-width: 785px) {
+  .home-reference-page {
+    min-height: 48rem;
+  }
+
+  .home-reference-center {
+    padding-top: 6.7rem;
+  }
+
+  .home-reference-center h1 {
+    font-size: clamp(4.3rem, 18vw, 5.9rem);
+  }
+
+  .home-reference-entry-row {
+    bottom: 1rem;
+    width: calc(100% - 2rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-reference-entry-card {
+    min-height: 5.3rem;
+    border-bottom: 1px solid rgba(201, 164, 92, 0.22);
+  }
+
+  .home-reference-entry-card:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .home-reference-entry-card:last-child {
+    grid-column: 1 / -1;
+    border-bottom: 0;
+  }
+}
+
+/* 这里是其他前台展示页的彻底重建外壳：页面直接铺在水墨背景上，不再套旧的大背景卡片。 */
+.public-art-page {
+  position: relative;
+  min-height: calc(100vh - 5.8rem);
+  overflow: hidden;
+  padding: 7.15rem clamp(1.2rem, 3vw, 3.6rem) 2.35rem;
+  color: #263238;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.34), rgba(237, 245, 241, 0.72)),
+    #f7f0df;
+}
+
+/* 这里给其他页面铺一张整幅水墨背景，替代旧外层卡片和竖向重复纸纹。 */
+.public-art-page::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/backgrounds/public-display-backdrop-v2.png") center top / cover no-repeat;
+  opacity: 0.9;
+}
+
+/* 这里叠加轻雾遮罩，让背景和导航融为一体，同时保证正文纸卡文字清楚。 */
+.public-art-page::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 253, 247, 0.68), transparent 29rem),
+    linear-gradient(180deg, rgba(255, 253, 247, 0.22), rgba(255, 253, 247, 0.06) 54%, rgba(237, 245, 241, 0.2));
+  opacity: 0.92;
+}
+
+/* 这里限制展示页内容宽度，保持和设计稿七宫格中的页面比例一致。 */
+.public-art-page > .canon-reference-layout,
+.public-art-page > .about-reference-grid,
+.public-art-page > .announcement-reference-layout,
+.public-art-page > .events-reference-layout,
+.public-art-page > .contact-reference-layout,
+.public-art-page > .notfound-reference-scene {
+  width: min(100%, 1380px);
+  margin-inline: auto;
+}
+
+/* 这里取消旧布局为了页签预留的上边距，所有页面不再显示“第几页”标签。 */
+.public-art-page .canon-reference-layout,
+.public-art-page .about-reference-grid,
+.public-art-page .announcement-reference-layout,
+.public-art-page .events-reference-layout,
+.public-art-page .contact-reference-layout {
+  padding-top: 0 !important;
+}
+
+/* 这里让立派金典长文可以自然向下阅读，并让左侧卷轴停在导航下方。 */
+.canon-art-page {
+  overflow: visible;
+}
+
+.canon-art-page .canon-reference-layout {
+  align-items: start;
+  min-height: auto;
+  padding-bottom: 2rem;
+}
+
+.canon-art-page .canon-scroll-menu {
+  position: sticky;
+  top: 6.3rem;
+}
+
+.canon-art-page .canon-paper-card {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.94), rgba(250, 244, 232, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 30rem auto;
+}
+
+/* 这里让其他展示页的主要卡片只保留设计稿里的内容纸卡，不再出现外层画框。 */
+.about-art-page .about-reference-card,
+.announcement-art-page .announcement-feature-card,
+.announcement-art-page .announcement-list-card,
+.events-art-page .event-reference-card,
+.events-art-page .events-note-card-reference,
+.contact-art-page .contact-seal-panel,
+.contact-art-page .contact-info-card,
+.contact-art-page .contact-safe-card {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.9), rgba(250, 244, 232, 0.84)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 30rem auto;
+}
+
+/* 这里让 404 页面占据整张画面，不再依赖旧公共画框。 */
+.notfound-art-page {
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+.notfound-art-page .notfound-reference-scene {
+  min-height: calc(100vh - 9.35rem);
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 这里继续保证小屏幕按设计稿纵向叠放，不会产生横向滚动。 */
+@media (max-width: 1024px) {
+  .public-art-page .canon-reference-layout,
+  .public-art-page .announcement-reference-layout,
+  .public-art-page .events-reference-layout,
+  .public-art-page .contact-reference-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .public-art-page .about-reference-grid,
+  .public-art-page .events-reference-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .canon-art-page .canon-scroll-menu {
+    position: relative;
+    top: auto;
+    order: 2;
+  }
+}
+
+@media (max-width: 785px) {
+  .public-art-page {
+    padding: 5.95rem 0.9rem 1.35rem;
+  }
+
+  .public-art-page .canon-reference-layout,
+  .public-art-page .about-reference-grid,
+  .public-art-page .announcement-reference-layout,
+  .public-art-page .events-reference-layout,
+  .public-art-page .contact-reference-layout {
+    padding-inline: 0 !important;
+  }
+
+  .notfound-art-page .notfound-reference-scene {
+    min-height: 35rem;
+  }
+}
+
+/* 这里是前台互动四页的重新复刻层，页面不再使用旧的标题卡和通用内容壳。 */
+.interaction-reference-page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 5.35rem clamp(0.9rem, 2vw, 1.45rem) 1.25rem;
+  color: #263238;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(255, 252, 245, 0.9), transparent 20rem),
+    radial-gradient(circle at 82% 20%, rgba(201, 164, 92, 0.14), transparent 18rem),
+    linear-gradient(180deg, #f8f1e4 0%, #f7efe0 56%, #f3ead8 100%);
+}
+
+/* 这里给互动页铺底部远山与边角竹影，贴近设计稿四张页面的统一背景。 */
+.interaction-reference-page::before {
+  position: absolute;
+  inset: auto -4rem 0 -4rem;
+  z-index: -3;
+  height: min(25rem, 48vh);
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+  opacity: 0.48;
+}
+
+/* 这里叠加细宣纸纹理，避免大面积浅色背景显得生硬。 */
+.interaction-reference-page::after {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+  background:
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 31rem auto,
+    repeating-linear-gradient(90deg, rgba(120, 96, 72, 0.035) 0 1px, transparent 1px 7rem);
+  opacity: 0.86;
+}
+
+/* 这里把互动页的顶部导航恢复成设计稿中的薄宣纸条。 */
+.wenyun-shell:has(.roster-reference-page) .site-header-bar,
+.wenyun-shell:has(.quiz-reference-page) .site-header-bar,
+.wenyun-shell:has(.lantern-reference-page) .site-header-bar {
+  height: 3.85rem !important;
+  border: 1px solid rgba(184, 137, 66, 0.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.96), rgba(250, 244, 232, 0.9)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 320px 320px !important;
+  box-shadow: 0 12px 24px rgba(23, 51, 50, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* 这里让登录页按设计稿独立成半屏山水，不显示前台导航和页脚。 */
+.wenyun-shell:has(.login-reference-page) header:has(.site-header-bar),
+.wenyun-shell:has(.interaction-reference-page) .site-footer {
+  display: none;
+}
+
+/* 这里去掉互动页隐藏页脚后遗留的底部留白，让整屏都由复刻画布接管。 */
+html:has(.interaction-reference-page) {
+  background: #f3ead8;
+}
+
+html:has(.login-reference-page) {
+  background: #f7efe0;
+}
+
+body:has(.interaction-reference-page) {
+  background: #f3ead8;
+}
+
+body:has(.login-reference-page) {
+  background: #f7efe0;
+}
+
+/* 这里关闭全站默认的底部淡绿氛围层，避免复刻页下方露出不属于设计稿的色块。 */
+body:has(.interaction-reference-page)::before,
+body:has(.interaction-reference-page)::after {
+  display: none;
+}
+
+.wenyun-shell:has(.interaction-reference-page) {
+  padding-bottom: 0 !important;
+  background: #f3ead8;
+}
+
+.wenyun-shell:has(.interaction-reference-page) > main {
+  min-height: 100vh;
+  background: #f3ead8;
+}
+
+.wenyun-shell:has(.login-reference-page),
+.wenyun-shell:has(.login-reference-page) > main {
+  background: #f7efe0;
+}
+
+/* 这里控制互动页主体宽度，桌面端像设计稿一样横向铺满但不贴边。 */
+.interaction-paper-shell {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1510px);
+  margin-inline: auto;
+}
+
+/* 这里统一互动页标题栏布局，左侧页面名，右侧放搜索、进度或提示。 */
+.interaction-page-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  min-height: 4.8rem;
+  margin-bottom: 1rem;
+}
+
+/* 这里统一标题簇的图标、主标题和副标题。 */
+.interaction-title-cluster {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 1rem;
+}
+
+.interaction-title-icon {
+  width: 4.1rem;
+  height: 4.1rem;
+  border-color: rgba(201, 164, 92, 0.34);
+  background: rgba(255, 252, 245, 0.72);
+}
+
+.interaction-title-cluster h1 {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.06;
+}
+
+.interaction-title-cluster p {
+  margin-top: 0.35rem;
+  color: #7f432a;
+  font-size: 0.98rem;
+}
+
+/* 这里统一卡片金角边框，普通内容块直接复用这个纸卡结构。 */
+.interaction-corner-card {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(184, 137, 66, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.91), rgba(250, 244, 232, 0.84)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 28rem auto;
+  box-shadow: 0 16px 34px rgba(23, 51, 50, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+/* 这里画左上和右下金线角，模拟设计稿里的装订边。 */
+.interaction-corner-card::before,
+.interaction-corner-card::after {
+  position: absolute;
+  z-index: 1;
+  width: 2.5rem;
+  height: 2.5rem;
+  pointer-events: none;
+  content: "";
+  opacity: 0.78;
+}
+
+.interaction-corner-card::before {
+  top: 0.52rem;
+  left: 0.52rem;
+  border-top: 1px solid rgba(201, 164, 92, 0.68);
+  border-left: 1px solid rgba(201, 164, 92, 0.68);
+}
+
+.interaction-corner-card::after {
+  right: 0.52rem;
+  bottom: 0.52rem;
+  border-right: 1px solid rgba(201, 164, 92, 0.68);
+  border-bottom: 1px solid rgba(201, 164, 92, 0.68);
+}
+
+/* 这里保证提示条不撑破页面宽度。 */
+.interaction-notice-row {
+  width: min(100%, 52rem);
+  margin-bottom: 0.85rem;
+}
+
+/* 这里统一搜索框、输入框和筛选按钮的紧凑样式。 */
+.interaction-search-box,
+.roster-filter-strip select,
+.interaction-filter-pill,
+.interaction-count-pill {
+  min-height: 2.6rem;
+  border: 1px solid rgba(120, 96, 72, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.78);
+  color: #40524f;
+}
+
+.interaction-search-box {
+  display: flex;
+  width: min(30rem, 42vw);
+  align-items: center;
+  gap: 0.65rem;
+  padding-inline: 1rem;
+}
+
+.interaction-search-box input {
+  min-height: 2.4rem;
+  border: 0;
+  background: transparent;
+  outline: 0;
+}
+
+.interaction-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding-inline: 1rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.interaction-filter-pill.is-active,
+.interaction-filter-pill:hover {
+  border-color: rgba(15, 61, 62, 0.24);
+  background: #0f3d3e;
+  color: #fff8e8;
+}
+
+.interaction-count-pill {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 1rem;
+  color: #6f5e42;
+  font-size: 0.88rem;
+}
+
+/* 这里统一主按钮、朱砂按钮和普通描边按钮。 */
+.interaction-primary-button,
+.interaction-seal-button,
+.interaction-ghost-button,
+.interaction-small-link {
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 8px;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.interaction-primary-button {
+  border: 1px solid rgba(15, 61, 62, 0.18);
+  background: linear-gradient(135deg, #0f3d3e, #235c56);
+  color: #fff8e8;
+  box-shadow: 0 12px 22px rgba(15, 61, 62, 0.18);
+}
+
+.interaction-seal-button {
+  border: 1px solid rgba(184, 71, 63, 0.2);
+  background: linear-gradient(135deg, #a53b31, #7f2e2a);
+  color: #fff8e8;
+  box-shadow: 0 12px 24px rgba(184, 71, 63, 0.2);
+}
+
+.interaction-ghost-button,
+.interaction-small-link {
+  border: 1px solid rgba(120, 96, 72, 0.28);
+  background: rgba(255, 252, 245, 0.82);
+  color: #40524f;
+}
+
+.interaction-primary-button:hover,
+.interaction-seal-button:hover,
+.interaction-ghost-button:hover,
+.interaction-small-link:hover {
+  transform: translateY(-0.08rem);
+}
+
+.interaction-primary-button:disabled,
+.interaction-seal-button:disabled,
+.interaction-ghost-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* 这里统一空状态和登录提示卡，让功能状态不破坏设计稿秩序。 */
+.interaction-empty-card,
+.interaction-state-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid rgba(201, 164, 92, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.7);
+  color: #40524f;
+  line-height: 1.75;
+}
+
+.interaction-empty-card {
+  min-height: 10rem;
+  justify-content: center;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.interaction-state-card {
+  margin-bottom: 0.8rem;
+  padding: 0.9rem 1rem;
+}
+
+.interaction-state-card strong {
+  display: block;
+  color: #173332;
+}
+
+.interaction-state-card p {
+  margin-top: 0.2rem;
+  font-size: 0.88rem;
+}
+
+.interaction-state-icon {
+  width: 2.3rem;
+  height: 2.3rem;
+}
+
+/* 这里开始复刻问云名册页面。 */
+.roster-wall-card {
+  padding: 1.35rem 1.45rem 1.2rem;
+}
+
+.roster-filter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.68rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.roster-filter-strip select {
+  width: auto;
+  min-width: 6.8rem;
+  padding-inline: 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.roster-card-row {
+  display: grid;
+  grid-auto-columns: minmax(15.8rem, 1fr);
+  grid-auto-flow: column;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.2rem 0.15rem 0.7rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+.roster-reference-card {
+  position: relative;
+  display: grid;
+  min-height: 18.4rem;
+  align-content: start;
+  justify-items: center;
+  padding: 1.05rem 1rem 0.95rem;
+  scroll-snap-align: start;
+  border: 1px solid rgba(201, 164, 92, 0.36);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.7);
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(23, 51, 50, 0.07);
+}
+
+.roster-card-avatar {
+  width: 5rem;
+  height: 5rem;
+  overflow: hidden;
+  border: 1px solid rgba(201, 164, 92, 0.42);
+  border-radius: 999px;
+  background: #f6efdd;
+}
+
+.roster-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.86) contrast(1.02);
+}
+
+.roster-card-body {
+  min-width: 0;
+}
+
+.roster-card-code {
+  margin-top: 0.55rem;
+  color: #7f432a;
+  font-size: 0.8rem;
+}
+
+.roster-reference-card h2 {
+  margin-top: 0.2rem;
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.roster-card-meta,
+.roster-card-location,
+.roster-card-tags {
+  color: #6f5e42;
+  font-size: 0.82rem;
+}
+
+.roster-card-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.25rem;
+}
+
+.roster-card-motto {
+  margin-top: 0.55rem;
+  color: #40524f;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.roster-card-tags {
+  margin-top: 0.35rem;
+}
+
+.roster-card-button {
+  align-self: end;
+  min-height: 2.1rem;
+  margin-top: 0.75rem;
+  border: 1px solid rgba(120, 96, 72, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 252, 245, 0.76);
+  color: #40524f;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding-inline: 1rem;
+}
+
+.roster-submit-card {
+  margin-top: 1rem;
+  padding: 1.25rem 1.45rem 1.35rem;
+}
+
+.roster-submit-heading {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.interaction-section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #7f432a;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.roster-submit-heading h2 {
+  margin-top: 0.25rem;
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.roster-submit-heading p:not(.interaction-section-kicker) {
+  margin-top: 0.35rem;
+  color: #6f5e42;
+  font-size: 0.88rem;
+}
+
+.roster-submit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  color: #7f432a;
+  font-size: 0.86rem;
+}
+
+.roster-submit-actions > span {
+  display: inline-flex;
+  min-height: 2.6rem;
+  align-items: center;
+  border: 1px solid rgba(201, 164, 92, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.72);
+  padding-inline: 0.9rem;
+  font-weight: 800;
+}
+
+.roster-step-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.roster-step-card {
+  border: 1px solid rgba(201, 164, 92, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.62);
+  padding: 0.9rem;
+}
+
+.roster-step-card span {
+  color: #a53b31;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.roster-step-card strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: #173332;
+  font-size: 1rem;
+}
+
+.roster-step-card p {
+  margin-top: 0.25rem;
+  color: #6f5e42;
+  font-size: 0.82rem;
+}
+
+.roster-reference-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.roster-reference-form label,
+.lantern-reference-form label,
+.login-reference-form label {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+  color: #40524f;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.roster-reference-form input,
+.roster-reference-form textarea,
+.lantern-reference-form input,
+.lantern-reference-form textarea,
+.login-reference-form input {
+  min-height: 2.65rem;
+  border: 1px solid rgba(120, 96, 72, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.74);
+  color: #263238;
+  padding: 0.55rem 0.75rem;
+  outline: 0;
+}
+
+.roster-wide-field,
+.roster-rule-check {
+  grid-column: span 2;
+}
+
+.roster-gender-field {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.8rem;
+  border: 0;
+  padding: 0;
+}
+
+.roster-gender-field legend {
+  color: #40524f;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.roster-gender-field label,
+.roster-rule-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.roster-gender-field input,
+.roster-rule-check input {
+  width: auto;
+  min-height: auto;
+}
+
+.roster-form-submit {
+  grid-column: 4;
+  align-self: end;
+}
+
+/* 这里开始复刻问心考核页面。 */
+.quiz-page-heading {
+  grid-template-columns: minmax(16rem, 1fr) minmax(18rem, 0.82fr) minmax(8rem, 0.22fr);
+}
+
+.quiz-progress-card,
+.quiz-score-card {
+  border: 1px solid rgba(201, 164, 92, 0.36);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.76);
+  padding: 0.85rem 1rem;
+  box-shadow: 0 12px 24px rgba(23, 51, 50, 0.07);
+}
+
+.quiz-progress-card span,
+.quiz-score-card span {
+  color: #40524f;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.quiz-progress-card div {
+  height: 0.55rem;
+  margin-top: 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(120, 96, 72, 0.12);
+}
+
+.quiz-progress-card i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #0f3d3e;
+  transition: width 0.24s ease;
+}
+
+.quiz-score-card {
+  display: grid;
+  justify-items: center;
+}
+
+.quiz-score-card strong {
+  margin-top: 0.2rem;
+  color: #173332;
+  font-size: 1.35rem;
+}
+
+.quiz-reference-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13.5rem, 0.32fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.quiz-main-column {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.quiz-question-card {
+  min-height: 20.7rem;
+  padding: 1.7rem 1.85rem;
+}
+
+.quiz-question-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: #7f432a;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.quiz-question-head small {
+  color: #6f5e42;
+  font-size: 0.78rem;
+}
+
+.quiz-question-card h2 {
+  margin-top: 0.9rem;
+  color: #173332;
+  font-size: clamp(1.15rem, 1.5vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.75;
+}
+
+.quiz-option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 1rem;
+  margin-top: 1.2rem;
+}
+
+.quiz-option-button {
+  display: grid;
+  min-height: 3.85rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(120, 96, 72, 0.23);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.76);
+  color: #40524f;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+}
+
+.quiz-option-button span {
+  font-weight: 900;
+}
+
+.quiz-option-button em {
+  min-width: 0;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.quiz-option-button.is-selected {
+  border-color: rgba(15, 61, 62, 0.3);
+  background: linear-gradient(135deg, #0f3d3e, #245f58);
+  color: #fff8e8;
+  box-shadow: 0 12px 22px rgba(15, 61, 62, 0.17);
+}
+
+.quiz-analysis-card {
+  display: grid;
+  min-height: 6.8rem;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  overflow: hidden;
+  padding: 1.1rem 1.3rem;
+}
+
+.quiz-analysis-card p {
+  color: #173332;
+  font-weight: 900;
+}
+
+.quiz-analysis-card span {
+  display: block;
+  margin-top: 0.45rem;
+  color: #40524f;
+  font-size: 0.88rem;
+  line-height: 1.75;
+}
+
+.quiz-analysis-card img {
+  position: absolute;
+  right: 0;
+  bottom: -2.8rem;
+  width: 24rem;
+  height: 10rem;
+  object-fit: cover;
+  opacity: 0.52;
+}
+
+.quiz-side-column {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.quiz-rule-card,
+.quiz-state-card {
+  padding: 1.25rem 1.15rem;
+}
+
+.quiz-rule-card h2,
+.quiz-state-card h2 {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.quiz-rule-card ul {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  padding-left: 1.1rem;
+  color: #40524f;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.quiz-state-card strong {
+  display: block;
+  margin-top: 0.85rem;
+  color: #173332;
+  font-size: 1.35rem;
+}
+
+.quiz-state-card p {
+  margin-top: 0.45rem;
+  color: #40524f;
+  font-size: 0.88rem;
+}
+
+.quiz-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.quiz-pass-card {
+  display: flex;
+  width: min(100%, 46rem);
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(126, 147, 104, 0.38);
+  border-radius: 8px;
+  background: rgba(241, 247, 233, 0.86);
+  color: #314434;
+  padding: 0.85rem 1rem;
+}
+
+/* 这里开始复刻云灯留言页面。 */
+.lantern-page-heading {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.lantern-page-note {
+  max-width: 28rem;
+  color: #6f5e42;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.lantern-reference-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.78fr) minmax(0, 1.22fr);
+  gap: 1.35rem;
+  align-items: start;
+}
+
+.lantern-form-card {
+  padding: 1.6rem 1.65rem;
+}
+
+.lantern-form-heading p,
+.lantern-wall-heading p {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.75rem;
+  font-weight: 900;
+}
+
+.lantern-form-heading span {
+  display: block;
+  margin-top: 0.35rem;
+  color: #6f5e42;
+}
+
+.lantern-reference-form {
+  display: grid;
+  gap: 0.95rem;
+  margin-top: 1rem;
+}
+
+.lantern-reference-form textarea {
+  min-height: 8.8rem;
+  resize: vertical;
+}
+
+.lantern-reference-form small {
+  justify-self: end;
+  color: #9a8a6f;
+  font-size: 0.78rem;
+}
+
+.lantern-mood-field {
+  display: grid;
+  gap: 0.65rem;
+  border: 0;
+  padding: 0;
+}
+
+.lantern-mood-field legend {
+  color: #40524f;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.lantern-mood-field div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.lantern-mood-field button {
+  display: inline-flex;
+  min-height: 2.2rem;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(120, 96, 72, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 252, 245, 0.72);
+  color: #40524f;
+  padding-inline: 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.lantern-mood-field button span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #c9a45c;
+}
+
+.lantern-mood-field button.is-active {
+  border-color: rgba(15, 61, 62, 0.24);
+  background: #0f3d3e;
+  color: #fff8e8;
+}
+
+.lantern-anonymous-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.2rem;
+  align-items: center;
+  border: 1px solid rgba(201, 164, 92, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.68);
+  padding: 0.75rem 0.9rem;
+}
+
+.lantern-anonymous-switch strong {
+  color: #173332;
+}
+
+.lantern-anonymous-switch em {
+  display: block;
+  margin-top: 0.2rem;
+  color: #6f5e42;
+  font-size: 0.78rem;
+  font-style: normal;
+}
+
+.lantern-anonymous-switch input {
+  position: absolute;
+  right: 1rem;
+  width: 3rem;
+  height: 1.6rem;
+  opacity: 0;
+}
+
+.lantern-anonymous-switch i {
+  justify-self: end;
+  width: 3rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: rgba(120, 96, 72, 0.26);
+}
+
+.lantern-anonymous-switch i::before {
+  display: block;
+  width: 1.22rem;
+  height: 1.22rem;
+  margin: 0.19rem;
+  content: "";
+  border-radius: 999px;
+  background: #fffaf0;
+  box-shadow: 0 4px 10px rgba(23, 51, 50, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.lantern-anonymous-switch input:checked + i {
+  background: #6f8f8b;
+}
+
+.lantern-anonymous-switch input:checked + i::before {
+  transform: translateX(1.38rem);
+}
+
+.lantern-submit-button {
+  width: 100%;
+  min-height: 3.1rem;
+  margin-top: 0.3rem;
+}
+
+.lantern-wall-card {
+  position: relative;
+  z-index: 2;
+  min-height: 32rem;
+}
+
+.lantern-wall-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.lantern-wall-heading h2 {
+  margin-top: 0.2rem;
+  color: #6f5e42;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.lantern-wall-heading span {
+  border: 1px solid rgba(201, 164, 92, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 252, 245, 0.7);
+  color: #6f5e42;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.lantern-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.lantern-message-card {
+  min-height: 9.5rem;
+  border: 1px solid rgba(201, 164, 92, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.88), rgba(250, 244, 232, 0.72)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 22rem auto;
+  padding: 0.9rem;
+  box-shadow: 0 12px 22px rgba(23, 51, 50, 0.06);
+}
+
+.lantern-message-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.lantern-card-icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 999px;
+}
+
+.lantern-message-head strong {
+  color: #40524f;
+  font-size: 0.86rem;
+}
+
+.lantern-message-head span {
+  color: #7f432a;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.lantern-message-card p {
+  margin-top: 0.65rem;
+  color: #40524f;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.lantern-like-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+  color: #9a8a6f;
+  font-size: 0.76rem;
+}
+
+.lantern-more-button {
+  display: inline-flex;
+  min-width: 8.5rem;
+  min-height: 2.55rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 1rem auto 0;
+  border: 1px solid rgba(120, 96, 72, 0.26);
+  border-radius: 999px;
+  background: rgba(255, 252, 245, 0.76);
+  color: #40524f;
+  font-weight: 800;
+}
+
+.lantern-more-button svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.lantern-bottom-scene {
+  position: absolute;
+  right: 14%;
+  bottom: -5rem;
+  z-index: 0;
+  width: min(32rem, 45vw);
+  height: 13rem;
+  object-fit: cover;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 这里开始复刻问云小院登录页面。 */
+.login-reference-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(24rem, 0.75fr);
+  gap: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 0;
+  background: #f7efe0;
+}
+
+.login-reference-page::before,
+.login-reference-page::after {
+  display: none;
+}
+
+.login-reference-scene {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #e8eee9;
+}
+
+.login-reference-scene > img {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.86) contrast(1.04);
+}
+
+.login-scene-mask {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(15, 61, 62, 0.08), rgba(255, 250, 240, 0.12) 50%, rgba(255, 250, 240, 0.68)),
+    radial-gradient(circle at 52% 36%, rgba(255, 250, 240, 0.26), transparent 20rem);
+}
+
+.login-scene-title {
+  position: absolute;
+  top: 13%;
+  right: 15%;
+  display: grid;
+  justify-items: center;
+  color: #5b4632;
+}
+
+.login-scene-title h1 {
+  writing-mode: vertical-rl;
+  color: #5b4632;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(4rem, 7vw, 6.4rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.05;
+  text-shadow: 0 8px 20px rgba(23, 51, 50, 0.16);
+}
+
+.login-scene-title p {
+  margin-top: 1.2rem;
+  writing-mode: vertical-rl;
+  color: #6f5e42;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.login-scene-seal {
+  position: absolute;
+  right: -3.6rem;
+  top: 8rem;
+}
+
+.login-reference-card {
+  align-self: center;
+  width: min(100% - 3rem, 33rem);
+  margin: 2rem auto;
+  padding: 1.65rem 1.75rem;
+}
+
+.login-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 1.15rem;
+  border-bottom: 1px solid rgba(120, 96, 72, 0.22);
+}
+
+.login-mode-tabs button {
+  display: inline-flex;
+  min-height: 3.1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #6f5e42;
+  font-weight: 800;
+}
+
+.login-mode-tabs button.is-active {
+  border-bottom-color: #0f3d3e;
+  color: #173332;
+}
+
+.login-reference-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.login-form-title h2 {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.55rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.login-form-title p {
+  margin-top: 0.35rem;
+  color: #6f5e42;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.login-input-with-icon {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(120, 96, 72, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.74);
+  padding-inline: 0.75rem;
+}
+
+.login-input-with-icon input {
+  border: 0;
+  background: transparent;
+  padding-inline: 0;
+}
+
+.login-input-with-icon button {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #40524f;
+}
+
+.login-form-row,
+.login-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.login-remember-check {
+  display: inline-flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem !important;
+}
+
+.login-remember-check input {
+  width: auto;
+  min-height: auto;
+}
+
+.login-plain-button,
+.login-switch-row button {
+  border: 0;
+  background: transparent;
+  color: #a53b31;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.login-main-button {
+  width: 100%;
+  min-height: 3.25rem;
+  margin-top: 0.2rem;
+}
+
+.login-switch-row {
+  justify-content: center;
+  color: #6f5e42;
+  font-size: 0.9rem;
+}
+
+.login-tip-card {
+  margin-top: 1.35rem;
+  border: 1px solid rgba(201, 164, 92, 0.32);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.62);
+  padding: 1rem;
+}
+
+.login-tip-card div {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #173332;
+}
+
+.login-tip-card p {
+  margin-top: 0.55rem;
+  color: #40524f;
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+
+/* 这里保证互动页在平板和手机上完整适配，不出现横向溢出。 */
+@media (max-width: 1024px) {
+  .interaction-page-heading,
+  .quiz-page-heading,
+  .lantern-page-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .interaction-search-box {
+    width: 100%;
+  }
+
+  .quiz-reference-layout,
+  .lantern-reference-layout,
+  .login-reference-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .login-reference-scene {
+    min-height: 30rem;
+  }
+
+  .login-reference-scene > img {
+    min-height: 30rem;
+  }
+
+  .login-scene-title {
+    top: 5rem;
+    right: 12%;
+  }
+}
+
+@media (max-width: 785px) {
+  .interaction-reference-page {
+    overflow: visible;
+    padding: 5.45rem 0.75rem 1rem;
+  }
+
+  .interaction-title-cluster {
+    gap: 0.75rem;
+  }
+
+  .interaction-title-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  .interaction-title-cluster h1 {
+    font-size: clamp(1.85rem, 9vw, 2.45rem);
+  }
+
+  .roster-wall-card,
+  .roster-submit-card,
+  .quiz-question-card,
+  .quiz-analysis-card,
+  .quiz-rule-card,
+  .quiz-state-card,
+  .lantern-form-card,
+  .login-reference-card {
+    padding: 1rem;
+  }
+
+  .roster-card-row {
+    grid-auto-columns: minmax(13.8rem, 82vw);
+  }
+
+  .roster-submit-heading,
+  .quiz-action-bar,
+  .login-form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .roster-step-grid,
+  .roster-reference-form,
+  .quiz-option-grid,
+  .lantern-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .roster-filter-strip {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roster-filter-strip select,
+  .roster-filter-strip .interaction-filter-pill,
+  .roster-filter-strip .interaction-count-pill {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .roster-submit-actions {
+    justify-content: flex-start;
+  }
+
+  .roster-submit-actions > span,
+  .roster-submit-actions .interaction-filter-pill {
+    width: 100%;
+  }
+
+  .roster-wide-field,
+  .roster-rule-check,
+  .roster-form-submit {
+    grid-column: auto;
+  }
+
+  .quiz-analysis-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quiz-analysis-card img {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: 7rem;
+    margin-top: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .lantern-bottom-scene {
+    display: none;
+  }
+
+  .login-reference-page {
+    padding: 0;
+  }
+
+  .login-reference-scene {
+    min-height: 26rem;
+  }
+
+  .login-reference-scene > img {
+    min-height: 26rem;
+  }
+
+  .login-scene-title {
+    top: 3rem;
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  .login-scene-title h1,
+  .login-scene-title p {
+    writing-mode: horizontal-tb;
+  }
+
+  .login-scene-seal {
+    position: static;
+    margin-top: 0.8rem;
+  }
+
+  .login-reference-card {
+    width: calc(100% - 1.4rem);
+    max-width: calc(100vw - 1.4rem);
+    margin: -2rem auto 1rem;
+  }
+
+  .login-mode-tabs button {
+    min-width: 0;
+    padding-inline: 0.25rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .login-input-with-icon {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+/* 这里开始是问云小院用户后台按设计稿重写的专用样式，六个页面共用同一套应用外壳。 */
+.yard-reference-shell {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  padding: clamp(0.8rem, 1.4vw, 1.35rem);
+  color: #263238;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.72), rgba(243, 237, 224, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat,
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 34rem auto;
+}
+
+/* 这里进入小院时关闭全站旧底部绿雾，避免截图底部露出与设计稿无关的色带。 */
+body:has(.yard-reference-shell),
+#root:has(.yard-reference-shell) {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.72), rgba(243, 237, 224, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat,
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 34rem auto;
+}
+
+body:has(.yard-reference-shell)::after {
+  display: none;
+}
+
+body:has(.yard-reference-shell)::before {
+  display: none;
+}
+
+/* 这里绘制桌面端左侧深青小院导航，宽度贴近设计稿里的窄栏。 */
+.yard-reference-sidebar {
+  position: fixed;
+  top: clamp(0.8rem, 1.4vw, 1.35rem);
+  bottom: clamp(0.8rem, 1.4vw, 1.35rem);
+  left: clamp(0.8rem, 1.4vw, 1.35rem);
+  z-index: 40;
+  display: none;
+  width: 7.3rem;
+  overflow: hidden;
+  border: 1px solid rgba(248, 223, 157, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 61, 62, 0.98), rgba(47, 111, 104, 0.94)),
+    url("/assets/guofeng-ui-20260509/ornaments/bamboo-ink-border.png") center bottom / 130% auto no-repeat;
+  box-shadow: 0 22px 42px rgba(23, 51, 50, 0.24);
+}
+
+/* 这里给侧栏增加淡山纹，避免深色栏变成单调色块。 */
+.yard-reference-sidebar::after,
+.yard-mobile-drawer::after {
+  position: absolute;
+  inset: auto -2rem -0.5rem -2rem;
+  height: 12rem;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-ribbon-ornament.png") center / contain no-repeat;
+  opacity: 0.22;
+}
+
+/* 这里控制小院侧栏品牌区，让印章和名称竖向紧凑排列。 */
+.yard-reference-brand {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  padding: 1rem 0.5rem 0.8rem;
+  color: #fffaf0;
+  text-align: center;
+}
+
+.yard-reference-brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+}
+
+.yard-reference-brand strong {
+  color: #fffaf0;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.12rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+/* 这里统一侧栏导航链接的高度、图标和激活态。 */
+.yard-reference-nav {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.4rem 0.55rem;
+}
+
+.yard-reference-nav-link,
+.yard-reference-admin-link,
+.yard-reference-foot-link {
+  display: grid;
+  min-height: 2.45rem;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.38rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: rgba(255, 250, 240, 0.88);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.yard-reference-nav-link {
+  padding: 0 0.46rem;
+}
+
+.yard-reference-nav-link svg,
+.yard-reference-admin-link svg,
+.yard-reference-foot-link svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.yard-reference-nav-link-active {
+  border-color: rgba(248, 223, 157, 0.46);
+  background: rgba(255, 250, 240, 0.94);
+  color: #0f3d3e;
+  box-shadow: 0 10px 18px rgba(7, 24, 24, 0.16);
+}
+
+.yard-reference-admin-link {
+  position: relative;
+  z-index: 2;
+  margin: 0.5rem 0.55rem 0;
+  padding: 0 0.46rem;
+  background: rgba(184, 71, 63, 0.86);
+  color: #fffaf0;
+}
+
+.yard-reference-sidebar-foot {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.8rem;
+  left: 0.55rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.yard-reference-foot-link {
+  width: 100%;
+  padding: 0 0.46rem;
+  background: rgba(255, 250, 240, 0.08);
+  text-align: left;
+}
+
+/* 这里控制桌面端内容外壳，使右侧内容像设计稿里的整张宣纸应用面板。 */
+.yard-reference-main {
+  width: 100%;
+}
+
+.yard-reference-stage {
+  min-height: calc(100vh - clamp(1.6rem, 2.8vw, 2.7rem));
+  overflow: hidden;
+  border: 1px solid rgba(184, 137, 66, 0.3);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.94), rgba(249, 242, 229, 0.9)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 31rem auto;
+  box-shadow: 0 24px 48px rgba(23, 51, 50, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.yard-reference-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  min-height: 3.15rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(184, 137, 66, 0.22);
+  background: rgba(255, 252, 245, 0.9);
+  padding: 0.45rem 0.85rem;
+  backdrop-filter: blur(8px);
+}
+
+.yard-reference-topbar-left,
+.yard-reference-topbar-right {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.55rem;
+  color: #173332;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.yard-reference-topbar-icon,
+.yard-reference-avatar {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(47, 111, 104, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.86);
+  color: #0f3d3e;
+}
+
+.yard-reference-bell-dot {
+  position: relative;
+}
+
+.yard-reference-bell-dot::after {
+  position: absolute;
+  top: 0.28rem;
+  right: 0.34rem;
+  width: 0.38rem;
+  height: 0.38rem;
+  content: "";
+  border-radius: 999px;
+  background: #b8473f;
+  box-shadow: 0 0 0 2px rgba(255, 250, 240, 0.9);
+}
+
+.yard-reference-avatar {
+  overflow: hidden;
+}
+
+.yard-reference-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.yard-reference-account {
+  max-width: 8rem;
+  overflow: hidden;
+  color: #526461;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yard-reference-content {
+  position: relative;
+  z-index: 1;
+  padding: clamp(0.95rem, 1.8vw, 1.55rem);
+}
+
+/* 这里控制手机端菜单按钮，固定在左上角便于展开侧栏。 */
+.yard-mobile-menu-button {
+  position: fixed;
+  top: 0.82rem;
+  left: 0.82rem;
+  z-index: 80;
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border: 1px solid rgba(184, 137, 66, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.94);
+  color: #0f3d3e;
+  box-shadow: 0 12px 24px rgba(23, 51, 50, 0.16);
+}
+
+.yard-mobile-drawer-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  border: 0;
+  background: rgba(15, 61, 62, 0.34);
+}
+
+.yard-mobile-drawer {
+  position: fixed;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  z-index: 90;
+  width: min(18.5rem, calc(100vw - 1.5rem));
+  overflow: hidden;
+  border: 1px solid rgba(248, 223, 157, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #0f3d3e, #2f6f68);
+  box-shadow: 0 24px 52px rgba(7, 24, 24, 0.34);
+  transform: translateX(calc(-100% - 1rem));
+  transition: transform 0.24s ease;
+}
+
+.yard-mobile-drawer-open {
+  transform: translateX(0);
+}
+
+.yard-mobile-drawer .yard-reference-nav-link,
+.yard-mobile-drawer .yard-reference-admin-link,
+.yard-mobile-drawer .yard-reference-foot-link {
+  min-height: 2.85rem;
+  font-size: 0.92rem;
+}
+
+/* 这里统一小院页面内部纵向间距。 */
+.yard-page-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+/* 这里复刻每页顶部横幅，使用素材包里的小院水墨插图。 */
+.yard-page-banner {
+  position: relative;
+  display: flex;
+  min-height: clamp(8.5rem, 16vw, 12rem);
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(184, 137, 66, 0.28);
+  border-radius: 8px;
+  background: #fffaf0;
+}
+
+.yard-page-banner-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.yard-page-banner-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.72;
+  filter: saturate(0.9) contrast(1.04) brightness(1.05);
+}
+
+.yard-page-banner-mask {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 252, 245, 0.92), rgba(255, 252, 245, 0.58) 50%, rgba(255, 252, 245, 0.22)),
+    linear-gradient(180deg, rgba(255, 252, 245, 0.18), rgba(255, 252, 245, 0.5));
+}
+
+.yard-page-banner-center .yard-page-banner-mask {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 252, 245, 0.78), rgba(255, 252, 245, 0.34) 52%, rgba(255, 252, 245, 0.14));
+}
+
+.yard-page-index-label {
+  position: absolute;
+  top: 0.55rem;
+  left: 50%;
+  z-index: 2;
+  min-width: 7.2rem;
+  transform: translateX(-50%);
+  border: 1px solid rgba(201, 164, 92, 0.58);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.92);
+  color: #7a4d23;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.75rem;
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(23, 51, 50, 0.08);
+}
+
+.yard-page-banner-content {
+  position: relative;
+  z-index: 2;
+  width: min(42rem, 72%);
+  padding: 3rem clamp(1rem, 3vw, 2.6rem) 1.3rem;
+}
+
+.yard-page-banner-content h1 {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.7rem, 3.1vw, 2.55rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.18;
+}
+
+.yard-page-banner-content p {
+  margin-top: 0.5rem;
+  color: #526461;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.yard-page-banner-action {
+  position: relative;
+  z-index: 2;
+  margin-left: auto;
+  padding: 3rem 1.3rem 1.3rem 0;
+}
+
+/* 这里统一宣纸卡片，所有小院内容块都使用同一类低圆角纸面。 */
+.yard-paper-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(184, 137, 66, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.92), rgba(250, 244, 232, 0.86)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 27rem auto;
+  box-shadow: 0 14px 28px rgba(23, 51, 50, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  padding: clamp(1rem, 1.8vw, 1.35rem);
+}
+
+.yard-paper-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.yard-paper-card h2,
+.yard-application-state-card h2,
+.yard-event-row h2,
+.yard-notice-row h2,
+.yard-lantern-row h2 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.yard-paper-card-head h2 {
+  font-size: 1.35rem;
+}
+
+.yard-paper-card-head p {
+  margin-top: 0.28rem;
+  color: #7a6a48;
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.yard-paper-card-action {
+  flex-shrink: 0;
+}
+
+/* 这里还原总览页五个统计卡片。 */
+.yard-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.yard-metric-card {
+  display: grid;
+  min-height: 8rem;
+  justify-items: center;
+  align-content: center;
+  gap: 0.25rem;
+  border: 1px solid rgba(184, 137, 66, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.76);
+  text-align: center;
+}
+
+.yard-metric-icon {
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 16px rgba(23, 51, 50, 0.08);
+}
+
+.yard-metric-card p {
+  color: #526461;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.yard-metric-card strong {
+  color: #263238;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2.3vw, 2rem);
+  line-height: 1;
+}
+
+.yard-metric-card span {
+  color: #7a6a48;
+  font-size: 0.76rem;
+}
+
+.yard-metric-card-gold {
+  background: linear-gradient(180deg, rgba(250, 238, 207, 0.8), rgba(255, 252, 245, 0.8));
+}
+
+.yard-metric-card-jade {
+  background: linear-gradient(180deg, rgba(228, 240, 235, 0.86), rgba(255, 252, 245, 0.8));
+}
+
+.yard-metric-card-seal {
+  background: linear-gradient(180deg, rgba(255, 241, 238, 0.86), rgba(255, 252, 245, 0.8));
+}
+
+.yard-metric-card-purple {
+  background: linear-gradient(180deg, rgba(240, 232, 247, 0.86), rgba(255, 252, 245, 0.8));
+}
+
+.yard-two-column,
+.yard-profile-layout,
+.yard-application-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  gap: 1rem;
+}
+
+/* 这里统一状态标签，颜色与设计稿里的审核状态保持柔和。 */
+.yard-status-pill {
+  display: inline-flex;
+  min-height: 1.55rem;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.yard-status-pill-gold {
+  background: #f8df9d;
+  color: #7a4d23;
+}
+
+.yard-status-pill-jade {
+  background: #dcece3;
+  color: #0f5a4f;
+}
+
+.yard-status-pill-seal {
+  background: #fff1ee;
+  color: #b8473f;
+}
+
+.yard-status-pill-muted {
+  background: #edf3ef;
+  color: #526461;
+}
+
+.yard-status-pill-danger {
+  background: #f8d6d0;
+  color: #9e3d32;
+}
+
+.yard-empty-box {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px dashed rgba(184, 137, 66, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.62);
+  padding: 1.2rem;
+  color: #526461;
+  line-height: 1.7;
+}
+
+.yard-empty-box strong {
+  color: #263238;
+  font-size: 1rem;
+}
+
+/* 这里统一小院操作按钮，避免各页按钮高矮不一。 */
+.yard-action-button,
+.yard-action-button-muted,
+.yard-action-button-danger,
+.yard-mini-button,
+.yard-small-link {
+  display: inline-flex;
+  min-height: 2.3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+  border-radius: 6px;
+  padding: 0.48rem 0.9rem;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.yard-action-button {
+  border: 1px solid rgba(15, 61, 62, 0.18);
+  background: #0f4a45;
+  color: #fffaf0;
+  box-shadow: 0 10px 18px rgba(15, 61, 62, 0.18);
+}
+
+.yard-action-button-muted,
+.yard-small-link {
+  border: 1px solid rgba(184, 137, 66, 0.28);
+  background: rgba(255, 250, 240, 0.86);
+  color: #7a4d23;
+}
+
+.yard-action-button-danger {
+  border: 1px solid rgba(184, 71, 63, 0.2);
+  background: #b8473f;
+  color: #fffaf0;
+}
+
+.yard-mini-button {
+  border: 1px solid rgba(184, 137, 66, 0.28);
+  background: rgba(255, 250, 240, 0.86);
+  color: #0f4a45;
+}
+
+.yard-action-button:hover,
+.yard-action-button-muted:hover,
+.yard-action-button-danger:hover,
+.yard-mini-button:hover,
+.yard-small-link:hover {
+  transform: translateY(-0.08rem);
+}
+
+.yard-action-button:disabled,
+.yard-action-button-muted:disabled,
+.yard-action-button-danger:disabled,
+.yard-mini-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.yard-action-button-full {
+  width: 100%;
+}
+
+.yard-inline-link {
+  margin-left: 0.55rem;
+  color: #b8473f;
+  font-weight: 800;
+}
+
+/* 这里控制总览提醒、资料摘要和小院名片。 */
+.yard-brief-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.yard-brief-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: start;
+  border-bottom: 1px solid rgba(184, 137, 66, 0.18);
+  padding-bottom: 0.65rem;
+}
+
+.yard-brief-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.yard-brief-row strong {
+  display: block;
+  margin-top: 0.34rem;
+  color: #263238;
+}
+
+.yard-brief-row p {
+  margin-top: 0.18rem;
+  color: #526461;
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.yard-brief-row time {
+  color: #7a6a48;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.yard-profile-card,
+.yard-namecard-preview,
+.yard-account-card,
+.yard-quiet-callout {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid rgba(184, 137, 66, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.62);
+  padding: 0.9rem;
+}
+
+.yard-profile-avatar,
+.yard-namecard-avatar,
+.yard-account-icon {
+  display: grid;
+  width: 4.2rem;
+  height: 4.2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(47, 111, 104, 0.18);
+  border-radius: 999px;
+  background: #dcece3;
+  color: #0f4a45;
+}
+
+.yard-profile-avatar img,
+.yard-namecard-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.yard-profile-card h3,
+.yard-namecard-preview h3 {
+  color: #263238;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.yard-profile-card p,
+.yard-namecard-preview p,
+.yard-namecard-preview span,
+.yard-account-card p,
+.yard-account-card span,
+.yard-quiet-callout p {
+  color: #526461;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.yard-account-card {
+  align-items: flex-start;
+}
+
+.yard-account-card strong {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: #263238;
+}
+
+.yard-account-card .yard-status-pill {
+  margin-left: auto;
+}
+
+.yard-quiet-callout {
+  margin-top: 0.9rem;
+  align-items: flex-start;
+}
+
+.yard-quiet-callout svg {
+  flex: 0 0 auto;
+  color: #c9a45c;
+}
+
+.yard-quiet-callout strong {
+  display: block;
+  color: #263238;
+}
+
+.yard-quiet-callout .yard-mini-button {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.yard-info-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.yard-info-list div {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.8rem;
+  color: #526461;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.yard-info-list dt {
+  color: #7a6a48;
+  font-weight: 800;
+}
+
+.yard-info-list dd {
+  min-width: 0;
+}
+
+/* 这里统一资料页表单控件，所有输入框保持窄边框宣纸感。 */
+.yard-form-grid,
+.yard-roster-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.yard-form-grid {
+  margin-top: 1rem;
+}
+
+.yard-form-grid-password {
+  border-top: 1px solid rgba(184, 137, 66, 0.18);
+  padding-top: 0.9rem;
+}
+
+.yard-form-columns-2,
+.yard-form-columns-3 {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.yard-form-columns-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.yard-form-columns-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.yard-form-grid label,
+.yard-roster-form label {
+  display: grid;
+  min-width: 0;
+  gap: 0.36rem;
+}
+
+.yard-form-grid label span,
+.yard-roster-form label span {
+  color: #263238;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.yard-input {
+  min-height: 2.42rem;
+  border: 1px solid rgba(184, 137, 66, 0.26);
+  border-radius: 6px;
+  background: rgba(255, 252, 245, 0.86);
+  color: #263238;
+  padding: 0.55rem 0.75rem;
+  outline: none;
+}
+
+.yard-input:focus {
+  border-color: rgba(47, 111, 104, 0.52);
+  box-shadow: 0 0 0 3px rgba(47, 111, 104, 0.12);
+}
+
+.yard-input-readonly {
+  background: rgba(237, 243, 239, 0.78);
+  color: #7a6a48;
+}
+
+.yard-textarea {
+  min-height: 5.8rem;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.yard-roster-form small {
+  color: #7a6a48;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.yard-check-row {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.7rem !important;
+  border: 1px solid rgba(184, 137, 66, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.62);
+  padding: 0.9rem;
+}
+
+.yard-check-row input {
+  margin-top: 0.2rem;
+  flex: 0 0 auto;
+}
+
+.yard-check-row span {
+  color: #526461 !important;
+  line-height: 1.7;
+}
+
+.yard-form-submit {
+  justify-self: end;
+  min-width: 9.5rem;
+}
+
+.yard-warning-line,
+.yard-progress-note {
+  border: 1px solid rgba(201, 164, 92, 0.28);
+  border-radius: 6px;
+  background: rgba(255, 246, 225, 0.62);
+  color: #7a4d23;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+/* 这里控制名帖进度、详情和文字台账。 */
+.yard-application-state-card {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.yard-application-state-card h2 {
+  font-size: 1.55rem;
+}
+
+.yard-application-state-card p,
+.yard-application-state-card span {
+  color: #526461;
+  font-size: 0.9rem;
+}
+
+.yard-progress-line {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.yard-progress-step {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  color: #9b917c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.yard-progress-step::before {
+  position: absolute;
+  top: 0.72rem;
+  right: 50%;
+  left: -50%;
+  height: 2px;
+  content: "";
+  background: rgba(184, 137, 66, 0.22);
+}
+
+.yard-progress-step:first-child::before {
+  display: none;
+}
+
+.yard-progress-step span {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #eee2cc;
+  color: #9b917c;
+}
+
+.yard-progress-step-active {
+  color: #0f4a45;
+}
+
+.yard-progress-step-active::before {
+  background: #0f4a45;
+}
+
+.yard-progress-step-active span {
+  background: #0f4a45;
+  color: #fffaf0;
+}
+
+.yard-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.yard-detail-grid div,
+.yard-text-ledger div {
+  border: 1px solid rgba(184, 137, 66, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 252, 245, 0.62);
+  padding: 0.7rem;
+}
+
+.yard-detail-grid span,
+.yard-text-ledger span {
+  display: block;
+  color: #7a6a48;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.yard-detail-grid strong {
+  display: block;
+  margin-top: 0.2rem;
+  overflow-wrap: anywhere;
+  color: #263238;
+  font-size: 0.92rem;
+}
+
+.yard-text-ledger {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+
+.yard-text-ledger p {
+  margin-top: 0.28rem;
+  color: #526461;
+  line-height: 1.75;
+}
+
+/* 这里控制云灯、雅集和消息列表的共同筛选条。 */
+.yard-filter-card {
+  padding-top: 0.9rem;
+}
+
+.yard-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(184, 137, 66, 0.18);
+  padding-bottom: 0.75rem;
+}
+
+.yard-filter-tabs span {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  color: #526461;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.yard-filter-tab-active {
+  background: #0f4a45;
+  color: #fffaf0 !important;
+}
+
+.yard-lantern-list,
+.yard-event-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.yard-lantern-row,
+.yard-event-row {
+  display: grid;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid rgba(184, 137, 66, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.7);
+  padding: 0.75rem;
+}
+
+.yard-lantern-row {
+  grid-template-columns: 6.1rem minmax(0, 1fr) auto;
+}
+
+.yard-event-row {
+  grid-template-columns: 6.8rem minmax(0, 1fr);
+}
+
+.yard-lantern-row > img,
+.yard-event-row > img {
+  width: 100%;
+  height: 5rem;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.yard-lantern-row-head,
+.yard-event-row-head {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.yard-lantern-row h2,
+.yard-event-row h2 {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 1.08rem;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.yard-lantern-row p,
+.yard-lantern-row span,
+.yard-lantern-row time,
+.yard-event-row p,
+.yard-event-meta span {
+  color: #526461;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.yard-lantern-row time {
+  white-space: nowrap;
+}
+
+.yard-event-main {
+  min-width: 0;
+}
+
+.yard-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  margin-top: 0.55rem;
+}
+
+.yard-event-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.yard-event-meta svg {
+  color: #c9a45c;
+}
+
+.yard-event-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.yard-banner-tag {
+  display: inline-flex;
+  border: 1px solid rgba(15, 61, 62, 0.18);
+  border-radius: 6px;
+  background: #0f4a45;
+  color: #fffaf0;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+/* 这里控制消息提醒时间线，复刻设计稿里的竖向点线列表。 */
+.yard-notice-timeline {
+  position: relative;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.yard-notice-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 0.45rem;
+}
+
+.yard-notice-row::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.45rem;
+  width: 1px;
+  content: "";
+  background: rgba(47, 111, 104, 0.18);
+}
+
+.yard-notice-dot {
+  position: relative;
+  z-index: 1;
+  width: 0.62rem;
+  height: 0.62rem;
+  margin-top: 1.05rem;
+  border-radius: 999px;
+  background: #b8473f;
+  box-shadow: 0 0 0 4px rgba(184, 71, 63, 0.1);
+}
+
+.yard-notice-row-read .yard-notice-dot {
+  background: #2f6f68;
+  box-shadow: 0 0 0 4px rgba(47, 111, 104, 0.1);
+}
+
+.yard-notice-content {
+  border-bottom: 1px solid rgba(184, 137, 66, 0.16);
+  padding: 0.8rem 0 0.9rem;
+}
+
+.yard-notice-row:last-child .yard-notice-content {
+  border-bottom: 0;
+}
+
+.yard-notice-head,
+.yard-notice-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.yard-notice-head > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.yard-notice-head time {
+  color: #7a6a48;
+  font-size: 0.78rem;
+}
+
+.yard-notice-content h2 {
+  margin-top: 0.48rem;
+  font-size: 1.08rem;
+}
+
+.yard-notice-content p {
+  margin-top: 0.28rem;
+  color: #526461;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.yard-notice-foot {
+  margin-top: 0.6rem;
+}
+
+.yard-notice-foot span,
+.yard-notice-foot strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #7a6a48;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.yard-notice-foot strong {
+  color: #b8473f;
+}
+
+/* 这里控制归云堂弹窗，保留业务功能并统一视觉。 */
+.yard-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 61, 62, 0.44);
+  padding: 1rem;
+  backdrop-filter: blur(6px);
+}
+
+.yard-modal-card {
+  width: min(27rem, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  border: 1px solid rgba(201, 164, 92, 0.44);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.96), rgba(250, 244, 232, 0.92)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 26rem auto;
+  box-shadow: 0 28px 64px rgba(7, 24, 24, 0.28);
+  padding: 1.2rem;
+}
+
+.yard-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.yard-modal-head p {
+  color: #b8473f;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.yard-modal-head h2 {
+  margin-top: 0.2rem;
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.yard-modal-head button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid rgba(184, 137, 66, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.86);
+  color: #526461;
+}
+
+.yard-modal-text,
+.yard-modal-warning {
+  margin-top: 0.9rem;
+  color: #526461;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.yard-modal-warning {
+  border: 1px solid rgba(184, 71, 63, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 241, 238, 0.72);
+  color: #9e3d32;
+  padding: 0.8rem;
+}
+
+.yard-qr-card {
+  margin-top: 1rem;
+  border: 1px solid rgba(184, 137, 66, 0.24);
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.8rem;
+}
+
+.yard-qr-card img {
+  display: block;
+  width: min(18rem, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.yard-modal-card .yard-action-button-full {
+  margin-top: 0.8rem;
+}
+
+@media (min-width: 1024px) {
+  .yard-reference-sidebar {
+    display: block;
+  }
+
+  .yard-reference-main {
+    padding-left: calc(7.3rem + clamp(1.6rem, 2.8vw, 2.7rem));
+  }
+
+  .yard-mobile-menu-button,
+  .yard-mobile-drawer,
+  .yard-mobile-drawer-mask {
+    display: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .yard-metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .yard-two-column,
+  .yard-profile-layout,
+  .yard-application-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 785px) {
+  .yard-reference-shell {
+    padding: 0.65rem;
+  }
+
+  .yard-reference-stage {
+    min-height: calc(100vh - 1.3rem);
+  }
+
+  .yard-reference-topbar {
+    padding-left: 3.1rem;
+    justify-content: flex-start;
+  }
+
+  .yard-reference-topbar-left .yard-reference-topbar-icon,
+  .yard-reference-topbar-right {
+    display: none;
+  }
+
+  .yard-reference-account {
+    display: none;
+  }
+
+  .yard-reference-content {
+    padding: 0.75rem;
+  }
+
+  .yard-page-banner {
+    min-height: 11rem;
+  }
+
+  .yard-page-banner-content {
+    width: 100%;
+    padding: 3.05rem 1rem 1rem;
+  }
+
+  .yard-page-banner-content h1 {
+    font-size: clamp(1.45rem, 8vw, 2.1rem);
+  }
+
+  .yard-page-banner-action {
+    position: absolute;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .yard-metric-grid,
+  .yard-form-columns-2,
+  .yard-form-columns-3,
+  .yard-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .yard-lantern-row,
+  .yard-event-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .yard-lantern-row > img,
+  .yard-event-row > img {
+    height: 8.5rem;
+  }
+
+  .yard-lantern-row-head,
+  .yard-event-row-head,
+  .yard-brief-row,
+  .yard-event-actions,
+  .yard-info-list div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .yard-lantern-row time,
+  .yard-brief-row time {
+    white-space: normal;
+  }
+
+  .yard-notice-head,
+  .yard-notice-foot {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .yard-notice-foot .yard-mini-button {
+    width: 100%;
+  }
+
+  .yard-paper-card-head,
+  .yard-account-card,
+  .yard-quiet-callout {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .yard-account-card .yard-status-pill,
+  .yard-quiet-callout .yard-mini-button {
+    margin-left: 0;
+  }
+
+  .yard-form-submit {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .yard-progress-line {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 0.8rem;
+  }
+
+  .yard-progress-step:nth-child(3)::before {
+    display: none;
+  }
+}
+
+/* 这里开始是后台管理端 draw-ui 复刻层：按设计稿重建深青侧栏、宣纸台账、编号题签和紧凑表格。 */
+.admin-reference-app {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(198, 156, 82, 0.24), transparent 18rem),
+    radial-gradient(circle at 82% 4%, rgba(255, 245, 210, 0.12), transparent 16rem),
+    linear-gradient(180deg, #073536 0%, #062f31 44%, #052727 100%);
+}
+
+/* 这里给后台整页叠加纸纹和远山，避免纯色背景显得生硬。 */
+.admin-reference-app::before {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+  background:
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-ribbon-ornament.png") 50% 1.2rem / min(38rem, 70vw) auto no-repeat,
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+  opacity: 0.32;
+}
+
+/* 这里让桌面端主内容避开固定侧栏。 */
+.admin-reference-main {
+  min-height: 100vh;
+  padding-left: 15.5rem;
+}
+
+/* 这里绘制设计稿中的固定深青侧栏。 */
+.admin-reference-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 40;
+  display: flex;
+  width: 15.5rem;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid rgba(218, 178, 100, 0.34);
+  background:
+    linear-gradient(180deg, rgba(4, 55, 57, 0.96), rgba(3, 43, 44, 0.98)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 26rem auto;
+  color: #fff7df;
+  box-shadow: 18px 0 38px rgba(0, 0, 0, 0.18);
+}
+
+/* 这里在侧栏底部铺一层山水纹，贴近设计稿左下角的装饰感。 */
+.admin-reference-sidebar::after {
+  position: absolute;
+  inset: auto -4rem 0 -2rem;
+  height: 18rem;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+  opacity: 0.38;
+}
+
+/* 这里控制侧栏品牌区，让左上角成为后台入口识别点。 */
+.admin-sidebar-brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.35rem 1rem 1.15rem;
+}
+
+.admin-sidebar-brand > span {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  border: 1px solid rgba(218, 178, 100, 0.48);
+  border-radius: 8px;
+  background: rgba(255, 247, 223, 0.12);
+  color: #f8df9d;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.admin-sidebar-brand strong {
+  color: #fff7df;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.admin-sidebar-brand p {
+  margin-top: 0.25rem;
+  color: rgba(248, 223, 157, 0.78);
+  font-size: 0.8rem;
+}
+
+/* 这里控制侧栏导航密度，保持和设计稿中每项短横条一致。 */
+.admin-sidebar-nav {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.45rem 0.75rem;
+}
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.45rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0 0.75rem;
+  color: rgba(255, 247, 223, 0.88);
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.admin-sidebar-link:hover {
+  border-color: rgba(218, 178, 100, 0.18);
+  background: rgba(255, 247, 223, 0.08);
+}
+
+.admin-sidebar-link-active {
+  border-color: rgba(248, 223, 157, 0.38);
+  background: linear-gradient(90deg, rgba(255, 247, 223, 0.18), rgba(255, 247, 223, 0.06));
+  color: #f8df9d;
+  box-shadow: inset 3px 0 0 #d8ae67;
+}
+
+/* 这里固定侧栏底部操作，保证管理员能快速回小院或退出。 */
+.admin-sidebar-footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.7rem;
+  margin-top: auto;
+  padding: 1rem;
+}
+
+.admin-sidebar-ghost,
+.admin-sidebar-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.45rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.admin-sidebar-ghost {
+  border: 1px solid rgba(248, 223, 157, 0.25);
+  background: rgba(255, 247, 223, 0.08);
+  color: #fff7df;
+}
+
+.admin-sidebar-danger {
+  border: 1px solid rgba(182, 74, 58, 0.28);
+  background: rgba(154, 55, 43, 0.9);
+  color: #fff7df;
+}
+
+/* 这里设置主画布外边距，让单页像设计稿里的独立边框画幅。 */
+.admin-reference-canvas {
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+/* 这里隐藏移动端顶部栏，桌面端使用左侧固定导航。 */
+.admin-mobile-topbar {
+  display: none;
+}
+
+/* 这里复刻每个后台页面的宣纸主面板。 */
+.admin-page-shell {
+  position: relative;
+  min-height: calc(100vh - 2rem);
+  overflow: hidden;
+  border: 1px solid rgba(218, 178, 100, 0.46);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 253, 246, 0.96), rgba(252, 246, 233, 0.91) 72%, rgba(248, 239, 219, 0.86)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 32rem auto;
+  box-shadow:
+    0 20px 54px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 3px rgba(7, 53, 54, 0.08),
+    inset 0 0 0 5px rgba(218, 178, 100, 0.18);
+}
+
+/* 这里给后台宣纸面板右下角加水墨远景，呼应设计稿里的山水留白。 */
+.admin-page-shell::after {
+  position: absolute;
+  right: -3rem;
+  bottom: -4rem;
+  z-index: 0;
+  width: min(38rem, 54vw);
+  height: 18rem;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+  opacity: 0.26;
+}
+
+/* 这里绘制左上角编号题签。 */
+.admin-page-ribbon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 8.6rem;
+  min-height: 2.45rem;
+  padding: 0 1.25rem 0 0.75rem;
+  border: 1px solid rgba(144, 96, 45, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 248, 228, 0.98), rgba(245, 229, 191, 0.95)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 20rem auto;
+  clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%, 0.55rem 50%);
+  color: #2c3028;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  box-shadow: 0 10px 20px rgba(98, 69, 36, 0.12);
+}
+
+.admin-page-ribbon span {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 253, 246, 0.86);
+  color: #1f2f2d;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.admin-page-ribbon strong {
+  font-size: 1.08rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* 这里控制页面标题区，桌面端保持低高度，避免挤压表格。 */
+.admin-page-heading {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 4.15rem 1.35rem 1rem;
+  border-bottom: 1px solid rgba(205, 164, 92, 0.2);
+}
+
+.admin-page-kicker {
+  color: #8b6a38;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.admin-page-heading h1 {
+  margin-top: 0.15rem;
+  color: #21332f;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.8rem, 2.2vw, 2.55rem);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.admin-page-heading p:last-child {
+  margin-top: 0.35rem;
+  max-width: 42rem;
+  color: #5b665f;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.admin-page-actions,
+.admin-panel-actions,
+.admin-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+/* 这里控制后台主体内容的统一间距。 */
+.admin-page-body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.95rem;
+  padding: 1rem 1.35rem 1.35rem;
+}
+
+/* 这里定义浅色纸卡，用于表格、表单和详情区域。 */
+.admin-panel {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(205, 164, 92, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.9), rgba(250, 244, 232, 0.82)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 30rem auto;
+  box-shadow:
+    0 12px 28px rgba(34, 48, 43, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  padding: 1rem;
+}
+
+.admin-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.admin-panel-head h2 {
+  color: #243832;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.28rem;
+  font-weight: 900;
+}
+
+.admin-panel-head p {
+  margin-top: 0.25rem;
+  color: #697069;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+/* 这里设置总览统计卡四宫格。 */
+.admin-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.admin-metric-card {
+  display: flex;
+  min-width: 0;
+  min-height: 7rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border: 1px solid rgba(205, 164, 92, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 253, 247, 0.78);
+  padding: 1rem;
+  box-shadow: 0 10px 20px rgba(34, 48, 43, 0.08);
+}
+
+.admin-metric-card p {
+  color: #4e5d58;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.admin-metric-card strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #073f3f;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.admin-metric-card span {
+  display: block;
+  margin-top: 0.45rem;
+  color: #7c725f;
+  font-size: 0.78rem;
+}
+
+.admin-metric-icon {
+  display: grid;
+  width: 3.1rem;
+  height: 3.1rem;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(15, 61, 62, 0.08);
+}
+
+/* 这里定义不同状态颜色，表格状态章和统计卡共用。 */
+.admin-tone-teal {
+  --admin-tone-main: #0f3d3e;
+  --admin-tone-soft: rgba(15, 61, 62, 0.1);
+}
+
+.admin-tone-gold {
+  --admin-tone-main: #9a742f;
+  --admin-tone-soft: rgba(201, 164, 92, 0.18);
+}
+
+.admin-tone-red {
+  --admin-tone-main: #a33c2f;
+  --admin-tone-soft: rgba(184, 71, 63, 0.12);
+}
+
+.admin-tone-green {
+  --admin-tone-main: #4c7a51;
+  --admin-tone-soft: rgba(76, 122, 81, 0.14);
+}
+
+.admin-tone-gray {
+  --admin-tone-main: #697069;
+  --admin-tone-soft: rgba(105, 112, 105, 0.12);
+}
+
+.admin-metric-card .admin-metric-icon,
+.admin-status-pill {
+  color: var(--admin-tone-main);
+  background: var(--admin-tone-soft);
+}
+
+.admin-status-pill {
+  display: inline-flex;
+  min-height: 1.55rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--admin-tone-main) 22%, transparent);
+  border-radius: 5px;
+  padding: 0 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* 这里设置总览页两列待办。 */
+.admin-dashboard-grid,
+.admin-two-column {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
+  gap: 0.95rem;
+}
+
+.admin-compact-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-compact-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  min-height: 3.45rem;
+  border-bottom: 1px solid rgba(205, 164, 92, 0.15);
+}
+
+.admin-compact-list strong {
+  display: block;
+  color: #243832;
+  font-size: 0.95rem;
+}
+
+.admin-compact-list span {
+  display: block;
+  max-width: 28rem;
+  overflow: hidden;
+  color: #697069;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-empty-line {
+  color: #697069;
+  font-size: 0.9rem;
+}
+
+/* 这里设置筛选条和搜索框。 */
+.admin-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.admin-search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.45rem;
+  border: 1px solid rgba(15, 61, 62, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.82);
+  padding: 0 0.75rem;
+  color: #5f8f83;
+}
+
+.admin-search-field input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #243832;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.admin-segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.admin-segmented button {
+  min-height: 2.3rem;
+  border: 1px solid rgba(15, 61, 62, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.78);
+  color: #384842;
+  padding: 0 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-segmented button.active {
+  border-color: rgba(15, 61, 62, 0.4);
+  background: #0f3d3e;
+  color: #fff7df;
+}
+
+/* 这里设置后台表格，保持设计稿中的紧凑台账密度。 */
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-data-table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  color: #2f3e39;
+}
+
+.admin-data-table th {
+  border-bottom: 1px solid rgba(205, 164, 92, 0.24);
+  color: #7a6232;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-data-table th,
+.admin-data-table td {
+  padding: 0.72rem 0.65rem;
+  vertical-align: middle;
+}
+
+.admin-data-table td {
+  border-bottom: 1px solid rgba(15, 61, 62, 0.08);
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.admin-table-main strong,
+.admin-table-main span {
+  display: block;
+}
+
+.admin-table-main strong {
+  color: #243832;
+  font-weight: 900;
+}
+
+.admin-table-main span {
+  max-width: 28rem;
+  overflow: hidden;
+  color: #697069;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.admin-table-actions .cloud-button {
+  min-height: 2rem;
+  border-radius: 5px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.admin-data-table select {
+  width: auto;
+  min-width: 6.8rem;
+  min-height: 2rem;
+  border: 1px solid rgba(15, 61, 62, 0.14);
+  border-radius: 5px;
+  background: rgba(255, 253, 247, 0.88);
+  padding: 0 0.5rem;
+  color: #243832;
+}
+
+/* 这里统一后台表单控件，让输入框贴近设计稿浅色线框。 */
+.admin-form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-form-grid label,
+.admin-account-grid label {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  color: #243832;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.admin-form-grid label > span,
+.admin-account-grid label > span {
+  color: #4c5a55;
+  font-size: 0.78rem;
+}
+
+.admin-form-grid input:not([type="checkbox"]):not([type="file"]),
+.admin-form-grid select,
+.admin-form-grid textarea,
+.admin-account-grid input {
+  width: 100%;
+  min-height: 2.45rem;
+  border: 1px solid rgba(15, 61, 62, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.86);
+  color: #243832;
+  padding: 0.55rem 0.7rem;
+  outline: none;
+}
+
+.admin-form-grid textarea {
+  min-height: 6.2rem;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.admin-form-grid input[type="file"] {
+  width: 100%;
+  border: 1px dashed rgba(15, 61, 62, 0.22);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.68);
+  padding: 0.65rem;
+  color: #4c5a55;
+}
+
+.admin-form-row,
+.admin-form-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.admin-form-span-2 {
+  grid-column: 1 / -1;
+}
+
+.admin-checkbox-row {
+  display: flex !important;
+  min-height: 2.45rem;
+  align-items: center;
+  gap: 0.55rem !important;
+  border: 1px solid rgba(205, 164, 92, 0.22);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.58);
+  padding: 0.55rem 0.7rem;
+}
+
+.admin-checkbox-row input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #0f3d3e;
+}
+
+/* 这里设置名册页左台账右详情结构。 */
+.admin-master-detail {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.68fr) minmax(0, 1.32fr);
+  gap: 0.95rem;
+  align-items: start;
+}
+
+.admin-master-list-panel,
+.admin-detail-panel {
+  min-height: 30rem;
+}
+
+.admin-application-list {
+  display: grid;
+  gap: 0.45rem;
+  max-height: min(58vh, 38rem);
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.admin-application-row {
+  display: grid;
+  gap: 0.55rem;
+  width: 100%;
+  border: 1px solid rgba(15, 61, 62, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.64);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.admin-application-row.active {
+  border-color: rgba(15, 61, 62, 0.42);
+  background: rgba(237, 245, 241, 0.86);
+  box-shadow: inset 3px 0 0 #0f3d3e;
+}
+
+.admin-application-row strong,
+.admin-application-row span {
+  display: block;
+}
+
+.admin-application-row strong {
+  color: #243832;
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.admin-application-row span {
+  color: #697069;
+  font-size: 0.75rem;
+}
+
+.admin-application-row-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.admin-application-detail {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.admin-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-detail-summary > div {
+  border: 1px solid rgba(15, 61, 62, 0.1);
+  border-radius: 6px;
+  background: rgba(237, 245, 241, 0.58);
+  padding: 0.8rem;
+}
+
+.admin-detail-summary span,
+.admin-detail-summary p {
+  color: #697069;
+  font-size: 0.75rem;
+}
+
+.admin-detail-summary strong {
+  display: block;
+  margin: 0.25rem 0;
+  color: #073f3f;
+  font-size: 1.22rem;
+  font-weight: 900;
+}
+
+.admin-qr-alert,
+.admin-change-request {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid rgba(184, 71, 63, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 241, 238, 0.68);
+  padding: 0.9rem;
+}
+
+.admin-qr-alert {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.admin-qr-alert p {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #a33c2f;
+  font-weight: 900;
+}
+
+.admin-qr-alert span,
+.admin-qr-alert strong,
+.admin-change-request span {
+  display: block;
+  margin-top: 0.35rem;
+  color: #5b665f;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.admin-qr-alert strong {
+  color: #a33c2f;
+}
+
+.admin-qr-alert img,
+.admin-qr-preview img {
+  width: 8.8rem;
+  height: 8.8rem;
+  border: 1px solid rgba(205, 164, 92, 0.28);
+  border-radius: 8px;
+  background: #fff;
+  object-fit: contain;
+  padding: 0.45rem;
+}
+
+.admin-qr-empty {
+  display: grid;
+  width: 8.8rem;
+  height: 8.8rem;
+  place-items: center;
+  border: 1px dashed rgba(184, 71, 63, 0.35);
+  border-radius: 8px;
+  color: #a33c2f;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.admin-change-request h3 {
+  color: #a33c2f;
+  font-weight: 900;
+}
+
+.admin-change-request p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  color: #4c5a55;
+  font-size: 0.86rem;
+}
+
+.admin-change-request button {
+  min-height: 1.8rem;
+  border: 1px solid rgba(184, 71, 63, 0.28);
+  border-radius: 5px;
+  background: rgba(255, 253, 247, 0.86);
+  color: #a33c2f;
+  padding: 0 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+/* 这里设置执事管理列表。 */
+.admin-steward-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-steward-card {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid rgba(15, 61, 62, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 253, 247, 0.62);
+  padding: 0.9rem;
+}
+
+.admin-steward-main {
+  display: flex;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.admin-steward-avatar {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(15, 61, 62, 0.1);
+  color: #0f3d3e;
+}
+
+.admin-steward-main h3 {
+  color: #243832;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.admin-steward-main p {
+  overflow-wrap: anywhere;
+  color: #697069;
+  font-size: 0.8rem;
+}
+
+.admin-steward-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.admin-steward-tags > span:not(.admin-status-pill) {
+  border-radius: 5px;
+  background: rgba(15, 61, 62, 0.06);
+  color: #5b665f;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.73rem;
+}
+
+.admin-steward-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-account-drawer {
+  border: 1px solid rgba(205, 164, 92, 0.16);
+  border-radius: 6px;
+  background: rgba(247, 242, 232, 0.58);
+  padding: 0.65rem;
+}
+
+.admin-account-drawer summary {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.45rem;
+  color: #243832;
+  font-size: 0.84rem;
+  font-weight: 900;
+  list-style: none;
+}
+
+.admin-account-drawer summary span {
+  margin-left: auto;
+  color: #697069;
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.admin-account-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+  margin-top: 0.85rem;
+}
+
+.admin-input-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(15, 61, 62, 0.14);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.86);
+  padding: 0 0.55rem;
+}
+
+.admin-input-with-icon svg {
+  color: #5f8f83;
+}
+
+.admin-input-with-icon input {
+  border: 0;
+  background: transparent;
+  padding-inline: 0;
+}
+
+/* 这里设置站点设置三栏布局和二维码预览。 */
+.admin-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.95rem;
+  align-items: start;
+}
+
+.admin-qr-preview {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+  border: 1px solid rgba(205, 164, 92, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 253, 247, 0.58);
+  padding: 0.75rem;
+}
+
+.admin-qr-preview button {
+  min-height: 2rem;
+  border: 1px solid rgba(184, 71, 63, 0.28);
+  border-radius: 5px;
+  background: rgba(255, 241, 238, 0.75);
+  color: #a33c2f;
+  padding: 0 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.admin-muted-box {
+  border: 1px solid rgba(205, 164, 92, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 253, 247, 0.55);
+  color: #697069;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  padding: 0.75rem;
+}
+
+/* 这里让后台按钮在纸卡内更紧凑，符合设计稿管理端的操作密度。 */
+.admin-page-shell .cloud-button {
+  min-height: 2.35rem;
+  border-radius: 6px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+/* 这里补充中等屏适配，后台从三栏逐步收为两栏。 */
+@media (max-width: 1280px) {
+  .admin-metric-grid,
+  .admin-settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-dashboard-grid,
+  .admin-two-column,
+  .admin-master-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-application-list {
+    max-height: none;
+  }
+}
+
+/* 这里补充平板和手机适配，侧栏改为顶部横向导航。 */
+@media (max-width: 1024px) {
+  .admin-reference-main {
+    padding-left: 0;
+  }
+
+  .admin-reference-sidebar {
+    display: none;
+  }
+
+  .admin-mobile-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: block;
+    border-bottom: 1px solid rgba(218, 178, 100, 0.3);
+    background:
+      linear-gradient(180deg, rgba(4, 55, 57, 0.96), rgba(3, 43, 44, 0.95)),
+      url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 28rem auto;
+    color: #fff7df;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .admin-mobile-topbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+  }
+
+  .admin-mobile-topbar-row button {
+    color: #f8df9d;
+    font-weight: 900;
+  }
+
+  .admin-mobile-nav {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding-top: 0.65rem;
+  }
+
+  .admin-mobile-link {
+    flex: 0 0 auto;
+    border: 1px solid rgba(248, 223, 157, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 247, 223, 0.08);
+    color: #fff7df;
+    padding: 0.42rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+
+  .admin-mobile-link-active {
+    background: #fff7df;
+    color: #073536;
+  }
+
+  .admin-reference-canvas {
+    padding: 0.75rem;
+  }
+
+  .admin-page-shell {
+    min-height: calc(100vh - 6rem);
+  }
+}
+
+/* 这里补充手机端完整适配，所有复杂布局收成单栏，避免文字和按钮溢出。 */
+@media (max-width: 785px) {
+  .admin-reference-canvas {
+    padding: 0.55rem;
+  }
+
+  .admin-page-heading {
+    display: grid;
+    padding: 4rem 0.85rem 0.85rem;
+  }
+
+  .admin-page-body {
+    padding: 0.85rem;
+  }
+
+  .admin-panel {
+    padding: 0.85rem;
+  }
+
+  .admin-panel-head,
+  .admin-filter-bar,
+  .admin-account-grid,
+  .admin-qr-alert {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-panel-head {
+    display: grid;
+  }
+
+  .admin-panel-actions,
+  .admin-page-actions,
+  .admin-detail-actions,
+  .admin-segmented,
+  .admin-steward-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-metric-grid,
+  .admin-settings-grid,
+  .admin-detail-summary,
+  .admin-form-row,
+  .admin-form-grid-compact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-page-ribbon {
+    min-width: 7.6rem;
+    max-width: calc(100% - 1.6rem);
+  }
+
+  .admin-page-ribbon strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-data-table {
+    min-width: 42rem;
+  }
+
+  .admin-steward-main {
+    align-items: flex-start;
+  }
+}
