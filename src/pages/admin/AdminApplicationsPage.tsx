@@ -263,7 +263,7 @@ export function AdminApplicationsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订" visual="workbench">
+      <SectionTitle eyebrow="名帖审核" title="先看名帖，再展开校订" visual="adminApplications">
         默认展示未审核名帖。道名和联系方式的用户申请，请切到“资料修改”筛选后展开审核。
       </SectionTitle>
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { CodeSceneVariant } from './CodeScene'
+import { getGuofengVisualPath, type GuofengVisualKey } from '../data/visualAssets'
 
 // 这个类型描述区块标题的入参，返回值用于统一各页面标题样式。
 interface SectionTitleProps {
@@ -14,21 +14,12 @@ interface SectionTitleProps {
   // 标题所处背景的明暗类型，用来保证文字在不同底色上都清晰。
   tone?: 'light' | 'dark'
   // 背景图主题，有值时会把生成图铺在标题区底层。
-  visual?: CodeSceneVariant
+  visual?: GuofengVisualKey
   // 背景图说明，用于无障碍朗读，也方便后续维护。
   visualLabel?: string
 }
 
 // 这个对象保存标题背景图地址，返回值用于把生成图直接铺进标题卡底层。
-const visualPathByVariant: Record<CodeSceneVariant, string> = {
-  gate: `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`,
-  scroll: `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`,
-  lantern: `${import.meta.env.BASE_URL}visual-drawui/lantern-ledger.svg`,
-  courtyard: `${import.meta.env.BASE_URL}visual-drawui/courtyard-landscape.svg`,
-  workbench: `${import.meta.env.BASE_URL}visual-drawui/workbench-ledger.svg`,
-  map: `${import.meta.env.BASE_URL}visual-drawui/lantern-ledger.svg`
-}
-
 // 这个函数渲染统一的区块标题，入参是标题内容，返回值是标题区域。
 export function SectionTitle({ eyebrow, title, children, center = false, tone = 'light', visual, visualLabel }: SectionTitleProps) {
   // 这里判断当前标题是否放在深色背景上，后面会据此切换高对比颜色。
@@ -46,7 +37,7 @@ export function SectionTitle({ eyebrow, title, children, center = false, tone = 
   // 这个变量保存背景图说明，避免维护者每次都手写重复文字。
   const safeVisualLabel = visualLabel ?? `${title}背景图`
   // 这个变量保存当前标题背景图地址，返回值用于真实图片层，避免手机浏览器漏掉 CSS 背景变量。
-  const visualImagePath = visual ? visualPathByVariant[visual] : ''
+  const visualImagePath = visual ? getGuofengVisualPath(visual) : ''
 
   return (
     <div

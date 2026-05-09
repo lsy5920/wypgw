@@ -119,7 +119,7 @@ export function EventsPage() {
 
   return (
     <PageShell>
-      <SectionTitle center eyebrow="问云雅集" title="线上清谈，线下相逢" visual="courtyard">
+      <SectionTitle center eyebrow="问云雅集" title="线上清谈，线下相逢" visual="events">
         问云派日常不求繁杂，但求有温度、有秩序、有意义。
       </SectionTitle>
 

@@ -41,7 +41,7 @@ export function YardApplicationsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的名帖" title="名帖已递，静候山门" visual="scroll">
+      <SectionTitle eyebrow="我的名帖" title="名帖已递，静候山门" visual="yardApplications">
         这里展示你提交过的名帖、当前状态和管理员备注。名帖内容由后台审核维护，普通同门不可自行改状态。
       </SectionTitle>
 

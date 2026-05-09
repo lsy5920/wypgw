@@ -230,7 +230,7 @@ export function AdminSettingsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="站点设置" title="维护联系山门信息" visual="workbench">
+      <SectionTitle eyebrow="站点设置" title="维护联系山门信息" visual="adminSettings">
         这里用于管理联系页展示说明，也可以维护问云小院邮件提醒使用的 SMTP 服务。
       </SectionTitle>
 

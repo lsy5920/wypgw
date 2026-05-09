@@ -193,7 +193,7 @@ export function AdminStewardsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="执事管理" title="授予执事，分灯守山" visual="courtyard">
+      <SectionTitle eyebrow="执事管理" title="授予执事，分灯守山" visual="adminStewards">
         只有超级管理员可以设置执事身份。成员被设为执事后，可使用自己的账号进入管理后台。
       </SectionTitle>
 

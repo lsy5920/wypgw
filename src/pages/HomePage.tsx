@@ -114,7 +114,7 @@ export function HomePage() {
         </section>
 
         <section className="mt-16">
-          <SectionTitle eyebrow="门派精神" title="正派之正，在于有愿、有规、有界" visual="scroll">
+          <SectionTitle eyebrow="门派精神" title="正派之正，在于有愿、有规、有界" visual="about">
             每一句话，都在共同塑造这个家。温暖要真实，边界也要清楚。
           </SectionTitle>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -128,7 +128,7 @@ export function HomePage() {
         </section>
 
         <section className="mt-16">
-          <SectionTitle eyebrow="入册流程" title="问云而来，归心有路" visual="map">
+          <SectionTitle eyebrow="入册流程" title="问云而来，归心有路" visual="roster">
             申请不是门槛，而是彼此确认边界。愿来者真诚，守门者温和。
           </SectionTitle>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
@@ -145,7 +145,7 @@ export function HomePage() {
         </section>
 
         <section className="mt-16">
-          <SectionTitle eyebrow="云灯留言" title="一盏云灯，照见同道" visual="lantern">
+          <SectionTitle eyebrow="云灯留言" title="一盏云灯，照见同道" visual="cloudLantern">
             给疲惫的人一句话，给陌生的同门一点温暖。留言审核后会公开展示。
           </SectionTitle>
           <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
@@ -171,7 +171,7 @@ export function HomePage() {
         </section>
 
         <section className="mt-16">
-          <SectionTitle eyebrow="山门近讯" title="公告须清楚，事务有回应" visual="scroll">
+          <SectionTitle eyebrow="山门近讯" title="公告须清楚，事务有回应" visual="announcements">
             重要通知、门规更新和雅集安排都会在这里出现。
           </SectionTitle>
           <div className="grid gap-4 md:grid-cols-2">

@@ -372,7 +372,7 @@ export function LoginPage() {
 
   return (
     <PageShell size="narrow">
-      <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院" visual="courtyard">
+      <SectionTitle center eyebrow="问云小院" title="一封邮箱，入一方小院" visual="login">
         同门可在小院查看自己的名帖、云灯、雅集与提醒。掌门和执事也有自己的小院，并可从小院进入管理后台。
       </SectionTitle>
 

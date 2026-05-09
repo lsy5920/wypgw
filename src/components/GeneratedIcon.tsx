@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { getGuofengIconPath, type GuofengIconKey } from '../data/visualAssets'
+
 // 这个类型描述 draw-ui 线描图标名称，入参用于选择要展示的图标。
 export type GeneratedIconName = 'scroll' | 'shield' | 'lantern' | 'gate' | 'notice' | 'calendar' | 'roster' | 'user' | 'settings'
 
@@ -20,6 +23,19 @@ const iconLabelByName: Record<GeneratedIconName, string> = {
   roster: '名册图标',
   user: '用户图标',
   settings: '设置图标'
+}
+
+// 这个对象把旧组件图标名映射到新素材包的白底图标名，返回值用于读取真实 PNG 图标。
+const guofengIconKeyByName: Record<GeneratedIconName, GuofengIconKey> = {
+  scroll: 'scroll',
+  shield: 'shieldCheck',
+  lantern: 'lantern',
+  gate: 'gate',
+  notice: 'noticePaper',
+  calendar: 'calendar',
+  roster: 'roster',
+  user: 'user',
+  settings: 'settings'
 }
 
 // 这个函数按名称返回线描路径，入参是图标名称，返回值是可放入 SVG 的路径节点。
@@ -102,11 +118,26 @@ function renderIconPath(name: GeneratedIconName) {
 
 // 这个函数渲染参考设计图风格的线描图标，入参是图标名称和样式，返回值是统一图标节点。
 export function GeneratedIcon({ name, className = '' }: GeneratedIconProps) {
+  // 这个状态记录白底图标是否读取失败，失败时展示纯代码 SVG 兜底。
+  const [imageFailed, setImageFailed] = useState(false)
+  // 这个变量保存当前图标的真实 PNG 路径，返回值用于图片标签展示。
+  const iconImagePath = getGuofengIconPath(guofengIconKeyByName[name])
+
+  // 这个函数处理图标图片读取失败，入参为空，返回值为空。
+  function handleImageError() {
+    // 这里切换到 SVG 兜底，避免某张素材丢失时页面出现破图。
+    setImageFailed(true)
+  }
+
   return (
     <span aria-label={iconLabelByName[name]} className={`generated-icon ${className}`} role="img">
-      <svg aria-hidden="true" className="generated-icon-line" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 64 64">
-        {renderIconPath(name)}
-      </svg>
+      {!imageFailed ? (
+        <img alt="" aria-hidden="true" className="generated-icon-image" onError={handleImageError} src={iconImagePath} />
+      ) : (
+        <svg aria-hidden="true" className="generated-icon-line" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 64 64">
+          {renderIconPath(name)}
+        </svg>
+      )}
     </span>
   )
 }

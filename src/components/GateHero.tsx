@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+import { getGuofengVisualPath } from '../data/visualAssets'
 import { BrandMark } from './BrandMark'
 import { GeneratedIcon, type GeneratedIconName } from './GeneratedIcon'
 
@@ -19,17 +21,17 @@ interface GateHeroProps {
   className?: string
 }
 
-// 这个数组保存首屏下方的三条可信信息，返回值用于让用户快速理解网站能做什么。
-const heroProofItems: Array<{ label: string; icon: GeneratedIconName }> = [
-  { label: '立派金典', icon: 'scroll' },
-  { label: '问心考核', icon: 'shield' },
-  { label: '云灯留言', icon: 'lantern' },
-  { label: '问云小院', icon: 'gate' },
-  { label: '公告活动', icon: 'notice' }
+// 这个数组保存首屏下方的五个快捷入口，返回值用于渲染可点击的站内跳转卡片。
+const heroProofItems: Array<{ label: string; icon: GeneratedIconName; path: string }> = [
+  { label: '立派金典', icon: 'scroll', path: '/canon' },
+  { label: '问心考核', icon: 'shield', path: '/wenxin-quiz' },
+  { label: '云灯留言', icon: 'lantern', path: '/cloud-lantern' },
+  { label: '问云小院', icon: 'gate', path: '/login' },
+  { label: '公告活动', icon: 'notice', path: '/announcements' }
 ]
 
 // 这个常量保存按参考设计图生成的山门插画地址，返回值会跟随 Vite 的部署路径自动变化，避免部署到子目录后图片丢失。
-const heroImagePath = `${import.meta.env.BASE_URL}visual-drawui/gate-landscape.svg`
+const heroImagePath = getGuofengVisualPath('homeHero')
 
 // 这个函数渲染山门首屏，入参是标题、说明和操作区，返回值是按视觉稿还原的纯代码首页首屏。
 export function GateHero({ eyebrow, title, children, actions, showLogo = false, className = '' }: GateHeroProps) {
@@ -66,7 +68,7 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
           <div className="mt-6 max-w-2xl text-lg leading-9 text-[#526461] md:text-xl">{children}</div>
           {actions ? <div className="hero-safe-width mt-8 grid min-w-0 grid-cols-1 gap-3 overflow-hidden sm:flex sm:flex-wrap sm:overflow-visible">{actions}</div> : null}
 
-          {/* 这里用三条短信息承接首屏，手机端也不会撑宽。 */}
+          {/* 这里用五个快捷入口承接首屏，点击后可以直接跳到对应页面。 */}
           <motion.div
             animate={{ opacity: 1, y: 0 }}
             className="hero-proof-grid hero-safe-width mt-9 grid max-w-3xl grid-cols-5 overflow-hidden rounded-lg border border-[#c8a45d]/22 bg-white/72 shadow-xl shadow-[#173332]/10 backdrop-blur"
@@ -74,10 +76,15 @@ export function GateHero({ eyebrow, title, children, actions, showLogo = false, 
             transition={{ duration: 0.62, delay: 0.16, ease: 'easeOut' }}
           >
             {heroProofItems.map((item) => (
-              <div className="min-w-0 border-r border-[#c8a45d]/18 px-3 py-4 text-center last:border-r-0 md:px-5" key={item.label}>
+              <Link
+                aria-label={`前往${item.label}`}
+                className="hero-proof-card focus-ring min-w-0 border-r border-[#c8a45d]/18 px-3 py-4 text-center last:border-r-0 md:px-5"
+                key={item.label}
+                to={item.path}
+              >
                 <GeneratedIcon className="mx-auto h-10 w-10" name={item.icon} />
                 <p className="mt-2 truncate text-xs font-semibold text-[#526461] md:text-sm">{item.label}</p>
-              </div>
+              </Link>
             ))}
           </motion.div>
         </motion.div>

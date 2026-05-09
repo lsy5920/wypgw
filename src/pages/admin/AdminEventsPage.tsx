@@ -128,7 +128,7 @@ export function AdminEventsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="活动管理" title="筹备问云雅集" visual="map">
+      <SectionTitle eyebrow="活动管理" title="筹备问云雅集" visual="adminEvents">
         线上清谈、读书会、茶会、徒步与公益活动都可从这里创建。
       </SectionTitle>
 

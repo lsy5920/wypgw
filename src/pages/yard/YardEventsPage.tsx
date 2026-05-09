@@ -112,7 +112,7 @@ export function YardEventsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的雅集" title="清谈可赴，山水可约" visual="map">
+      <SectionTitle eyebrow="我的雅集" title="清谈可赴，山水可约" visual="yardEvents">
         这里展示已发布雅集，并记录你的报名状态。报名变化会写入小院提醒。
       </SectionTitle>
 

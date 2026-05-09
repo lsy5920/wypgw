@@ -127,7 +127,7 @@ export function AdminLayout() {
         </header>
 
         {/* 这里放置各个后台页面内容。 */}
-        <main className="mx-auto max-w-6xl px-3 py-5 md:px-8 md:py-8">
+        <main className="mx-auto max-w-[1540px] px-3 py-5 md:px-8 md:py-8">
           <WorkbenchFrame>
           <Outlet />
           </WorkbenchFrame>

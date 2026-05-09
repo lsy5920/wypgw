@@ -48,7 +48,7 @@ export function ContactPage() {
 
   return (
     <PageShell>
-      <SectionTitle center eyebrow="联系山门" title="不公开永久二维码，只留清净入口" visual="gate">
+      <SectionTitle center eyebrow="联系山门" title="不公开永久二维码，只留清净入口" visual="contact">
         问云派首版采用名册登记与人工审核，不直接公开永久微信群二维码，避免广告和陌生人直接入群。
       </SectionTitle>
 

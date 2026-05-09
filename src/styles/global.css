@@ -403,7 +403,7 @@ textarea:focus-visible {
   text-shadow: none;
 }
 
-.hero-proof-grid > div {
+.hero-proof-grid > * {
   min-width: 0;
 }
 
@@ -1651,7 +1651,7 @@ td {
     margin-top: 1rem;
   }
 
-  .hero-proof-grid > div {
+  .hero-proof-grid > * {
     padding: 0.9rem 0.75rem;
   }
 
@@ -1885,6 +1885,7 @@ body::after {
 }
 
 .site-hero-copy {
+  position: relative;
   display: flex;
   width: min(100%, 56rem);
   max-width: min(56rem, calc(100vw - 5rem));
@@ -1931,20 +1932,37 @@ body::after {
 
 .hero-proof-grid {
   position: absolute;
-  right: clamp(2rem, 6vw, 5rem);
+  left: 50%;
   bottom: clamp(4.2rem, 6vw, 5.4rem);
-  left: clamp(2rem, 6vw, 5rem);
+  width: min(70rem, calc(100vw - 6rem));
   max-width: none;
+  translate: -50% 0;
   border-color: rgba(200, 164, 93, 0.28);
   background: rgba(255, 250, 240, 0.88);
   box-shadow: 0 12px 32px rgba(23, 51, 50, 0.1);
 }
 
-.hero-proof-grid > div {
+.hero-proof-card {
   display: grid;
   min-height: 5.25rem;
   align-content: center;
+  justify-items: center;
   padding: 0.8rem 1.2rem;
+  transition:
+    background-color 0.24s ease,
+    color 0.24s ease,
+    transform 0.24s ease,
+    box-shadow 0.24s ease;
+}
+
+.hero-proof-card:hover {
+  background: rgba(255, 255, 255, 0.72);
+  transform: translateY(-0.12rem);
+  box-shadow: inset 0 -2px 0 rgba(200, 164, 93, 0.34);
+}
+
+.hero-proof-card:hover p {
+  color: #173332;
 }
 
 /* 这里统一页面容器，保留参考图的大幅宣纸留白和窄金线。 */
@@ -2220,14 +2238,16 @@ td {
   }
 
   .hero-proof-grid {
-    right: 0.85rem;
+    right: 0;
+    left: 0;
     bottom: 2.4rem;
-    left: 0.85rem;
+    width: auto;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     margin-top: 0;
+    translate: none;
   }
 
-  .hero-proof-grid > div {
+  .hero-proof-card {
     min-height: 4.6rem;
     padding: 0.55rem 0.25rem;
   }
@@ -2279,6 +2299,214 @@ td {
 
   .workbench-surface {
     padding: 1rem;
+  }
+}
+
+/* 这里开始是 2026-05-09 按 guofeng-ui-20260508 设计稿继续精修的还原层，专门覆盖旧通用视觉。 */
+body {
+  background:
+    linear-gradient(rgba(248, 241, 228, 0.9), rgba(248, 241, 228, 0.9)),
+    url("/assets/guofeng-ui-20260509/ornaments/paper-fiber-texture.png"),
+    radial-gradient(circle at 88% 12%, rgba(200, 164, 93, 0.22), transparent 19rem),
+    radial-gradient(circle at 12% 22%, rgba(255, 250, 240, 0.78), transparent 24rem),
+    linear-gradient(180deg, #f7efe0 0%, #f4ecdc 48%, #dfe9e4 100%);
+  background-size: auto, 520px 520px, auto, auto, auto;
+}
+
+/* 这里把全站纸面纹理和浅墨远山固定到底层，复刻设计稿里的宣纸边框感。 */
+.wenyun-shell::after {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: -2;
+  height: min(28rem, 46vh);
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(180deg, transparent, rgba(255, 250, 240, 0.08) 26%, rgba(47, 111, 104, 0.08)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png");
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: auto 100%;
+  opacity: 0.42;
+}
+
+/* 这里让官网顶部导航接近设计稿的窄金线白色导航条。 */
+.site-header-bar {
+  border: 1px solid rgba(184, 137, 66, 0.3);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.94), rgba(250, 244, 232, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 360px 360px;
+}
+
+/* 这里把首页首屏按设计稿做成大幅山门画卷卡，不再像普通背景图。 */
+.site-hero-image {
+  object-position: center center;
+  filter: saturate(0.94) contrast(1.04);
+}
+
+.site-hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.02), rgba(255, 250, 240, 0.08) 42%, rgba(255, 250, 240, 0.7) 78%, rgba(255, 250, 240, 0.96)),
+    linear-gradient(90deg, rgba(255, 250, 240, 0.24), transparent 28%, transparent 72%, rgba(255, 250, 240, 0.24));
+}
+
+/* 这里让首页底部五入口成为设计稿中的居中图标条。 */
+.hero-proof-grid {
+  border: 1px solid rgba(184, 137, 66, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.94), rgba(250, 244, 232, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 320px 320px;
+}
+
+/* 这里用真实白底国风图标替代旧的纯代码图标，保证和设计稿插画统一。 */
+.generated-icon {
+  overflow: hidden;
+  border: 1px solid rgba(200, 164, 93, 0.24);
+  background: #fff;
+}
+
+.generated-icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12%;
+}
+
+/* 这里把页面标题卡还原成设计稿里的边框画卷，标题浮在图片左侧。 */
+.section-title-block {
+  border: 1px solid rgba(184, 137, 66, 0.32);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 246, 0.9), rgba(250, 244, 232, 0.76)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 360px 360px;
+}
+
+.section-title-block::before {
+  display: none;
+}
+
+.section-title-with-visual {
+  min-height: clamp(18rem, 31vw, 29rem);
+  border-color: rgba(184, 137, 66, 0.36);
+}
+
+.section-title-visual-image {
+  object-fit: cover;
+  object-position: center center;
+  filter: saturate(0.96) contrast(1.04);
+}
+
+.section-title-with-visual[data-visual="canon"] .section-title-visual-image,
+.section-title-with-visual[data-visual="contact"] .section-title-visual-image,
+.section-title-with-visual[data-visual="quiz"] .section-title-visual-image,
+.section-title-with-visual[data-visual="cloudLantern"] .section-title-visual-image,
+.section-title-with-visual[data-visual="login"] .section-title-visual-image {
+  object-position: center center;
+}
+
+.section-title-with-visual[data-visual^="admin"] .section-title-visual-image {
+  object-position: center center;
+  filter: saturate(0.9) contrast(1.08) brightness(0.96);
+}
+
+.section-title-visual-shade {
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.9), rgba(255, 250, 240, 0.58) 38%, rgba(255, 250, 240, 0.18) 70%, rgba(255, 250, 240, 0.04)),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.04), rgba(15, 61, 62, 0.08));
+}
+
+.section-title-block h2 {
+  color: #1b332e;
+  text-shadow: 0 8px 24px rgba(255, 250, 240, 0.62);
+}
+
+/* 这里统一卡片为设计稿中的宣纸浅卡，有细金线和轻微案头阴影。 */
+.scroll-panel,
+.ritual-card,
+.design-surface-card {
+  border: 1px solid rgba(184, 137, 66, 0.26);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 246, 0.96), rgba(250, 244, 232, 0.86) 54%, rgba(239, 244, 239, 0.72)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 360px 360px;
+}
+
+/* 这里让表单、筛选、后台输入框更接近设计稿里的浅色线框控件。 */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-color: rgba(184, 137, 66, 0.28);
+  background: rgba(255, 253, 246, 0.9);
+}
+
+/* 这里复刻问云小院和后台设计稿里的深青固定侧栏。 */
+.yard-sidebar,
+.workbench-sidebar {
+  width: 17rem;
+  border-right: 1px solid rgba(248, 223, 157, 0.18);
+  background:
+    linear-gradient(180deg, rgba(8, 58, 58, 0.96), rgba(6, 45, 45, 0.98)),
+    url("/assets/guofeng-ui-20260509/ornaments/bamboo-ink-border.png"),
+    repeating-linear-gradient(0deg, rgba(248, 223, 157, 0.06) 0 1px, transparent 1px 48px);
+  background-size: auto, 260px auto, auto;
+  background-position: center, left bottom, center;
+  background-repeat: no-repeat, no-repeat, repeat;
+}
+
+.yard-sidebar::after,
+.workbench-sidebar::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 14rem;
+  pointer-events: none;
+  content: "";
+  background: url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / auto 100% repeat-x;
+  opacity: 0.22;
+}
+
+/* 这里扩大工作台纸面，并加入设计稿中的淡墨山水台账底纹。 */
+.workbench-surface {
+  border: 1px solid rgba(184, 137, 66, 0.28);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 246, 0.96), rgba(250, 244, 232, 0.9) 50%, rgba(239, 244, 239, 0.8)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  background-size: auto, 420px 420px;
+}
+
+.workbench-frame-map {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.02), rgba(255, 250, 240, 0.28)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png");
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: auto 18rem;
+  opacity: 0.28;
+}
+
+/* 这里把后台页面的标题卡略微压暗，贴近深青管理端总稿。 */
+.workbench-sidebar ~ * .section-title-with-visual {
+  border-color: rgba(248, 223, 157, 0.32);
+}
+
+/* 这里校准移动端，使图像、入口条、表单不会溢出 785 设计档位。 */
+@media (max-width: 785px) {
+  .section-title-with-visual {
+    min-height: 16.5rem;
+  }
+
+  .section-title-visual-image {
+    object-position: center center;
+  }
+
+  .generated-icon-image {
+    padding: 9%;
+  }
+
+  .yard-sidebar,
+  .workbench-sidebar {
+    width: 17rem;
   }
 }
 

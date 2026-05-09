@@ -41,7 +41,7 @@ export function YardLanternsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的云灯" title="灯火已寄，静候清风" visual="lantern">
+      <SectionTitle eyebrow="我的云灯" title="灯火已寄，静候清风" visual="yardLanterns">
         这里展示你提交过的云灯和审核状态。公开后的云灯会出现在前台云灯留言页。
       </SectionTitle>
 

@@ -88,7 +88,7 @@ export function CloudLanternPage() {
 
   return (
     <PageShell size="wide">
-      <SectionTitle center eyebrow="云灯留言" title="点一盏云灯，照一段归途" visual="lantern">
+      <SectionTitle center eyebrow="云灯留言" title="点一盏云灯，照一段归途" visual="cloudLantern">
         留下一句祝福、一段心情、一个问候。云灯默认先由执事审核，避免广告和恶意内容扰乱山门。
       </SectionTitle>
 

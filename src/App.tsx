@@ -20,6 +20,7 @@ import { AdminEventsPage } from './pages/admin/AdminEventsPage'
 import { AdminLanternsPage } from './pages/admin/AdminLanternsPage'
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage'
 import { AdminStewardsPage } from './pages/admin/AdminStewardsPage'
+import { RouteScrollReset } from './components/RouteScrollReset'
 import { YardApplicationsPage } from './pages/yard/YardApplicationsPage'
 import { YardDashboardPage } from './pages/yard/YardDashboardPage'
 import { YardEventsPage } from './pages/yard/YardEventsPage'
@@ -54,6 +55,8 @@ export default function App() {
   return (
     // 这里使用 HashRouter 管理页面路径，部署到 GitHub Pages 子目录后刷新页面也不会误入 404。
     <HashRouter>
+      {/* 这里统一处理路由切换后的滚动位置，避免新页面沿用旧页面的阅读位置。 */}
+      <RouteScrollReset />
       <Routes>
         {/* 这里放置前台官网页面，共用顶部导航、底部信息和移动端导航。 */}
         <Route element={<SiteLayout />}>

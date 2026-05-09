@@ -11,7 +11,7 @@ interface WorkbenchFrameProps {
 // 这个函数渲染工作台外壳，入参是页面内容，返回值是统一的玉石宣纸背景容器。
 export function WorkbenchFrame({ children, className = '' }: WorkbenchFrameProps) {
   return (
-    <section className={`workbench-surface relative mx-auto min-h-[48vh] max-w-6xl overflow-hidden rounded-lg p-4 md:min-h-[58vh] md:p-6 lg:min-h-[calc(100vh-6rem)] ${className}`}>
+    <section className={`workbench-surface relative mx-auto min-h-[48vh] w-full max-w-[1500px] overflow-hidden rounded-lg p-4 md:min-h-[58vh] md:p-6 lg:min-h-[calc(100vh-6rem)] ${className}`}>
       {/* 这里绘制工作台内部的浅色经纬线，统一小院和后台每个页面的操作底盘。 */}
       <div aria-hidden="true" className="workbench-frame-map pointer-events-none absolute inset-0" />
       {/* 这里给工作台顶部加一条金线，强化后台和小院的高级仪表盘感。 */}

@@ -285,7 +285,7 @@ export function YardProfilePage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="我的资料" title="小院名片，自己掌灯" visual="courtyard">
+      <SectionTitle eyebrow="我的资料" title="小院名片，自己掌灯" visual="yardProfile">
         这里可维护登录安全、小院展示资料和名册资料。名册中的道名与联系方式改动需管理员审核。
       </SectionTitle>
 

@@ -12,7 +12,7 @@ export function NotFoundPage() {
         此路暂无山门，或许云雾遮了归途。不妨回到问云派首页，再寻来处。
       </p>
       {/* 这里用纯代码山门场景提示路径已断，不使用任何现有图片素材。 */}
-      <CodeScene className="code-scene-light mt-8 min-h-56 w-full" label="问云派 404 归途纯代码场景" variant="map" />
+      <CodeScene className="code-scene-light mt-8 min-h-56 w-full" label="问云派 404 归途国风场景" variant="notFound" />
       <div className="mt-8">
         <CloudButton to="/" variant="seal">
           返回山门

@@ -1,10 +1,11 @@
 import { CodeScene } from './CodeScene'
 import { ScrollPanel } from './ScrollPanel'
+import type { GuofengVisualKey } from '../data/visualAssets'
 
 // 这个类型描述页面场景横幅的入参，入参用于控制图形主题、说明文字和明暗底色。
 interface SceneBannerProps {
   // 场景主题，用于选择山门、卷轴、云灯、小院、工作台或地图。
-  variant?: 'gate' | 'scroll' | 'lantern' | 'courtyard' | 'workbench' | 'map'
+  variant?: GuofengVisualKey
   // 场景说明，用于无障碍朗读，也方便维护者知道这一块在表达什么。
   label: string
   // 是否使用浅色场景，前台和小院多数页面用浅色，后台多数页面用深色。

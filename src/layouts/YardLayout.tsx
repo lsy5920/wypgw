@@ -39,12 +39,12 @@ export function YardLayout() {
 
   return (
     <div className="wenyun-shell min-h-screen bg-[#eef3ef] text-[#172b2c]">
-      <aside className="yard-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#172b2c] backdrop-blur-xl lg:block">
+      <aside className="yard-sidebar fixed inset-y-0 left-0 hidden w-72 p-5 text-[#f6f4ef] backdrop-blur-xl lg:block">
         <Link className="mb-8 flex items-center gap-3" to="/">
-          <BrandMark className="border-[#b8473f]/35 shadow-md shadow-[#b8473f]/12" size="normal" />
+          <BrandMark className="border-[#f8df9d]/45 shadow-lg shadow-[#07171d]/20" size="normal" />
           <div>
-            <p className="ink-title text-xl font-bold text-[#173332]">问云小院</p>
-            <p className="text-xs text-[#7a6a48]">一方清净，安放来路</p>
+            <p className="ink-title text-xl font-bold text-[#fff8e8]">问云小院</p>
+            <p className="text-xs text-[#f8df9d]">一方清净，安放来路</p>
           </div>
         </Link>
 
@@ -56,7 +56,7 @@ export function YardLayout() {
               <NavLink
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition ${
-                    isActive ? 'bg-[#b8473f] !text-white shadow-md shadow-[#b8473f]/18' : 'text-[#40524f] hover:bg-[#edf3ef]'
+                    isActive ? 'bg-[#fff8e8] !text-[#102a31] shadow-md shadow-[#07171d]/16' : 'text-[#f4efe0] hover:bg-white/10'
                   }`
                 }
                 end={item.path === '/yard'}
@@ -82,7 +82,7 @@ export function YardLayout() {
         ) : null}
 
         <div className="absolute bottom-5 left-5 right-5 grid gap-3">
-          <Link className="flex items-center justify-center gap-2 rounded-lg border border-[#2f6f68]/18 bg-white/72 px-4 py-3 text-sm text-[#40524f]" to="/">
+          <Link className="flex items-center justify-center gap-2 rounded-lg border border-[#f8df9d]/28 bg-white/8 px-4 py-3 text-sm text-[#fff8e8]" to="/">
             <FileText className="h-4 w-4" />
             返回官网
           </Link>
@@ -137,7 +137,7 @@ export function YardLayout() {
           </nav>
         </header>
 
-        <main className="mx-auto max-w-6xl px-3 py-5 md:px-8 md:py-8">
+        <main className="mx-auto max-w-[1540px] px-3 py-5 md:px-8 md:py-8">
           <WorkbenchFrame>
           <Outlet />
           </WorkbenchFrame>

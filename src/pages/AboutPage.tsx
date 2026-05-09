@@ -9,7 +9,7 @@ import { sectRoles, spiritItems } from '../data/siteContent'
 export function AboutPage() {
   return (
     <PageShell size="wide">
-      <SectionTitle center eyebrow="山门介绍" title="问云派，不是冷群，是有规矩的家" visual="gate">
+      <SectionTitle center eyebrow="山门介绍" title="问云派，不是冷群，是有规矩的家" visual="about">
         身处尘世，不失清明；心有疑问，仍向云天；来者可歇，去者自由。
       </SectionTitle>
 

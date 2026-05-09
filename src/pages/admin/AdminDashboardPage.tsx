@@ -61,7 +61,7 @@ export function AdminDashboardPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="后台总览" title="护灯与守门" visual="workbench">
+      <SectionTitle eyebrow="后台总览" title="护灯与守门" visual="adminDashboard">
         查看名册登记、云灯留言、公告和雅集的当前状态。
       </SectionTitle>
 

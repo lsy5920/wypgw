@@ -141,7 +141,7 @@ export function YardDashboardPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="问云小院" title={`${overview.profile.nickname}，欢迎回院`} visual="courtyard">
+      <SectionTitle eyebrow="问云小院" title={`${overview.profile.nickname}，欢迎回院`} visual="yardDashboard">
         这里收着你的名帖、云灯、雅集报名和状态提醒。愿小院清静，也愿来路从容。
       </SectionTitle>
 

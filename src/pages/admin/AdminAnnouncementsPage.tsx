@@ -85,7 +85,7 @@ export function AdminAnnouncementsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="公告管理" title="发布山门近讯" visual="scroll">
+      <SectionTitle eyebrow="公告管理" title="发布山门近讯" visual="adminAnnouncements">
         公告可先保存草稿，也可直接发布到前台公告页。
       </SectionTitle>
 

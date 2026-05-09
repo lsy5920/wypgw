@@ -81,7 +81,7 @@ export function YardNotificationsPage() {
 
   return (
     <div>
-      <SectionTitle eyebrow="消息提醒" title="小院来信，灯火有回音" visual="lantern">
+      <SectionTitle eyebrow="消息提醒" title="小院来信，灯火有回音" visual="yardNotifications">
         名帖、云灯和雅集状态变化会写入这里。若 SMTP 已配置，也会同步尝试发送邮件。
       </SectionTitle>
 
