@@ -5525,9 +5525,55 @@ body:has(.interaction-reference-page)::after {
   font-size: 1.35rem;
 }
 
+/* 这里用一条细金线分隔标题栏和试卷区域，让页面更接近设计稿的宣纸边界。 */
+.quiz-visual-rule {
+  height: 1px;
+  margin: -0.15rem 0 0.95rem;
+  background: linear-gradient(90deg, transparent, rgba(201, 164, 92, 0.44), transparent);
+}
+
+/* 这里设置登录前和加载中的开考卡片，保证未登录时不会直接露出试题。 */
+.quiz-gate-card {
+  display: grid;
+  width: min(100%, 48rem);
+  min-height: 14rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  margin: 2.5rem auto 0;
+  padding: 1.55rem 1.7rem;
+}
+
+/* 这里统一开考卡片标题的书卷气字体，保持和互动页标题一致。 */
+.quiz-gate-card h2 {
+  color: #173332;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  font-weight: 900;
+}
+
+/* 这里控制开考说明的阅读宽度，避免长句在桌面端过宽。 */
+.quiz-gate-card p {
+  max-width: 34rem;
+  margin: 0.5rem 0 1rem;
+  color: #40524f;
+  line-height: 1.8;
+}
+
+/* 这里绘制登录提醒图标的朱砂提示态，和交卷按钮形成同一强调色。 */
+.quiz-gate-warning {
+  width: 3.4rem;
+  height: 3.4rem;
+  border: 1px solid rgba(184, 71, 63, 0.28);
+  border-radius: 999px;
+  background: rgba(184, 71, 63, 0.08);
+  color: #a53b31;
+  padding: 0.7rem;
+}
+
 .quiz-reference-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(13.5rem, 0.32fr);
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.34fr);
   gap: 1.25rem;
   align-items: start;
 }
@@ -5642,12 +5688,14 @@ body:has(.interaction-reference-page)::after {
 }
 
 .quiz-rule-card,
-.quiz-state-card {
+.quiz-state-card,
+.quiz-map-card {
   padding: 1.25rem 1.15rem;
 }
 
 .quiz-rule-card h2,
-.quiz-state-card h2 {
+.quiz-state-card h2,
+.quiz-map-card h2 {
   color: #173332;
   font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
   font-size: 1.35rem;
@@ -5675,6 +5723,60 @@ body:has(.interaction-reference-page)::after {
   margin-top: 0.45rem;
   color: #40524f;
   font-size: 0.88rem;
+}
+
+/* 这里把三十道题做成紧凑题号盘，方便桌面端快速定位。 */
+.quiz-question-map {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+/* 这里设置单个题号按钮的默认纸面样式，避免按钮撑宽侧栏。 */
+.quiz-map-button {
+  position: relative;
+  min-width: 0;
+  min-height: 2.15rem;
+  border: 1px solid rgba(120, 96, 72, 0.23);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.76);
+  color: #40524f;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+/* 这里标识已经作答的题，让用户能快速发现漏答题。 */
+.quiz-map-button.is-answered {
+  border-color: rgba(15, 61, 62, 0.22);
+  background: rgba(15, 61, 62, 0.08);
+  color: #173332;
+}
+
+/* 这里标识当前题，使用深青底色和试卷选中态保持一致。 */
+.quiz-map-button.is-active {
+  background: linear-gradient(135deg, #0f3d3e, #245f58);
+  color: #fff8e8;
+  box-shadow: 0 10px 18px rgba(15, 61, 62, 0.16);
+}
+
+/* 这里给已标记题号加一个小朱砂点，提醒用户回看。 */
+.quiz-map-button.is-marked::after {
+  position: absolute;
+  top: -0.18rem;
+  right: -0.12rem;
+  width: 0.52rem;
+  height: 0.52rem;
+  border-radius: 999px;
+  background: #a53b31;
+  content: "";
+}
+
+/* 这里让标记按钮在已标记时有明显反馈，避免用户误以为没有保存。 */
+.quiz-mark-button.is-marked {
+  border-color: rgba(184, 71, 63, 0.28);
+  background: rgba(184, 71, 63, 0.08);
+  color: #7f2e2a;
 }
 
 .quiz-action-bar {
@@ -6240,24 +6342,95 @@ body:has(.interaction-reference-page)::after {
 @media (max-width: 785px) {
   .interaction-reference-page {
     overflow: visible;
-    padding: 5.45rem 0.75rem 1rem;
+    padding: 4.95rem 0.75rem 0;
+  }
+
+  /* 这里按新生成的手机端设计图，把问云考核标题区改成整块水墨首屏。 */
+  .quiz-page-heading {
+    gap: 1rem;
+    margin: 0 -0.75rem 1rem;
+  }
+
+  /* 这里让标题簇在手机端居中展示，形成盾牌、标题、副标题三层结构。 */
+  .quiz-page-heading .interaction-title-cluster {
+    display: grid;
+    min-height: 21.2rem;
+    justify-items: center;
+    align-content: center;
+    gap: 0.65rem;
+    padding: 2.3rem 1rem 2rem;
+    border-bottom: 1px solid rgba(201, 164, 92, 0.26);
+    background:
+      linear-gradient(180deg, rgba(247, 242, 232, 0.1), rgba(249, 244, 235, 0.6) 68%, rgba(248, 241, 228, 0.95)),
+      url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+    text-align: center;
   }
 
   .interaction-title-cluster {
     gap: 0.75rem;
   }
 
-  .interaction-title-icon {
-    width: 3.25rem;
-    height: 3.25rem;
+  /* 这里把问云考核的盾牌图标放大，贴近移动端设计稿的主视觉比例。 */
+  .quiz-page-heading .interaction-title-icon {
+    width: 4.6rem;
+    height: 4.6rem;
+    background: rgba(255, 252, 245, 0.86);
   }
 
+  /* 这里让手机端问云考核标题成为页面视觉中心，和生成图的题字大小接近。 */
+  .quiz-page-heading .interaction-title-cluster h1 {
+    margin-top: 0.25rem;
+    font-size: clamp(2.95rem, 13vw, 3.35rem);
+    line-height: 1.08;
+  }
+
+  /* 这里给副标题加深青色与宽松字距，匹配设计图中的清雅横幅感。 */
+  .quiz-page-heading .interaction-title-cluster p {
+    color: #0f5654;
+    font-size: 1.05rem;
+    font-weight: 900;
+  }
+
+  /* 这里让普通互动页标题仍保持原有手机尺寸，避免问云考核样式误伤其他页面。 */
   .interaction-title-cluster h1 {
     font-size: clamp(1.85rem, 9vw, 2.45rem);
   }
 
+  /* 这里把问云考核的进度和得分卡改成设计图里的大纸卡。 */
+  .quiz-progress-card,
+  .quiz-score-card {
+    width: calc(100% - 1.5rem);
+    margin-inline: 0.75rem;
+    padding: 1.25rem 1.05rem;
+  }
+
+  /* 这里把进度卡文字拆成更适合手机阅读的块状节奏。 */
+  .quiz-progress-card span {
+    display: block;
+    color: #173332;
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  /* 这里让进度条更像生成图里的细长墨青刻度。 */
+  .quiz-progress-card div {
+    height: 0.62rem;
+    margin-top: 0.65rem;
+  }
+
+  /* 这里让得分卡在手机端居中留白，形成独立分数牌。 */
+  .quiz-score-card {
+    min-height: 5.25rem;
+    align-content: center;
+  }
+
+  .quiz-score-card strong {
+    font-size: 1.55rem;
+  }
+
   .roster-wall-card,
   .roster-submit-card,
+  .quiz-gate-card,
   .quiz-question-card,
   .quiz-analysis-card,
   .quiz-rule-card,
@@ -6265,6 +6438,47 @@ body:has(.interaction-reference-page)::after {
   .lantern-form-card,
   .login-reference-card {
     padding: 1rem;
+  }
+
+  /* 这里让手机端开考卡从图标加文字横排改成纵向阅读，避免内容挤压。 */
+  .quiz-gate-card {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    min-height: 17.4rem;
+    margin: 2rem 0.75rem 0;
+    padding: 1.35rem 1rem 1.2rem;
+    text-align: center;
+  }
+
+  /* 这里按设计图把登录提示图标做成居中的朱砂圆章。 */
+  .quiz-gate-warning {
+    width: 4rem;
+    height: 4rem;
+    border-color: rgba(184, 71, 63, 0.34);
+    background: rgba(184, 71, 63, 0.09);
+    color: #a53b31;
+    padding: 0.85rem;
+  }
+
+  /* 这里让登录提示标题使用朱砂色，贴近生成图的提示重点。 */
+  .quiz-gate-card h2 {
+    color: #a53b31;
+    font-size: clamp(2rem, 10vw, 2.55rem);
+  }
+
+  /* 这里控制登录提示正文在手机端逐行舒展，避免文字贴边。 */
+  .quiz-gate-card p {
+    margin: 0.8rem auto 1.05rem;
+    color: #40524f;
+    font-size: 0.98rem;
+    line-height: 1.9;
+  }
+
+  /* 这里把登录按钮改成生成图里的整行主按钮，触控面积更稳。 */
+  .quiz-gate-card .interaction-primary-button {
+    width: 100%;
+    min-height: 3.3rem;
+    font-size: 1.05rem;
   }
 
   .roster-card-row {
@@ -6324,6 +6538,18 @@ body:has(.interaction-reference-page)::after {
     height: 7rem;
     margin-top: 0.75rem;
     border-radius: 8px;
+  }
+
+  /* 这里让手机端题号盘一行放六题，三十题正好分成五行。 */
+  .quiz-question-map {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  /* 这里让手机端底部操作按钮占满整行，触控更稳也不会互相挤压。 */
+  .quiz-action-bar .interaction-ghost-button,
+  .quiz-action-bar .interaction-primary-button,
+  .quiz-action-bar .interaction-seal-button {
+    width: 100%;
   }
 
   .lantern-bottom-scene {

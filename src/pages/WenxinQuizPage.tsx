@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronLeft, ChevronRight, FileText, RotateCcw, Send, Star } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, FileText, RotateCcw, Send, Star } from 'lucide-react'
 import { FormEvent, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GeneratedIcon } from '../components/GeneratedIcon'
@@ -27,6 +27,12 @@ function getScoreAdvice(score: number): string {
   return wenxinScoreLevels.find((item) => score >= item.min && score <= item.max)?.text ?? wenxinScoreLevels[wenxinScoreLevels.length - 1].text
 }
 
+// 这个函数把题号格式化成两位数字，入参是题号，返回值用于题号导航显示。
+function formatQuestionNumber(questionId: number): string {
+  // 这里统一补零，让题号按钮在视觉上更整齐。
+  return String(questionId).padStart(2, '0')
+}
+
 // 这个函数渲染问心考核页面，入参为空，返回值是按设计稿重写后的试卷、须知和交卷区域。
 export function WenxinQuizPage() {
   // 这里读取登录资料，考核结果必须绑定账号后才能保存。
@@ -37,6 +43,8 @@ export function WenxinQuizPage() {
   const [result, setResult] = useState<WenxinQuizResult | null>(null)
   // 这个状态保存当前正在作答的题目位置，从 0 开始计算。
   const [currentIndex, setCurrentIndex] = useState(0)
+  // 这个状态保存被标记的题号，返回值用于题号导航和标记按钮高亮。
+  const [markedQuestionIds, setMarkedQuestionIds] = useState<number[]>([])
   // 这个状态表示是否正在提交，返回值用于禁用交卷按钮。
   const [submitting, setSubmitting] = useState(false)
   // 这个状态保存页面提示，返回值用于展示登录、漏答、提交结果。
@@ -55,8 +63,12 @@ export function WenxinQuizPage() {
   const currentAnswer = answers[String(currentQuestion.id)] ?? []
   // 这个变量表示当前题目是否已经作答，返回值用于控制下一题按钮。
   const currentAnswered = currentAnswer.length > 0
+  // 这个变量表示当前题目是否已标记，返回值用于按钮文案和样式。
+  const currentMarked = markedQuestionIds.includes(currentQuestion.id)
   // 这个变量保存当前进度百分比，返回值用于顶部进度条宽度。
   const progressPercent = Math.round((answeredCount / totalQuestions) * 100)
+  // 这个变量保存剩余未答题数，返回值用于侧边状态卡和登录提示。
+  const remainingCount = Math.max(totalQuestions - answeredCount, 0)
   // 这个变量保存题目背景插图，返回值用于题目解析卡片的右侧山水。
   const quizSceneImage = getGuofengVisualPath('quiz')
 
@@ -85,6 +97,7 @@ export function WenxinQuizPage() {
     // 这里把题目位置限制在有效范围内，避免越界导致页面没有题目可显示。
     const safeIndex = Math.min(Math.max(nextIndex, 0), totalQuestions - 1)
     setCurrentIndex(safeIndex)
+    setNotice(null)
   }
 
   // 这个函数进入下一题，入参为空，返回值为空。
@@ -103,6 +116,24 @@ export function WenxinQuizPage() {
   function goPrevQuestion() {
     setNotice(null)
     goToQuestion(currentIndex - 1)
+  }
+
+  // 这个函数切换当前题目标记，入参为空，返回值为空。
+  function toggleCurrentMark() {
+    setMarkedQuestionIds((current) => {
+      // 这里已标记时再次点击会取消标记，方便用户整理需要回看的题。
+      if (current.includes(currentQuestion.id)) {
+        return current.filter((questionId) => questionId !== currentQuestion.id)
+      }
+
+      return [...current, currentQuestion.id]
+    })
+  }
+
+  // 这个函数提示错题记录生成时机，入参为空，返回值为空。
+  function showMistakeHint() {
+    // 这里先给明确反馈，避免按钮点了没有反应；真实错题明细仍以交卷结果为准。
+    setNotice({ type: 'info', title: '交卷后生成', message: '错题记录会在完成交卷后根据本次答案生成，请先答完全部题目。' })
   }
 
   // 这个函数计算当前答案得分，入参为空，返回值包含分数和答对数量。
@@ -129,7 +160,7 @@ export function WenxinQuizPage() {
 
     // 这里要求先登录，保证成绩能回到用户小院和后台。
     if (!profile) {
-      setNotice({ type: 'error', title: '请先登录', message: '问心考核需要绑定你的问云小院账号，登录后才能记录成绩。' })
+      setNotice({ type: 'error', title: '请先登录', message: '问云考核需要绑定你的问云小院账号，登录后才能记录成绩。' })
       return
     }
 
@@ -155,7 +186,7 @@ export function WenxinQuizPage() {
       setResult(saveResult.data)
       setNotice({
         type: saveResult.ok && passed ? 'success' : saveResult.ok ? 'info' : 'error',
-        title: saveResult.ok ? (passed ? '问心合格' : '已记录本次考核') : '提交失败',
+        title: saveResult.ok ? (passed ? '问云合格' : '已记录本次考核') : '提交失败',
         message: saveResult.ok ? `${scoreSummary.score} 分，${getScoreAdvice(scoreSummary.score)}。` : saveResult.message
       })
     } finally {
@@ -170,22 +201,23 @@ export function WenxinQuizPage() {
     setResult(null)
     setNotice(null)
     setCurrentIndex(0)
+    setMarkedQuestionIds([])
   }
 
   return (
-    <section className="interaction-reference-page quiz-reference-page" aria-label="问心考核">
+    <section className="interaction-reference-page quiz-reference-page" aria-label="问云考核">
       <div className="interaction-paper-shell">
         {/* 这里还原设计稿顶部标题、进度条和当前得分卡。 */}
         <header className="interaction-page-heading quiz-page-heading">
           <div className="interaction-title-cluster">
             <GeneratedIcon className="interaction-title-icon" name="shield" />
             <div>
-              <h1>问心考核</h1>
-              <p>以心明道，方可入派</p>
+              <h1>问云考核</h1>
+              <p>以心明规，方可入派</p>
             </div>
           </div>
           <div className="quiz-progress-card">
-            <span>进度：{answeredCount} / {totalQuestions}</span>
+            <span>进度：{answeredCount} / {totalQuestions}，尚余 {remainingCount} 题</span>
             <div>
               <i style={{ width: `${progressPercent}%` }} />
             </div>
@@ -196,12 +228,34 @@ export function WenxinQuizPage() {
           </div>
         </header>
 
+        <div className="quiz-visual-rule" aria-hidden="true" />
+
         {notice ? (
           <div className="interaction-notice-row">
             <StatusNotice type={notice.type} title={notice.title} message={notice.message} />
           </div>
         ) : null}
 
+        {loading ? (
+          <section className="interaction-corner-card quiz-gate-card" aria-label="正在读取登录状态">
+            <GeneratedIcon className="interaction-state-icon" name="gate" />
+            <div>
+              <h2>正在开卷</h2>
+              <p>系统正在确认你的问云小院账号，请稍候片刻。</p>
+            </div>
+          </section>
+        ) : !profile ? (
+          <section className="interaction-corner-card quiz-gate-card" aria-label="登录后参加问云考核">
+            <AlertTriangle className="quiz-gate-warning" />
+            <div>
+              <h2>请先登录小院</h2>
+              <p>问云考核需要绑定你的问云小院账号，合格成绩会用于递交名帖和后台审核。</p>
+              <Link className="interaction-primary-button" to="/login">
+                登录后开考
+              </Link>
+            </div>
+          </section>
+        ) : (
         <form className="quiz-reference-form" onSubmit={handleSubmit}>
           <div className="quiz-reference-layout">
             {/* 这里还原设计稿左侧大试卷卡。 */}
@@ -209,7 +263,7 @@ export function WenxinQuizPage() {
               <section className="interaction-corner-card quiz-question-card" aria-label="当前题目">
                 <div className="quiz-question-head">
                   <p>
-                    第 {currentQuestion.id} 题 <span>({currentQuestion.type === 'single' ? '单选题' : '多选题'})</span>
+                    第 {formatQuestionNumber(currentQuestion.id)} 题 <span>({currentQuestion.type === 'single' ? '单选题' : '多选题'})</span>
                   </p>
                   <small>{currentQuestion.score} 分 · {currentQuestion.source}</small>
                 </div>
@@ -246,20 +300,39 @@ export function WenxinQuizPage() {
                 <ul>
                   <li>共 {totalQuestions} 题，总分 100 分</li>
                   <li>80 分及以上为合格</li>
-                  <li>可随时中断，下次继续</li>
+                  <li>单选题只选一项，多选题需选全</li>
                   <li>交卷后不可修改本次答案</li>
                 </ul>
               </section>
               <section className="interaction-corner-card quiz-state-card">
                 <h2>本次状态</h2>
                 <strong>{answeredCount === totalQuestions ? '可以交卷' : '进行中'}</strong>
-                <p>还需作答 {Math.max(totalQuestions - answeredCount, 0)} 题</p>
-                {loading ? <p>正在读取登录状态...</p> : null}
-                {!loading && !profile ? (
-                  <Link className="interaction-small-link" to="/login">
-                    登录后保存成绩
-                  </Link>
-                ) : null}
+                <p>还需作答 {remainingCount} 题，已标记 {markedQuestionIds.length} 题。</p>
+              </section>
+              <section className="interaction-corner-card quiz-map-card" aria-label="题号导航">
+                <h2>题号导航</h2>
+                <div className="quiz-question-map">
+                  {wenxinQuizQuestions.map((question, index) => {
+                    // 这个变量表示该题是否已经有答案，用于题号按钮的完成态。
+                    const answered = (answers[String(question.id)] ?? []).length > 0
+                    // 这个变量表示该题是否被标记，用于题号按钮的星标态。
+                    const marked = markedQuestionIds.includes(question.id)
+                    // 这个变量表示该题是否是当前题，用于题号按钮的当前态。
+                    const active = index === currentIndex
+
+                    return (
+                      <button
+                        aria-label={`跳到第 ${question.id} 题`}
+                        className={`quiz-map-button ${active ? 'is-active' : ''} ${answered ? 'is-answered' : ''} ${marked ? 'is-marked' : ''}`}
+                        key={question.id}
+                        onClick={() => goToQuestion(index)}
+                        type="button"
+                      >
+                        {formatQuestionNumber(question.id)}
+                      </button>
+                    )
+                  })}
+                </div>
               </section>
             </aside>
           </div>
@@ -274,11 +347,11 @@ export function WenxinQuizPage() {
               <RotateCcw className="h-4 w-4" />
               重做
             </button>
-            <button className="interaction-ghost-button" type="button">
+            <button className={`interaction-ghost-button quiz-mark-button ${currentMarked ? 'is-marked' : ''}`} onClick={toggleCurrentMark} type="button">
               <Star className="h-4 w-4" />
-              标记本题
+              {currentMarked ? '取消标记' : '标记本题'}
             </button>
-            <button className="interaction-ghost-button" type="button">
+            <button className="interaction-ghost-button" onClick={showMistakeHint} type="button">
               <FileText className="h-4 w-4" />
               错题记录
             </button>
@@ -298,13 +371,14 @@ export function WenxinQuizPage() {
           {result?.passed && profile ? (
             <div className="quiz-pass-card">
               <CheckCircle2 className="h-5 w-5" />
-              <p>你已通过问心考核，可以前往问云名册递交登记。</p>
+              <p>你已通过问云考核，可以前往问云名册递交登记。</p>
               <Link className="interaction-small-link" to="/join">
                 前往登记
               </Link>
             </div>
           ) : null}
         </form>
+        )}
       </div>
     </section>
   )

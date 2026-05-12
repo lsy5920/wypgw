@@ -18,7 +18,7 @@ interface HomeEntryCard {
 // 这个数组保存首页五个入口，返回值用于复刻设计稿底部居中的入口卡片。
 const homeEntryCards: HomeEntryCard[] = [
   { label: '立派金典', summary: '立派根本 全章传承', icon: 'scroll', path: '/canon' },
-  { label: '问心考核', summary: '持心明德 自证方向', icon: 'shield', path: '/wenxin-quiz' },
+  { label: '问云考核', summary: '持心明规 自证方向', icon: 'shield', path: '/wenxin-quiz' },
   { label: '云灯留言', summary: '灯火相伴 温暖同行', icon: 'lantern', path: '/cloud-lantern' },
   { label: '问云小院', summary: '我的名帖 云灯雅集', icon: 'gate', path: '/yard' },
   { label: '公告活动', summary: '公告良言 活动雅集', icon: 'notice', path: '/announcements' }

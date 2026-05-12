@@ -201,7 +201,7 @@ export function YardDashboardPage() {
         <YardMetricCard icon="roster" label="我的名帖" note={latestApplication ? applicationStatusLabels[latestApplication.status] : '等待递帖'} tone="gold" value={overview.applications.length} />
         <YardMetricCard icon="lantern" label="我的云灯" note={latestLantern ? lanternStatusLabels[latestLantern.status] : '尚未点灯'} tone="paper" value={overview.lanterns.length} />
         <YardMetricCard icon="calendar" label="我的雅集" note={formatRegistrationStatus(latestRegistration?.status ?? null)} tone="jade" value={overview.registrations.length} />
-        <YardMetricCard icon="shieldCheck" label="问心考核" note={latestQuiz?.passed ? '已合格' : '未合格或未参加'} tone="purple" value={latestQuiz ? `${latestQuiz.score}分` : '未考'} />
+        <YardMetricCard icon="shieldCheck" label="问云考核" note={latestQuiz?.passed ? '已合格' : '未合格或未参加'} tone="purple" value={latestQuiz ? `${latestQuiz.score}分` : '未考'} />
         <YardMetricCard icon="bell" label="消息提醒" note={`未读 ${overview.notifications.filter((item) => !item.read_at).length} 条`} tone="seal" value={overview.notifications.length} />
       </div>
 
@@ -239,7 +239,7 @@ export function YardDashboardPage() {
               查看我的资料
             </Link>
           }
-          subtitle="道名、城市、自述与问心状态汇总。"
+          subtitle="道名、城市、自述与问云考核状态汇总。"
           title="小院资料"
         >
           <div className="yard-profile-card">
@@ -261,7 +261,7 @@ export function YardDashboardPage() {
               <dd>{overview.profile.bio ?? '尚未写下小院自述。'}</dd>
             </div>
             <div>
-              <dt>问心考核</dt>
+              <dt>问云考核</dt>
               <dd>
                 {latestQuiz ? `${latestQuiz.score}/${latestQuiz.total_score}，${latestQuiz.passed ? '已合格' : '未合格'}` : '尚未参加'}
                 <Link className="yard-inline-link" to="/wenxin-quiz">

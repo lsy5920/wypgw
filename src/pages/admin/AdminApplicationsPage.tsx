@@ -357,7 +357,7 @@ export function AdminApplicationsPage() {
             <div className="admin-application-detail">
               <div className="admin-detail-summary">
                 <div>
-                  <span>问心成绩</span>
+                  <span>问云成绩</span>
                   <strong>{selectedQuiz ? `${selectedQuiz.score} 分` : '未参加'}</strong>
                   <p>{selectedQuiz?.passed ? '已达登记门槛' : '尚未确认合格'}</p>
                 </div>

@@ -29,7 +29,7 @@ const initialForm: JoinApplicationInput = {
 }
 
 // 这个数组保存名册登记流程步骤，返回值用于折叠状态下给新同门看清先后顺序。
-const rosterJoinSteps = ['登录小院', '问心合格', '递交名帖', '执事审核']
+const rosterJoinSteps = ['登录小院', '问云合格', '递交名帖', '执事审核']
 
 // 这个数组保存名册头像可复用插图，返回值用于让每张名帖有水墨头像而不是空白圆点。
 const rosterAvatarVisuals = ['roster', 'quiz', 'cloudLantern', 'login'] as const
@@ -183,8 +183,8 @@ export function JoinPage() {
     : existingApplication
       ? `已递交名帖：${applicationStatusLabels[existingApplication.status]}`
       : quizResult?.passed
-        ? `问心已合格：${quizResult.score} 分`
-        : '待完成问心考核'
+        ? `问云已合格：${quizResult.score} 分`
+        : '待完成问云考核'
 
   // 这个函数更新文字或勾选字段，入参是字段名和值，返回值为空。
   function updateField(field: keyof JoinApplicationInput, value: string | boolean) {
@@ -222,7 +222,7 @@ export function JoinPage() {
 
     // 这里要求最新一次问心考核合格后才能提交名帖。
     if (!quizResult?.passed) {
-      setNotice({ type: 'error', title: '请先完成问心考核', message: '登记入册前需要先完成问心考核，并且最新成绩达到 80 分以上。' })
+      setNotice({ type: 'error', title: '请先完成问云考核', message: '登记入册前需要先完成问云考核，并且最新成绩达到 80 分以上。' })
       return
     }
 
@@ -370,7 +370,7 @@ export function JoinPage() {
                 递交名帖
               </p>
               <h2>新成员登记入口</h2>
-              <p>第一次来的同门，请先完成问心考核，再填写可公开与仅后台核对的资料。</p>
+              <p>第一次来的同门，请先完成问云考核，再填写可公开与仅后台核对的资料。</p>
             </div>
             <div className="roster-submit-actions">
               <span>{gateStatusText}</span>
@@ -419,7 +419,7 @@ export function JoinPage() {
                 <div className="interaction-state-card">
                   <GeneratedIcon className="interaction-state-icon" name="shield" />
                   <div>
-                    <strong>请先完成问心考核</strong>
+                    <strong>请先完成问云考核</strong>
                     <p>当前结果：{quizResult ? `${quizResult.score} 分，尚未达到登记门槛。` : '尚未参加考核。'}</p>
                   </div>
                   <Link className="interaction-small-link" to="/wenxin-quiz">
