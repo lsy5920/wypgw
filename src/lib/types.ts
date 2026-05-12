@@ -4,8 +4,8 @@ export type JoinApplicationStatus = 'pending' | 'approved' | 'rejected' | 'conta
 // 这个类型表示名册公开展示的性别选项。
 export type MemberGender = '男' | '女'
 
-// 这个类型表示问云名册中的公开身份，普通用户默认是同门，只能由管理员调整。
-export type WenyunMemberRole = '掌门' | '执事' | '护灯人' | '同门'
+// 这个类型表示问云名册中的公开身份，普通用户默认是同门，只能由管理员调整；末尾两个旧身份用于兼容尚未迁移的历史数据。
+export type WenyunMemberRole = '掌门' | '执灯长老' | '云纪执事' | '文案执事' | '雅集执事' | '同门' | '执事' | '护灯人'
 
 // 这个类型表示云灯留言在审核流程中的状态。
 export type LanternStatus = 'pending' | 'approved' | 'rejected'
@@ -82,10 +82,10 @@ export interface AdminUserAccountUpdateInput {
   password: string
 }
 
-// 这个类型描述问心考核答案，键是题号，值是用户选择的选项编号。
+// 这个类型描述问云考核答案，键是题号，值是用户选择的选项编号。
 export type WenxinQuizAnswerMap = Record<string, string[]>
 
-// 这个接口描述问心考核结果，入参来自 Supabase wenxin_quiz_results 表，返回值用于小院、后台和登记门槛判断。
+// 这个接口描述问云考核结果，入参来自 Supabase wenxin_quiz_results 表，返回值用于小院、后台和登记门槛判断。
 export interface WenxinQuizResult {
   // 结果唯一编号，由数据库生成。
   id: string
@@ -107,7 +107,7 @@ export interface WenxinQuizResult {
   created_at: string
 }
 
-// 这个接口描述提交问心考核时需要传入的数据，入参来自前台考核页，返回值用于服务层保存。
+// 这个接口描述提交问云考核时需要传入的数据，入参来自前台考核页，返回值用于服务层保存。
 export interface WenxinQuizSubmitInput {
   // 本次得分。
   score: number
@@ -181,7 +181,7 @@ export interface JoinApplication {
   city: string | null
   // 申请理由是审核时最重要的文字。
   reason: string
-  // 是否认同门规，必须为真才允许提交。
+  // 是否认同金典，必须为真才允许提交。
   accept_rules: boolean
   // 门派身份，只能由管理员在后台编辑。
   member_role: WenyunMemberRole | null
@@ -257,7 +257,7 @@ export interface JoinApplicationInput {
   companion_expectation: string
   // 联系方式，不能为空，只供后台联系和账号绑定排查。
   legacy_contact: string
-  // 是否认同门规，必须勾选。
+  // 是否认同金典，必须勾选。
   accept_rules: boolean
 }
 
@@ -277,7 +277,7 @@ export interface RosterEntry {
   birth_month: string | null
   // 所在城市，用于名册展示。
   city: string | null
-  // 公开身份，例如掌门、执事、护灯人、同门。
+  // 公开身份，例如掌门、执灯长老、云纪执事、文案执事、雅集执事、同门。
   member_role: WenyunMemberRole
   // 辈分字，例如“云”。
   generation_name: string
@@ -319,7 +319,7 @@ export interface JoinApplicationUpdateInput {
   raw_region: string
   // 申请理由。
   reason: string
-  // 是否认同门规。
+  // 是否认同金典。
   accept_rules: boolean
   // 管理员备注。
   admin_note: string
@@ -419,7 +419,7 @@ export interface Announcement {
   title: string
   // 公告地址别名，用于后续详情页扩展。
   slug: string
-  // 公告分类，例如山门公告、门规更新。
+  // 公告分类，例如山门公告、金典修订。
   category: string
   // 公告摘要，用于列表展示。
   summary: string | null
@@ -539,7 +539,7 @@ export interface YardOverview {
   registrations: EventRegistration[]
   // 当前用户最近提醒。
   notifications: UserNotification[]
-  // 当前用户最新一次问心考核结果，没有考过时为空。
+  // 当前用户最新一次问云考核结果，没有考过时为空。
   quizResult: WenxinQuizResult | null
 }
 

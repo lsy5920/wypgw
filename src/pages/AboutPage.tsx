@@ -17,7 +17,7 @@ interface AboutDisplayCard {
 
 // 这个数组保存设计稿中的三张介绍卡，前两张文案来自站点真实精神配置，第三张承接真实架构配置。
 const aboutCards: AboutDisplayCard[] = [
-  { title: '宗门愿景', subtitle: '清明立愿 有界相扶', imagePosition: 'center 46%', visual: 'aboutVision', lineCount: 4 },
+  { title: '宗门愿景', subtitle: '以温柔结社 以清醒立身', imagePosition: 'center 46%', visual: 'aboutVision', lineCount: 4 },
   { title: '门风', subtitle: spiritItems.slice(0, 3).map((item) => item.title).join(' · '), imagePosition: 'center 55%', visual: 'aboutPavilion', lineCount: 3 },
   { title: '宗门架构', subtitle: '山门低调 各院协同', imagePosition: 'center 64%', lineCount: 0 }
 ]
@@ -25,7 +25,7 @@ const aboutCards: AboutDisplayCard[] = [
 // 这个函数渲染山门介绍页，入参为空，返回值是按设计稿复刻的三张横向介绍卡。
 export function AboutPage() {
   // 这个常量保存真实门派架构标题，并补充页面固定院部名称，让关系图既接真实配置又保留设计稿密度。
-  const structureNodes = [...sectRoles.map((role) => role.title), '问心院', '问道院', '问云院', '云灯间'].slice(0, 8)
+  const structureNodes = [...sectRoles.map((role) => role.title), '云庐', '云灯间'].slice(0, 8)
 
   return (
     <section className="public-art-page about-art-page" aria-label="山门介绍">

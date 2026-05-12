@@ -113,7 +113,7 @@ export function YardDashboardPage() {
   const latestRegistration = overview.registrations[0]
   // 这个变量保存最近提醒列表，返回值用于总览提醒卡。
   const latestNotifications = overview.notifications.slice(0, 4)
-  // 这个变量保存最新问心考核结果，返回值用于指标卡。
+  // 这个变量保存最新问云考核结果，返回值用于指标卡。
   const latestQuiz = overview.quizResult
   // 这个变量保存可查看归云堂二维码的名帖，返回值用于弹窗和卡片入口。
   const guiyuntangApplication = overview.applications.find((item) => canViewGuiyuntang(item))
@@ -163,7 +163,7 @@ export function YardDashboardPage() {
     <div className="yard-page-stack">
       <YardPageBanner
         indexLabel="1 小院总览"
-        subtitle="愿你在小院安心停靠，今日也从清明处出发。"
+        subtitle="愿你在小院安心停靠，今日也从清醒处出发。"
         title={`${overview.profile.nickname}，欢迎回院`}
         visual="yardDashboard"
       />

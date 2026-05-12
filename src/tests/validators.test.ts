@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parseCanonSections } from '../pages/CanonPage'
 import { canonText } from '../data/siteContent'
+import { wenxinQuizQuestions } from '../data/quizContent'
 import { isEmailNotConfirmedError, translateSupabaseAuthError } from '../lib/authMessages'
 import { createNextMemberCode, createSlug, isValidBirthYear, isValidDaoName, validateCloudLantern, validateJoinApplication } from '../lib/validators'
 
@@ -95,8 +96,18 @@ describe('问云派内容工具', () => {
   it('可以把立派金典拆成章节', () => {
     const sections = parseCanonSections(canonText)
 
-    expect(sections.length).toBeGreaterThan(5)
+    expect(sections.length).toBeGreaterThan(19)
     expect(sections.some((section) => section.title.includes('立派缘起'))).toBe(true)
+    expect(canonText).toContain('清醒温柔，同行自渡')
+  })
+
+  // 这个用例验证问云考核题库总分和新版金典内容一致。
+  it('可以保持新版问云考核题库总分为一百分', () => {
+    const totalScore = wenxinQuizQuestions.reduce((sum, question) => sum + question.score, 0)
+
+    expect(wenxinQuizQuestions).toHaveLength(30)
+    expect(totalScore).toBe(100)
+    expect(wenxinQuizQuestions.some((question) => question.title.includes('八字派训'))).toBe(true)
   })
 
   // 这个用例验证公告别名不会为空。

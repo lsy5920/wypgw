@@ -98,7 +98,7 @@ export function AdminDashboardPage() {
 
       <div className="admin-metric-grid">
         <AdminMetricCard icon={<ShieldCheck className="h-7 w-7" />} label="待审核登记" value={stats.pendingApplications} hint="较昨日保持守序" tone="teal" />
-        <AdminMetricCard icon={<Lamp className="h-7 w-7" />} label="待审核云灯" value={stats.pendingLanterns} hint="温暖内容先过目" tone="gold" />
+        <AdminMetricCard icon={<Lamp className="h-7 w-7" />} label="待审核云灯" value={stats.pendingLanterns} hint="清净内容先过目" tone="gold" />
         <AdminMetricCard icon={<Megaphone className="h-7 w-7" />} label="公告总数" value={stats.announcements} hint="山门近讯可追溯" tone="green" />
         <AdminMetricCard icon={<FileText className="h-7 w-7" />} label="活动总数" value={stats.events} hint="雅集安排有记录" tone="red" />
       </div>

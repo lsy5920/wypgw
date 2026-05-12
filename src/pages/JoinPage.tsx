@@ -29,7 +29,7 @@ const initialForm: JoinApplicationInput = {
 }
 
 // 这个数组保存名册登记流程步骤，返回值用于折叠状态下给新同门看清先后顺序。
-const rosterJoinSteps = ['登录小院', '问云合格', '递交名帖', '执事审核']
+const rosterJoinSteps = ['登录小院', '问云合格', '递交名帖', '云纪审核']
 
 // 这个数组保存名册头像可复用插图，返回值用于让每张名帖有水墨头像而不是空白圆点。
 const rosterAvatarVisuals = ['roster', 'quiz', 'cloudLantern', 'login'] as const
@@ -93,7 +93,7 @@ export function JoinPage() {
   const [roleFilter, setRoleFilter] = useState('')
   // 这个状态保存随机展示种子，返回值用于“换一组”按钮。
   const [rosterSeed, setRosterSeed] = useState(() => Date.now())
-  // 这个状态保存当前用户最新一次问心考核结果，返回值用于判断是否能递帖。
+  // 这个状态保存当前用户最新一次问云考核结果，返回值用于判断是否能递帖。
   const [quizResult, setQuizResult] = useState<WenxinQuizResult | null>(null)
   // 这个状态保存当前账号已经递交过的名帖，返回值用于阻止重复提交。
   const [existingApplication, setExistingApplication] = useState<JoinApplication | null>(null)
@@ -220,7 +220,7 @@ export function JoinPage() {
       return
     }
 
-    // 这里要求最新一次问心考核合格后才能提交名帖。
+    // 这里要求最新一次问云考核合格后才能提交名帖。
     if (!quizResult?.passed) {
       setNotice({ type: 'error', title: '请先完成问云考核', message: '登记入册前需要先完成问云考核，并且最新成绩达到 80 分以上。' })
       return
@@ -320,7 +320,7 @@ export function JoinPage() {
           {roster.length === 0 ? (
             <div className="interaction-empty-card">
               <UsersRound className="h-7 w-7" />
-              <p>名册暂空，待执事审核通过后，同门会列入问云名册。</p>
+              <p>名册暂空，待云纪执事审核通过后，同门会列入问云名册。</p>
             </div>
           ) : randomizedRoster.length === 0 ? (
             <div className="interaction-empty-card">
@@ -398,7 +398,7 @@ export function JoinPage() {
                   <UserRound className="h-5 w-5" />
                   <div>
                     <strong>递交名帖前请先登录</strong>
-                    <p>名帖登记需要绑定到你的问云小院，执事审核后你才能看到状态和提醒。</p>
+                    <p>名帖登记需要绑定到你的问云小院，云纪执事审核后你才能看到状态和提醒。</p>
                   </div>
                   <Link className="interaction-small-link" to="/login">
                     前往登录
@@ -487,7 +487,7 @@ export function JoinPage() {
                   </label>
                   <label className="roster-rule-check">
                     <input checked={form.accept_rules} onChange={(event) => updateField('accept_rules', event.target.checked)} type="checkbox" />
-                    <span>我已阅读并认可问云门规，愿意守住边界，不伤人、不泄密、不广告。</span>
+                    <span>我已阅读并认可问云金典，愿意守住真诚与边界，不造谣、不伤人、不越界。</span>
                   </label>
                   <button className="interaction-primary-button roster-form-submit" disabled={submitting || authLoading || !profile || !quizResult?.passed} type="submit">
                     {submitting ? '正在送帖...' : '提交名帖'}

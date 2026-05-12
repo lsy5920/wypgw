@@ -17,9 +17,9 @@ interface HomeEntryCard {
 
 // 这个数组保存首页五个入口，返回值用于复刻设计稿底部居中的入口卡片。
 const homeEntryCards: HomeEntryCard[] = [
-  { label: '立派金典', summary: '立派根本 全章传承', icon: 'scroll', path: '/canon' },
-  { label: '问云考核', summary: '持心明规 自证方向', icon: 'shield', path: '/wenxin-quiz' },
-  { label: '云灯留言', summary: '灯火相伴 温暖同行', icon: 'lantern', path: '/cloud-lantern' },
+  { label: '立派金典', summary: '清醒温柔 同行自渡', icon: 'scroll', path: '/canon' },
+  { label: '问云考核', summary: '明愿知界 方可入云', icon: 'shield', path: '/wenxin-quiz' },
+  { label: '云灯留言', summary: '以灯为证 温柔相伴', icon: 'lantern', path: '/cloud-lantern' },
   { label: '问云小院', summary: '我的名帖 云灯雅集', icon: 'gate', path: '/yard' },
   { label: '公告活动', summary: '公告良言 活动雅集', icon: 'notice', path: '/announcements' }
 ]
@@ -38,9 +38,9 @@ export function HomePage() {
       {/* 这里复刻设计稿中央的印章、门派口号和大标题。 */}
       <div className="home-reference-center">
         <BrandMark className="home-reference-seal" size="large" />
-        <p className="home-reference-eyebrow">问云山门 · 清明立愿 · 有界相扶</p>
+        <p className="home-reference-eyebrow">问云山门 · 清醒温柔 · 同行自渡</p>
         <h1>问云派</h1>
-        <p className="home-reference-subtitle">问心 · 问道 · 问云派</p>
+        <p className="home-reference-subtitle">问心 · 问路 · 问云深处</p>
       </div>
 
       {/* 这里复刻底部五个居中入口卡片，每张卡片都可以点击跳转。 */}

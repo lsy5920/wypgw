@@ -81,7 +81,7 @@ export function YardLanternsPage() {
         }
         center
         indexLabel="4 我的云灯"
-        subtitle="一盏云灯，守一念温暖，愿诸君安好。"
+        subtitle="一盏云灯，守一念陪伴，愿诸君安好。"
         title="灯火已寄，静候清风"
         visual="yardLanterns"
       />

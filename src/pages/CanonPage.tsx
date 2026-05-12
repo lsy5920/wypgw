@@ -28,8 +28,8 @@ export function parseCanonSections(text: string): CanonSection[] {
   text.split(/\r?\n/).forEach((line) => {
     // 这里清理当前行首尾空格，便于判断是否为标题。
     const trimmedLine = line.trim()
-    // 这里兼容一级总纲和二级章节标题，避免旧资料格式变化导致解析失败。
-    const isSectionTitle = /^##\s+/.test(trimmedLine) || trimmedLine === '# 问云派总纲'
+    // 这里兼容任意一级标题和二级章节标题，避免金典名称调整后解析失败。
+    const isSectionTitle = /^#{1,2}\s+/.test(trimmedLine)
 
     if (isSectionTitle) {
       // 这里把上一章放进结果，保证章节切换时内容不丢失。
@@ -108,7 +108,7 @@ export function CanonPage() {
           <div className="public-card-corner public-card-corner-right-top" />
           <div className="public-card-corner public-card-corner-left-bottom" />
           <div className="public-card-corner public-card-corner-right-bottom" />
-          <h1>问云派总纲 <span>问云印</span></h1>
+          <h1>问云派立派金典 <span>问云印</span></h1>
           <img alt="立派金典山水横幅" className="canon-banner-image" src={canonImage} />
           <div className="canon-full-content">
             {sections.map((section, sectionIndex) => (

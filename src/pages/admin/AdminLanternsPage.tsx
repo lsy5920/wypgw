@@ -92,7 +92,7 @@ export function AdminLanternsPage() {
   }
 
   return (
-    <AdminPageShell index="3" title="云灯审核" description="所有云灯先入后台，确认温暖清净后再公开。">
+    <AdminPageShell index="3" title="云灯审核" description="所有云灯先入后台，确认真诚清净后再公开。">
       {notice ? <StatusNotice type={notice.type} title={notice.title} message={notice.message} /> : null}
 
       <AdminPanel>

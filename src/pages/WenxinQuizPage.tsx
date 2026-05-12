@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth'
 import { submitWenxinQuizResult } from '../lib/services'
 import type { WenxinQuizAnswerMap, WenxinQuizResult } from '../lib/types'
 
-// 这个常量表示问心考核通过线，返回值用于决定是否开放登记入册。
+// 这个常量表示问云考核通过线，返回值用于决定是否开放登记入册。
 const passScore = 80
 
 // 这个函数判断两个答案数组是否完全一致，入参是用户答案和正确答案，返回值表示是否答对。
@@ -33,7 +33,7 @@ function formatQuestionNumber(questionId: number): string {
   return String(questionId).padStart(2, '0')
 }
 
-// 这个函数渲染问心考核页面，入参为空，返回值是按设计稿重写后的试卷、须知和交卷区域。
+// 这个函数渲染问云考核页面，入参为空，返回值是按设计稿重写后的试卷、须知和交卷区域。
 export function WenxinQuizPage() {
   // 这里读取登录资料，考核结果必须绑定账号后才能保存。
   const { profile, loading } = useAuth()
@@ -287,7 +287,7 @@ export function WenxinQuizPage() {
               <section className="interaction-corner-card quiz-analysis-card" aria-label="题目解析">
                 <div>
                   <p>题目解析（作答后可见）</p>
-                  <span>问云派倡导清明自守，行事有不争之界，也有互相照见之心。</span>
+                  <span>问云派倡导清醒温柔，同行自渡，守住真诚与边界。</span>
                 </div>
                 <img alt="" aria-hidden="true" src={quizSceneImage} />
               </section>

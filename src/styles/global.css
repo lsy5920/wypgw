@@ -2516,7 +2516,7 @@ textarea {
   scroll-snap-align: start;
 }
 
-/* 这里按问心考核设计稿重排：上方为统计和须知，答题区是左主试卷、右状态栏。 */
+/* 这里按问云考核设计稿重排：上方为统计和须知，答题区是左主试卷、右状态栏。 */
 .quiz-summary-grid {
   grid-template-columns: minmax(0, 1fr) minmax(13rem, 0.32fr);
 }
@@ -3073,7 +3073,7 @@ textarea {
   padding: 1.25rem !important;
 }
 
-/* 这里把问心考核首屏改成左侧试卷、右侧提示的结构。 */
+/* 这里把问云考核首屏改成左侧试卷、右侧提示的结构。 */
 .quiz-summary-grid {
   display: none;
 }
@@ -3102,7 +3102,7 @@ textarea {
   padding: 1.35rem;
 }
 
-/* 这里把问心考核的底部操作条改成设计稿中的普通按钮栏，不再贴在浏览器底部。 */
+/* 这里把问云考核的底部操作条改成设计稿中的普通按钮栏，不再贴在浏览器底部。 */
 .quiz-answer-layout > div:last-child {
   position: static;
   grid-column: 1 / -1;
@@ -5477,7 +5477,7 @@ body:has(.interaction-reference-page)::after {
   align-self: end;
 }
 
-/* 这里开始复刻问心考核页面。 */
+/* 这里开始复刻问云考核页面。 */
 .quiz-page-heading {
   grid-template-columns: minmax(16rem, 1fr) minmax(18rem, 0.82fr) minmax(8rem, 0.22fr);
 }

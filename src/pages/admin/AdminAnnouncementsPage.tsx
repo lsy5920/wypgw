@@ -30,7 +30,7 @@ const initialForm: AnnouncementForm = {
 }
 
 // 这个数组保存公告分类选项，返回值用于下拉框。
-const categoryOptions = ['山门公告', '门规更新', '活动通知', '金典修订', '执事公告']
+const categoryOptions = ['山门公告', '金典修订', '活动通知', '组织公告', '执事公告']
 
 // 这个对象保存发布状态中文文案，入参是数据库状态，返回值用于后台表格展示。
 const publishStatusLabels: Record<PublishStatus, string> = {

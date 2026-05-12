@@ -31,7 +31,7 @@ const filterItems: Array<{ label: string; value: StewardFilter }> = [
 const roleLabels: Record<ProfileRole, string> = {
   founder: '超级管理员',
   admin: '执事',
-  guardian: '护灯人',
+  guardian: '执灯长老',
   member: '普通成员',
   applicant: '申请中',
   visitor: '访客'

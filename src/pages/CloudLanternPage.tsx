@@ -18,13 +18,13 @@ const initialForm: CloudLanternInput = {
 }
 
 // 这个数组保存常用心情标签，返回值用于复刻设计稿中的单选小标签。
-const lanternMoodOptions = ['平静', '温暖', '悦己', '感恩', '祝愿', '其他']
+const lanternMoodOptions = ['陪伴', '清醒', '成长', '守界', '向光', '其他']
 
 // 这个数组保存云灯墙暂无真实数据时的展示卡片，返回值用于保持设计稿右侧留言墙布局。
 const emptyLanternCards = [
-  { author_name: '清风', mood: '温暖', content: '愿每一位远行者，都能在这里找到一点安静。' },
-  { author_name: '山路', mood: '清明', content: '最近有些辛苦，幸好还能在灯火里见到方向。' },
-  { author_name: '匿名同门', mood: '守真', content: '愿你一路不必逞强，也不必独自走完。' },
+  { author_name: '清风', mood: '陪伴', content: '愿每一位远行者，都能在这里望见一盏灯。' },
+  { author_name: '山路', mood: '清醒', content: '最近有些辛苦，幸好还能在灯火里见到方向。' },
+  { author_name: '匿名同门', mood: '守界', content: '愿你一路不必逞强，也不必独自走完。' },
   { author_name: '小鹿', mood: '欢喜', content: '今日一灯，送给正在赶路的人，愿心中有光。' },
   { author_name: '云边来客', mood: '安定', content: '把今天没说出口的话，暂且寄在这一盏灯里。' },
   { author_name: '归舟', mood: '明朗', content: '愿明日仍有勇气，也仍有温柔。' }
@@ -113,7 +113,7 @@ export function CloudLanternPage() {
               <p>点一盏云灯，愿光照见</p>
             </div>
           </div>
-          <p className="lantern-page-note">留言会先由执事审核，审核通过后公开展示。</p>
+          <p className="lantern-page-note">留言会先由云纪执事审核，审核通过后公开展示。</p>
         </header>
 
         {notice ? (
@@ -199,7 +199,7 @@ export function CloudLanternPage() {
                   <div className="lantern-message-head">
                     <GeneratedIcon className="lantern-card-icon" name="lantern" />
                     <strong>{item.author_name || '匿名同门'}</strong>
-                    <span>{item.mood || '温暖'}</span>
+                    <span>{item.mood || '陪伴'}</span>
                   </div>
                   <p>{item.content}</p>
                   <div className="lantern-like-row">

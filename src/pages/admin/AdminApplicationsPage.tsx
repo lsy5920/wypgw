@@ -135,7 +135,7 @@ export function AdminApplicationsPage() {
   const [deletingId, setDeletingId] = useState('')
   // 这个状态保存提示信息。
   const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; title: string; message: string } | null>(null)
-  // 这个状态保存每个用户最新问心考核结果，键为用户编号。
+  // 这个状态保存每个用户最新问云考核结果，键为用户编号。
   const [quizResults, setQuizResults] = useState<Record<string, WenxinQuizResult>>({})
   // 这个状态保存归云堂二维码设置，只在后台审核页使用。
   const [guiyuntangSetting, setGuiyuntangSetting] = useState<GuiyuntangSetting | null>(null)
@@ -143,7 +143,7 @@ export function AdminApplicationsPage() {
   // 这个函数读取登记列表，入参为空，返回值为空。
   async function loadApplications() {
     try {
-      // 这里同时读取名帖、问心结果和归云堂设置，让详情区一次拿到完整审核上下文。
+      // 这里同时读取名帖、问云考核结果和归云堂设置，让详情区一次拿到完整审核上下文。
       const [result, quizResult, guiyuntangResult] = await Promise.all([
         fetchAdminApplications(),
         fetchAdminLatestWenxinQuizResults(),
@@ -158,7 +158,7 @@ export function AdminApplicationsPage() {
       })
 
       quizResult.data.forEach((item) => {
-        // 这里按用户编号保存最新问心结果，方便名帖详情快速读取。
+        // 这里按用户编号保存最新问云考核结果，方便名帖详情快速读取。
         nextQuizResults[item.user_id] = item
       })
 
@@ -202,7 +202,7 @@ export function AdminApplicationsPage() {
   const selectedApplication = filteredApplications.find((item) => item.id === selectedId) ?? filteredApplications[0] ?? null
   // 这个变量保存当前选中名帖的草稿，返回值用于右侧详情表单。
   const selectedDraft = selectedApplication ? drafts[selectedApplication.id] ?? createDraft(selectedApplication) : null
-  // 这个变量保存当前选中用户的问心考核结果，返回值用于详情顶部展示。
+  // 这个变量保存当前选中用户的问云考核结果，返回值用于详情顶部展示。
   const selectedQuiz = selectedApplication?.user_id ? quizResults[selectedApplication.user_id] : null
   // 这个变量表示当前归云堂二维码是否可用。
   const guiyuntangQrReady = Boolean(guiyuntangSetting?.enabled && guiyuntangSetting.qr_image_data_url)
@@ -521,7 +521,7 @@ export function AdminApplicationsPage() {
                 </label>
                 <label className="admin-checkbox-row">
                   <input checked={selectedDraft.accept_rules} onChange={(event) => updateDraft(selectedApplication.id, 'accept_rules', event.target.checked)} type="checkbox" />
-                  <span>已认同门规</span>
+                  <span>已认同金典</span>
                 </label>
                 <label className="admin-form-span-2">
                   <span>宣言</span>

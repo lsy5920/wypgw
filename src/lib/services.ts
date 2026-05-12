@@ -408,12 +408,12 @@ export async function submitCloudLantern(input: CloudLanternInput): Promise<ApiR
       userId: user.id,
       kind: 'lantern',
       title: '云灯已送至山门',
-      content: '你的云灯已进入待审核状态，执事查看后会决定是否公开。',
+      content: '你的云灯已进入待审核状态，云纪执事查看后会决定是否公开。',
       targetTable: 'cloud_lanterns',
       targetId: lantern.id
     })
 
-    return okResult(lantern, '云灯已送至山门，待执事审核后公开。')
+    return okResult(lantern, '云灯已送至山门，待云纪执事审核后公开。')
   } catch (error) {
     return failResult(
       {
@@ -430,11 +430,11 @@ export async function submitCloudLantern(input: CloudLanternInput): Promise<ApiR
   }
 }
 
-// 这个函数读取当前用户最新一次问心考核结果，入参为空，返回值是最新结果或空值。
+// 这个函数读取当前用户最新一次问云考核结果，入参为空，返回值是最新结果或空值。
 export async function fetchMyLatestWenxinQuizResult(): Promise<ApiResult<WenxinQuizResult | null>> {
   // 这里在演示模式下返回一条合格结果，方便无数据库时体验登记流程。
   if (!supabase) {
-    return okResult(mockQuizResults[0] ?? null, '当前为演示问心考核结果。')
+    return okResult(mockQuizResults[0] ?? null, '当前为演示问云考核结果。')
   }
 
   try {
@@ -452,13 +452,13 @@ export async function fetchMyLatestWenxinQuizResult(): Promise<ApiResult<WenxinQ
       throw error
     }
 
-    return okResult((data as WenxinQuizResult | null) ?? null, data ? '最新问心考核结果已读取。' : '尚未参加问心考核。')
+    return okResult((data as WenxinQuizResult | null) ?? null, data ? '最新问云考核结果已读取。' : '尚未参加问云考核。')
   } catch (error) {
-    return failResult(null, getErrorMessage(error, '读取问心考核结果失败，请确认已执行最新 Supabase SQL 脚本'))
+    return failResult(null, getErrorMessage(error, '读取问云考核结果失败，请确认已执行最新 Supabase SQL 脚本'))
   }
 }
 
-// 这个函数提交当前用户问心考核结果，入参是前台计分结果，返回值是保存后的结果。
+// 这个函数提交当前用户问云考核结果，入参是前台计分结果，返回值是保存后的结果。
 export async function submitWenxinQuizResult(input: WenxinQuizSubmitInput): Promise<ApiResult<WenxinQuizResult | null>> {
   // 这个对象保存要写入数据库的考核结果。
   const payload = {
@@ -496,17 +496,17 @@ export async function submitWenxinQuizResult(input: WenxinQuizSubmitInput): Prom
       throw error
     }
 
-    return okResult(data as WenxinQuizResult, input.passed ? '问心考核已合格，现在可以登记入册。' : '问心考核已记录，建议重读金典后再试。')
+    return okResult(data as WenxinQuizResult, input.passed ? '问云考核已合格，现在可以登记入册。' : '问云考核已记录，建议重读金典后再试。')
   } catch (error) {
-    return failResult(null, getErrorMessage(error, '提交问心考核失败，请确认已执行最新 Supabase SQL 脚本'))
+    return failResult(null, getErrorMessage(error, '提交问云考核失败，请确认已执行最新 Supabase SQL 脚本'))
   }
 }
 
-// 这个函数读取后台全部用户的最新问心考核结果，入参为空，返回值用于名帖审核页面按用户展示。
+// 这个函数读取后台全部用户的最新问云考核结果，入参为空，返回值用于名帖审核页面按用户展示。
 export async function fetchAdminLatestWenxinQuizResults(): Promise<ApiResult<WenxinQuizResult[]>> {
   // 这里在演示模式下返回演示结果。
   if (!supabase) {
-    return okResult(mockQuizResults, '当前为演示问心考核结果。')
+    return okResult(mockQuizResults, '当前为演示问云考核结果。')
   }
 
   try {
@@ -528,9 +528,9 @@ export async function fetchAdminLatestWenxinQuizResults(): Promise<ApiResult<Wen
       }
     })
 
-    return okResult(Array.from(latestResults.values()), '后台问心考核结果已读取。')
+    return okResult(Array.from(latestResults.values()), '后台问云考核结果已读取。')
   } catch (error) {
-    return failResult([], getErrorMessage(error, '读取后台问心考核结果失败，请确认已执行最新 Supabase SQL 脚本'))
+    return failResult([], getErrorMessage(error, '读取后台问云考核结果失败，请确认已执行最新 Supabase SQL 脚本'))
   }
 }
 
@@ -612,11 +612,11 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
       throw new Error('每个账号只能提交一份名帖。你已经递交过名帖，请到问云小院的“我的资料”修改资料，或到“我的名帖”查看审核状态。')
     }
 
-    // 这里再次检查最新问心考核是否合格，防止用户绕过页面直接提交名帖。
+    // 这里再次检查最新问云考核是否合格，防止用户绕过页面直接提交名帖。
     const quizResult = await fetchMyLatestWenxinQuizResult()
 
     if (!quizResult.data?.passed) {
-      throw new Error('请先完成问心考核并达到 80 分以上，再登记入册。')
+      throw new Error('请先完成问云考核并达到 80 分以上，再登记入册。')
     }
 
     // 这里写入名册登记表，用户只能新增自己的待审核名帖。
@@ -635,12 +635,12 @@ export async function submitJoinApplication(input: JoinApplicationInput): Promis
       userId: user.id,
       kind: 'application',
       title: '名帖已送至山门',
-      content: '你的问云名帖已进入待审核状态，掌门或执事查看后会更新状态。',
+      content: '你的问云名帖已进入待审核状态，掌门或云纪执事查看后会更新状态。',
       targetTable: 'join_applications',
       targetId: application.id
     })
 
-    return okResult(application, '名册登记已送至山门，执事查看后会择时联系。')
+    return okResult(application, '名册登记已送至山门，云纪执事查看后会择时联系。')
   } catch (error) {
     return failResult(
       {
@@ -1770,7 +1770,7 @@ export async function fetchMyNotifications(): Promise<ApiResult<UserNotification
   }
 }
 
-// 这个函数读取问云小院总览数据，入参为空，返回值是资料、名帖、云灯、报名、提醒和问心考核。
+// 这个函数读取问云小院总览数据，入参为空，返回值是资料、名帖、云灯、报名、提醒和问云考核。
 export async function fetchYardOverview(): Promise<ApiResult<YardOverview>> {
   const [profileResult, applicationResult, lanternResult, registrationResult, notificationResult, quizResult] = await Promise.all([
     fetchMyProfile(),

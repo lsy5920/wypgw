@@ -118,7 +118,7 @@ export function YardApplicationsPage() {
             </div>
           </YardPaperCard>
 
-          <YardPaperCard title="审核进度" subtitle="进度会随执事审核结果自动更新。">
+          <YardPaperCard title="审核进度" subtitle="进度会随云纪执事审核结果自动更新。">
             <div className="yard-progress-line">
               {applicationProgressSteps.map((step, index) => (
                 <div className={`yard-progress-step ${index <= progressIndex ? 'yard-progress-step-active' : ''}`} key={step}>
