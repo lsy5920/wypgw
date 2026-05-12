@@ -90,6 +90,13 @@ export function WenxinQuizPage() {
 
       return { ...current, [key]: nextValues }
     })
+
+    // 这里单选题选完后自动进入下一题，减少手机端反复点击下一题的麻烦。
+    if (type === 'single' && currentIndex < totalQuestions - 1) {
+      window.setTimeout(() => {
+        goToQuestion(currentIndex + 1)
+      }, 260)
+    }
   }
 
   // 这个函数跳转到指定题目，入参是题目位置，返回值为空。
