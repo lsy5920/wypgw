@@ -1,12 +1,14 @@
 import { Menu, UserRound, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { siteNavItems } from '../data/siteContent'
 import { BrandMark } from './BrandMark'
 
 // 这个函数渲染官网顶部导航，入参为空，返回值是桌面和手机共用的导航栏。
 export function SiteHeader() {
+  // 这个变量保存当前地址，页面切换后用于自动收起手机菜单。
+  const location = useLocation()
   // 这个状态控制手机菜单是否展开。
   const [open, setOpen] = useState(false)
   // 这个状态记录页面是否已经向下滚动，用于让导航在阅读中更凝练。
@@ -31,6 +33,38 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    // 这里在路由切换时收起菜单，避免新页面被旧菜单遮挡。
+    setOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    // 这里在菜单关闭时清理页面状态，避免影响桌面端滚动。
+    if (!open) {
+      document.body.style.removeProperty('overflow')
+      return undefined
+    }
+
+    // 这里打开菜单后临时锁住背景滚动，防止手机端边滚动边点错入口。
+    document.body.style.overflow = 'hidden'
+
+    // 这个函数处理键盘退出菜单，入参是键盘事件，返回值为空。
+    function handleKeyDown(event: KeyboardEvent) {
+      // 这里允许用户按 Esc 关闭菜单，提升键盘可用性。
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    // 这里恢复页面滚动并移除键盘监听，避免组件卸载后残留副作用。
+    return () => {
+      document.body.style.removeProperty('overflow')
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open])
+
   // 这个函数用于关闭手机菜单，入参为空，返回值为空。
   const closeMenu = () => setOpen(false)
   // 这个变量保存导航主容器质感，返回值用于滚动前后平滑切换。
@@ -54,9 +88,10 @@ export function SiteHeader() {
 
         {/* 这里把手机菜单按钮固定推到右侧，避免 785 宽度下按钮偏向中间。 */}
         <button
+          aria-controls="site-mobile-menu"
           aria-expanded={open}
           aria-label={open ? '关闭菜单' : '打开菜单'}
-          className="mobile-menu-button-inline focus-ring ml-auto items-center justify-center rounded-lg border border-[#0f3d3e]/16 bg-white/84 p-3 text-[#173332] shadow-md shadow-[#173332]/10"
+          className="mobile-menu-button-inline focus-ring ml-auto items-center justify-center rounded-lg border border-[#0f3d3e]/16 bg-white/84 p-3 text-[#173332] shadow-md shadow-[#173332]/10 xl:hidden"
           onClick={() => setOpen((value) => !value)}
           type="button"
         >
@@ -97,8 +132,9 @@ export function SiteHeader() {
         {open ? (
           <motion.div
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="pointer-events-auto mx-auto mt-3 max-w-7xl rounded-lg border border-[#173332]/12 bg-white/94 px-3 pb-3 shadow-xl shadow-[#173332]/16 backdrop-blur-2xl xl:hidden"
+            className="pointer-events-auto mx-auto mt-3 max-h-[calc(100svh-5.5rem)] max-w-7xl overflow-y-auto rounded-lg border border-[#173332]/12 bg-white/94 px-3 pb-3 shadow-xl shadow-[#173332]/16 backdrop-blur-2xl xl:hidden"
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            id="site-mobile-menu"
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
           >

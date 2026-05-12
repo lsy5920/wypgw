@@ -1,0 +1,389 @@
+/* 这个文件是后置体验优化层，专门收口桌面端和移动端布局，不直接改动业务组件。 */
+
+:root {
+  /* 这些变量统一页面边距，入参来自视口宽度，返回值用于各端保持稳定留白。 */
+  --experience-page-gutter: clamp(1rem, 3vw, 3.6rem);
+  --experience-mobile-gutter: clamp(0.82rem, 4vw, 1.05rem);
+  --experience-header-height: 4rem;
+  --experience-panel-radius: 8px;
+}
+
+html {
+  /* 这里避免手机横竖屏切换时浏览器自动放大文字，导致按钮或卡片撑开。 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  /* 这里让整站使用动态视口高度，减少手机浏览器地址栏收起时的跳动。 */
+  min-height: 100svh;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  /* 这里统一中文排版策略，长数字、邮箱和链接不会把容器撑出屏幕。 */
+  overflow-wrap: anywhere;
+}
+
+/* 这里提供键盘用户的跳转入口，默认藏在视口外，聚焦时出现在导航上方。 */
+.skip-to-content {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  z-index: 100;
+  min-height: 2.5rem;
+  transform: translate(-50%, -5rem);
+  border: 1px solid rgba(184, 137, 66, 0.35);
+  border-radius: var(--experience-panel-radius);
+  background: rgba(255, 253, 247, 0.96);
+  color: #0f3d3e;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.88rem;
+  font-weight: 900;
+  box-shadow: 0 14px 30px rgba(23, 51, 50, 0.18);
+  transition: transform 0.18s ease;
+}
+
+.skip-to-content:focus-visible {
+  /* 这里让跳转入口只在键盘聚焦时出现，不干扰鼠标和触屏用户。 */
+  transform: translate(-50%, 0);
+  outline: 2px solid rgba(184, 71, 63, 0.82);
+  outline-offset: 3px;
+}
+
+/* 这里重建顶部导航的最终形态，覆盖旧样式中多次互相抵消的透明/纸面规则。 */
+.site-header-bar {
+  width: min(1500px, calc(100vw - 2.4rem)) !important;
+  min-width: 0;
+  height: var(--experience-header-height) !important;
+  border-color: rgba(184, 137, 66, 0.28) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.94), rgba(249, 243, 230, 0.88)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 360px 360px !important;
+  box-shadow:
+    0 14px 34px rgba(23, 51, 50, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+.site-header-bar > a:first-child {
+  /* 这里限制品牌区域宽度，避免窄桌面端挤压导航项目。 */
+  flex: 0 1 13rem;
+}
+
+.site-header-bar nav {
+  /* 这里让桌面导航在品牌和小院入口之间居中排布。 */
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.site-header-bar nav a {
+  /* 这里统一导航点击区，满足触控高度并避免中文标签换行。 */
+  min-height: 2.5rem;
+  white-space: nowrap;
+}
+
+.site-header-bar .cloud-button {
+  /* 这里让桌面端小院入口不被九个导航项挤压变形。 */
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+#site-mobile-menu {
+  /* 这里限制展开菜单高度，手机横屏时也可以在菜单内部滚动。 */
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 1280px) {
+  .site-header-bar .mobile-menu-button-inline {
+    /* 这里删除桌面端多余的汉堡按钮，只保留完整导航和小院入口。 */
+    display: none !important;
+  }
+}
+
+@media (max-width: 1279px) {
+  .site-header-bar nav,
+  .site-header-bar .cloud-button {
+    /* 这里在平板和手机端只保留品牌与菜单按钮，减少顶部拥挤。 */
+    display: none !important;
+  }
+}
+
+@media (max-width: 785px) {
+  header:has(.site-header-bar) {
+    /* 这里收紧手机端导航外边距，让顶部条不贴边也不压缩内容。 */
+    top: 0.6rem;
+    right: var(--experience-mobile-gutter);
+    left: var(--experience-mobile-gutter);
+  }
+
+  .site-header-bar {
+    width: calc(100vw - (var(--experience-mobile-gutter) * 2)) !important;
+    height: 3.55rem !important;
+    padding-inline: 0.72rem !important;
+  }
+
+  .site-header-bar > a:first-child {
+    /* 这里给手机端品牌区留出菜单按钮空间，避免标题和按钮重叠。 */
+    flex-basis: auto;
+    max-width: calc(100% - 3.2rem);
+  }
+
+  .site-header-bar a:first-child p:first-child {
+    /* 这里降低手机端站名尺寸，让小屏也能完整显示。 */
+    font-size: 1.22rem !important;
+  }
+}
+
+/* 这里把首页从绝对定位改成稳定的上下布局，短屏和长屏都能自然阅读。 */
+.home-reference-page {
+  display: grid;
+  min-height: 100svh;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: clamp(5.6rem, 11vh, 7.6rem) var(--experience-page-gutter) clamp(1.4rem, 4vh, 2.8rem);
+}
+
+.home-reference-center {
+  /* 这里让首页标题位于视觉中心，不再依赖固定顶部内边距。 */
+  align-self: center;
+  padding: 0 1rem !important;
+}
+
+.home-reference-eyebrow {
+  /* 这里允许首页短句在窄屏换行，避免横向溢出。 */
+  max-width: min(100%, 32rem);
+  justify-content: center;
+  text-wrap: balance;
+}
+
+.home-reference-entry-row {
+  /* 这里删除底部绝对定位，入口卡片会跟随页面内容自然占位。 */
+  position: relative !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: min(72rem, 100%) !important;
+  margin: clamp(1.2rem, 4vh, 2.6rem) auto 0;
+  transform: none !important;
+}
+
+.home-reference-entry-card {
+  /* 这里稳定首页入口卡片尺寸，避免图标加载后撑高页面。 */
+  min-width: 0;
+  padding: 0.85rem 0.55rem;
+}
+
+.home-reference-entry-card strong,
+.home-reference-entry-card span {
+  /* 这里让入口文字最多按词换行，不把相邻卡片挤开。 */
+  max-width: 100%;
+}
+
+@media (max-width: 785px) {
+  .home-reference-page {
+    min-height: 100svh;
+    padding: 5.35rem var(--experience-mobile-gutter) 1rem;
+  }
+
+  .home-reference-center {
+    align-self: end;
+  }
+
+  .home-reference-eyebrow {
+    min-height: auto;
+    padding: 0.62rem 0.85rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .home-reference-center h1 {
+    font-size: clamp(3.7rem, 16vw, 5.2rem) !important;
+  }
+
+  .home-reference-subtitle {
+    font-size: clamp(1.05rem, 5vw, 1.35rem);
+  }
+
+  .home-reference-entry-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    margin-top: 1.1rem;
+  }
+
+  .home-reference-entry-card {
+    min-height: 5.15rem !important;
+    padding: 0.7rem 0.48rem;
+  }
+
+  .home-reference-entry-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .home-reference-entry-card strong {
+    font-size: 0.94rem;
+  }
+
+  .home-reference-entry-card span {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-reference-entry-row {
+    /* 这里在极窄手机上保留双列，但进一步压缩间距，避免首页入口超出首屏太多。 */
+    gap: 0;
+  }
+
+  .home-reference-entry-card span {
+    display: none;
+  }
+}
+
+/* 这里统一公共展示页的阅读宽度，减少桌面端卡片过宽、手机端贴边的问题。 */
+.public-art-page,
+.interaction-reference-page {
+  overflow-x: clip;
+}
+
+.public-art-page > .canon-reference-layout,
+.public-art-page > .about-reference-grid,
+.public-art-page > .announcement-reference-layout,
+.public-art-page > .events-reference-layout,
+.public-art-page > .contact-reference-layout,
+.public-art-page > .notfound-reference-scene {
+  max-width: 1380px;
+}
+
+@media (max-width: 785px) {
+  .public-art-page,
+  .interaction-reference-page {
+    padding-right: var(--experience-mobile-gutter) !important;
+    padding-left: var(--experience-mobile-gutter) !important;
+  }
+
+  .section-title-with-visual,
+  .yard-page-banner {
+    /* 这里降低手机端大图横幅高度，正文更快进入视野。 */
+    min-height: 10rem;
+  }
+}
+
+/* 这里优化小院端，保证卡片、表单和列表在移动端不互相挤压。 */
+.yard-reference-shell,
+.admin-reference-app {
+  min-width: 0;
+}
+
+.yard-reference-stage,
+.admin-page-shell,
+.admin-panel,
+.yard-paper-card {
+  /* 这里让复杂内容在自身容器内收缩，减少横向滚动来源。 */
+  min-width: 0;
+}
+
+.yard-mobile-drawer {
+  /* 这里让手机抽屉内容超出时内部滚动，不遮住退出按钮。 */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.yard-reference-topbar {
+  /* 这里让小院顶部条在移动端也保持可读，不被长昵称挤变形。 */
+  min-width: 0;
+}
+
+@media (max-width: 785px) {
+  .yard-reference-shell {
+    padding: var(--experience-mobile-gutter);
+  }
+
+  .yard-reference-stage {
+    border-radius: var(--experience-panel-radius);
+  }
+
+  .yard-paper-card-head,
+  .yard-lantern-row-head,
+  .yard-event-row-head {
+    gap: 0.65rem;
+  }
+
+  .yard-action-button,
+  .yard-action-button-muted,
+  .yard-action-button-danger,
+  .yard-mini-button,
+  .yard-small-link {
+    /* 这里统一移动端按钮触控尺寸，减少误触。 */
+    min-height: 2.75rem;
+  }
+}
+
+/* 这里优化后台端，减少移动端横向滚动并让顶部导航更像可滑动标签。 */
+.admin-mobile-nav,
+.admin-table-wrap {
+  scrollbar-width: thin;
+}
+
+.admin-mobile-nav {
+  /* 这里让后台移动导航横向滑动更顺手，并给最后一个标签留出安全距离。 */
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 0.85rem;
+}
+
+.admin-table-wrap {
+  /* 这里保留表格横向滚动，但加上顺滑触控和内阴影提示。 */
+  border-radius: var(--experience-panel-radius);
+  box-shadow: inset -14px 0 18px -18px rgba(15, 61, 62, 0.45);
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-data-table {
+  /* 这里略微降低后台表格最小宽度，让手机端少横滑一段距离。 */
+  min-width: 40rem;
+}
+
+@media (max-width: 785px) {
+  .admin-mobile-topbar {
+    /* 这里让后台手机顶部栏吸顶时更紧凑，正文可用空间更多。 */
+    padding: 0.58rem var(--experience-mobile-gutter) 0.65rem;
+  }
+
+  .admin-mobile-link {
+    min-height: 2.35rem;
+    padding-inline: 0.85rem;
+  }
+
+  .admin-reference-canvas {
+    padding: var(--experience-mobile-gutter);
+  }
+
+  .admin-page-heading {
+    padding-top: 3.45rem;
+  }
+
+  .admin-page-actions .cloud-button,
+  .admin-panel-actions .cloud-button,
+  .admin-detail-actions .cloud-button {
+    /* 这里让后台操作按钮在手机端自动占满一行，避免按钮挤成一团。 */
+    width: 100%;
+  }
+
+  .admin-data-table {
+    min-width: 36rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* 这里尊重系统减少动态效果设置，避免动效影响容易眩晕的用户。 */
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
