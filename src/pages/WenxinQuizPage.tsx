@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, FileText, RotateCcw, Send, Star } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, FileText, Send, Star } from 'lucide-react'
 import { FormEvent, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GeneratedIcon } from '../components/GeneratedIcon'
@@ -202,15 +202,6 @@ export function WenxinQuizPage() {
     }
   }
 
-  // 这个函数清空当前答案，入参为空，返回值为空。
-  function resetAnswers() {
-    setAnswers({})
-    setResult(null)
-    setNotice(null)
-    setCurrentIndex(0)
-    setMarkedQuestionIds([])
-  }
-
   return (
     <section className="interaction-reference-page quiz-reference-page" aria-label="问云考核">
       <div className="interaction-paper-shell">
@@ -224,7 +215,8 @@ export function WenxinQuizPage() {
             </div>
           </div>
           <div className="quiz-progress-card">
-            <span>进度：{answeredCount} / {totalQuestions}，尚余 {remainingCount} 题</span>
+            <span>进度：{answeredCount} / {totalQuestions}</span>
+            <small>尚余 {remainingCount} 题</small>
             <div>
               <i style={{ width: `${progressPercent}%` }} />
             </div>
@@ -272,8 +264,9 @@ export function WenxinQuizPage() {
                   <p>
                     第 {formatQuestionNumber(currentQuestion.id)} 题 <span>({currentQuestion.type === 'single' ? '单选题' : '多选题'})</span>
                   </p>
-                  <small>{currentQuestion.score} 分 · {currentQuestion.source}</small>
+                  <small>本题 {currentQuestion.score} 分</small>
                 </div>
+                <div className="quiz-question-source">出处：{currentQuestion.source}</div>
                 <h2>{currentQuestion.title}</h2>
                 <div className="quiz-option-grid">
                   {currentQuestion.options.map((option) => {
@@ -318,6 +311,12 @@ export function WenxinQuizPage() {
               </section>
               <section className="interaction-corner-card quiz-map-card" aria-label="题号导航">
                 <h2>题号导航</h2>
+                <div className="quiz-map-legend" aria-label="题号状态说明">
+                  <span><i />答题中</span>
+                  <span><i />已答题</span>
+                  <span><i />标记题</span>
+                  <span><i />未答题</span>
+                </div>
                 <div className="quiz-question-map">
                   {wenxinQuizQuestions.map((question, index) => {
                     // 这个变量表示该题是否已经有答案，用于题号按钮的完成态。
@@ -346,29 +345,25 @@ export function WenxinQuizPage() {
 
           {/* 这里还原底部上一题、标记、下一题和交卷按钮。 */}
           <div className="quiz-action-bar">
-            <button className="interaction-ghost-button" disabled={currentIndex === 0} onClick={goPrevQuestion} type="button">
+            <button className="interaction-ghost-button quiz-prev-button" disabled={currentIndex === 0} onClick={goPrevQuestion} type="button">
               <ChevronLeft className="h-4 w-4" />
               上一题
-            </button>
-            <button className="interaction-ghost-button" onClick={resetAnswers} type="button">
-              <RotateCcw className="h-4 w-4" />
-              重做
             </button>
             <button className={`interaction-ghost-button quiz-mark-button ${currentMarked ? 'is-marked' : ''}`} onClick={toggleCurrentMark} type="button">
               <Star className="h-4 w-4" />
               {currentMarked ? '取消标记' : '标记本题'}
             </button>
-            <button className="interaction-ghost-button" onClick={showMistakeHint} type="button">
+            <button className="interaction-ghost-button quiz-mistake-button" onClick={showMistakeHint} type="button">
               <FileText className="h-4 w-4" />
               错题记录
             </button>
             {currentIndex < totalQuestions - 1 ? (
-              <button className="interaction-primary-button" disabled={!currentAnswered} onClick={goNextQuestion} type="button">
+              <button className="interaction-primary-button quiz-next-button" disabled={!currentAnswered} onClick={goNextQuestion} type="button">
                 下一题
                 <ChevronRight className="h-4 w-4" />
               </button>
             ) : (
-              <button className="interaction-seal-button" disabled={submitting || !profile || answeredCount < totalQuestions} type="submit">
+              <button className="interaction-seal-button quiz-submit-button" disabled={submitting || !profile || answeredCount < totalQuestions} type="submit">
                 {submitting ? '正在交卷...' : '交卷'}
                 <Send className="h-4 w-4" />
               </button>

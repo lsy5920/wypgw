@@ -5801,6 +5801,303 @@ body:has(.interaction-reference-page)::after {
   padding: 0.85rem 1rem;
 }
 
+/* 这里开始按最新问云考核设计图重新覆盖页面，形成水墨考核工作台。 */
+.quiz-reference-page {
+  min-height: 100vh;
+  padding-top: 5.55rem;
+  background:
+    linear-gradient(180deg, rgba(248, 240, 223, 0.9), rgba(246, 237, 220, 0.96)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+}
+
+/* 这里让问云考核画布铺满宽屏，贴近设计图的桌面端浏览器构图。 */
+.quiz-reference-page .interaction-paper-shell {
+  width: min(100%, 1510px);
+}
+
+/* 这里把标题区改成左标题、右进度和得分的设计图比例。 */
+.quiz-reference-page .quiz-page-heading {
+  grid-template-columns: minmax(22rem, 1fr) minmax(23rem, 0.6fr) minmax(12rem, 0.22fr);
+  min-height: 11.1rem;
+  margin-bottom: 1.15rem;
+  padding: 1.1rem 1.6rem 1.35rem;
+  border: 1px solid rgba(201, 164, 92, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.16), rgba(249, 244, 235, 0.55)),
+    url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center 58% / cover no-repeat;
+  box-shadow: inset 0 -1px 0 rgba(201, 164, 92, 0.24);
+}
+
+/* 这里把盾牌和标题放大，接近设计稿里强识别的考核标题。 */
+.quiz-reference-page .interaction-title-cluster {
+  gap: 1.3rem;
+}
+
+.quiz-reference-page .interaction-title-icon {
+  width: 5.8rem;
+  height: 5.8rem;
+  border-color: rgba(201, 164, 92, 0.46);
+  background: rgba(248, 240, 223, 0.72);
+}
+
+.quiz-reference-page .interaction-title-cluster h1 {
+  font-size: clamp(3rem, 4vw, 4.1rem);
+  letter-spacing: 0;
+}
+
+.quiz-reference-page .interaction-title-cluster p {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #0f5654;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+/* 这里把进度卡和得分卡调整成设计图中的横向纸牌。 */
+.quiz-reference-page .quiz-progress-card,
+.quiz-reference-page .quiz-score-card {
+  min-height: 6.8rem;
+  border-color: rgba(201, 164, 92, 0.44);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.88), rgba(250, 244, 232, 0.78)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 22rem auto;
+}
+
+.quiz-reference-page .quiz-progress-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  gap: 0.4rem 1rem;
+  padding: 1.2rem 1.35rem;
+}
+
+.quiz-reference-page .quiz-progress-card span,
+.quiz-reference-page .quiz-progress-card small {
+  color: #173332;
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.quiz-reference-page .quiz-progress-card small {
+  color: #6f5e42;
+}
+
+.quiz-reference-page .quiz-progress-card div {
+  grid-column: 1 / -1;
+  height: 0.68rem;
+}
+
+.quiz-reference-page .quiz-score-card {
+  align-content: center;
+}
+
+.quiz-reference-page .quiz-score-card strong {
+  color: #0f3d3e;
+  font-size: 2rem;
+}
+
+/* 这里隐藏旧分隔线，最新设计图中标题区本身承载分隔关系。 */
+.quiz-reference-page .quiz-visual-rule {
+  display: none;
+}
+
+/* 这里把主体改成左大试卷、右侧状态栏的桌面布局。 */
+.quiz-reference-page .quiz-reference-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.34fr);
+  gap: 1.35rem;
+}
+
+.quiz-reference-page .quiz-main-column {
+  gap: 1rem;
+}
+
+/* 这里让试卷卡成为页面视觉中心，尺寸、边角和留白贴近设计图。 */
+.quiz-reference-page .quiz-question-card {
+  min-height: 29rem;
+  padding: 2.4rem 3rem 2.1rem;
+  border-color: rgba(201, 164, 92, 0.58);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.92), rgba(250, 244, 232, 0.84)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 30rem auto;
+}
+
+.quiz-reference-page .quiz-question-head {
+  align-items: baseline;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.48);
+  padding-bottom: 1rem;
+}
+
+.quiz-reference-page .quiz-question-head p {
+  color: #0f3d3e;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: clamp(1.85rem, 2.4vw, 2.45rem);
+  font-weight: 900;
+}
+
+.quiz-reference-page .quiz-question-head span {
+  color: #6f5e42;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.quiz-reference-page .quiz-question-head small {
+  color: #a53b31;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.quiz-question-source {
+  margin-top: -2.1rem;
+  text-align: right;
+  color: #173332;
+  font-size: 0.9rem;
+}
+
+.quiz-reference-page .quiz-question-card h2 {
+  margin-top: 2.2rem;
+  color: #173332;
+  font-size: clamp(1.2rem, 1.5vw, 1.55rem);
+  line-height: 1.8;
+}
+
+.quiz-reference-page .quiz-option-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin-top: 1.7rem;
+}
+
+.quiz-reference-page .quiz-option-button {
+  min-height: 4.45rem;
+  border-color: rgba(201, 164, 92, 0.42);
+  background: rgba(255, 253, 247, 0.74);
+  padding: 0.85rem 1.2rem;
+  font-size: 1.05rem;
+}
+
+.quiz-reference-page .quiz-option-button span {
+  width: 2.5rem;
+  color: inherit;
+  font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  font-size: 1.5rem;
+}
+
+.quiz-reference-page .quiz-option-button.is-selected {
+  border-color: rgba(15, 61, 62, 0.56);
+  background: linear-gradient(135deg, #0f3d3e, #0f5654);
+}
+
+/* 这里把解析卡做成底部水墨横条，和设计稿下方远山一致。 */
+.quiz-reference-page .quiz-analysis-card {
+  min-height: 8.4rem;
+  padding: 1.3rem 1.6rem;
+  border-color: rgba(201, 164, 92, 0.42);
+}
+
+.quiz-reference-page .quiz-analysis-card img {
+  right: 0;
+  bottom: -1.4rem;
+  width: 32rem;
+  height: 11rem;
+  opacity: 0.46;
+}
+
+/* 这里统一右侧三张卡片，形成设计稿中的考核侧栏。 */
+.quiz-reference-page .quiz-side-column {
+  gap: 1rem;
+}
+
+.quiz-reference-page .quiz-rule-card,
+.quiz-reference-page .quiz-state-card,
+.quiz-reference-page .quiz-map-card {
+  border-color: rgba(201, 164, 92, 0.46);
+  padding: 1.35rem 1.45rem;
+}
+
+.quiz-reference-page .quiz-rule-card h2,
+.quiz-reference-page .quiz-state-card h2,
+.quiz-reference-page .quiz-map-card h2 {
+  color: #a53b31;
+  font-size: 1.35rem;
+}
+
+.quiz-reference-page .quiz-state-card {
+  min-height: 7.8rem;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.9), rgba(250, 244, 232, 0.78)),
+    url("/assets/guofeng-ui-20260509/illustrations/interaction/quiz-compass-scroll.png") right bottom / 10rem auto no-repeat;
+}
+
+.quiz-reference-page .quiz-state-card strong {
+  color: #0f3d3e;
+}
+
+.quiz-map-legend {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.8rem;
+  color: #6f5e42;
+  font-size: 0.72rem;
+}
+
+.quiz-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  white-space: nowrap;
+}
+
+.quiz-map-legend i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid rgba(15, 61, 62, 0.36);
+  border-radius: 999px;
+  background: #0f3d3e;
+}
+
+.quiz-map-legend span:nth-child(2) i {
+  background: #6f9a6b;
+}
+
+.quiz-map-legend span:nth-child(3) i {
+  border-color: rgba(165, 59, 49, 0.5);
+  background: #a53b31;
+}
+
+.quiz-map-legend span:nth-child(4) i {
+  background: rgba(255, 253, 247, 0.8);
+}
+
+.quiz-reference-page .quiz-question-map {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.quiz-reference-page .quiz-map-button {
+  min-height: 2.4rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+/* 这里让桌面端底部操作区贴近设计图，四个按钮横向平铺。 */
+.quiz-reference-page .quiz-action-bar {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.64fr) minmax(8rem, 0.64fr) minmax(8rem, 0.64fr) minmax(10rem, 0.92fr);
+  gap: 1rem;
+}
+
+.quiz-reference-page .quiz-action-bar .interaction-primary-button {
+  background: linear-gradient(135deg, #0f3d3e, #0f5654);
+}
+
+.quiz-reference-page .quiz-action-bar .interaction-seal-button {
+  background: linear-gradient(135deg, #a53b31, #7f2e2a);
+}
+
 /* 这里开始复刻云灯留言页面。 */
 .lantern-page-heading {
   grid-template-columns: minmax(0, 1fr) auto;
@@ -6635,6 +6932,219 @@ body:has(.interaction-reference-page)::after {
 
   .login-input-with-icon {
     grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+/* 这里按最新设计图重新收口问云考核手机端，形成水墨标题、题卡和底部固定双按钮。 */
+@media (max-width: 785px) {
+  .quiz-reference-page {
+    padding: 4.8rem 0 0;
+    background:
+      linear-gradient(180deg, rgba(248, 240, 223, 0.88), rgba(246, 237, 220, 0.96)),
+      url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center top / auto 18rem no-repeat;
+  }
+
+  .quiz-reference-page .interaction-paper-shell {
+    width: 100%;
+  }
+
+  .quiz-reference-page .quiz-page-heading {
+    display: grid;
+    min-height: auto;
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .quiz-reference-page .quiz-page-heading .interaction-title-cluster {
+    min-height: 13.8rem;
+    padding: 1.7rem 1rem 1.25rem;
+    background:
+      linear-gradient(180deg, rgba(247, 242, 232, 0.08), rgba(249, 244, 235, 0.52) 68%, rgba(248, 241, 228, 0.98)),
+      url("/assets/guofeng-ui-20260509/ornaments/cloud-mountain-banner.png") center bottom / cover no-repeat;
+  }
+
+  .quiz-reference-page .interaction-title-icon {
+    width: 4.35rem;
+    height: 4.35rem;
+  }
+
+  .quiz-reference-page .interaction-title-cluster h1 {
+    font-size: clamp(2.6rem, 12vw, 3.2rem);
+  }
+
+  .quiz-reference-page .interaction-title-cluster p {
+    font-size: 0.98rem;
+  }
+
+  .quiz-reference-page .quiz-progress-card,
+  .quiz-reference-page .quiz-score-card,
+  .quiz-reference-page .quiz-question-card,
+  .quiz-reference-page .quiz-analysis-card,
+  .quiz-reference-page .quiz-rule-card,
+  .quiz-reference-page .quiz-state-card,
+  .quiz-reference-page .quiz-map-card {
+    width: calc(100% - 1.5rem);
+    margin-inline: 0.75rem;
+  }
+
+  .quiz-reference-page .quiz-progress-card {
+    min-height: 5rem;
+    padding: 1.05rem 1rem;
+  }
+
+  .quiz-reference-page .quiz-score-card {
+    min-height: 5.1rem;
+    padding: 1rem;
+  }
+
+  .quiz-reference-page .quiz-reference-form {
+    padding-bottom: 6.2rem;
+  }
+
+  .quiz-reference-page .quiz-reference-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .quiz-reference-page .quiz-question-card {
+    min-height: auto;
+    padding: 1.25rem 1rem 1.1rem;
+  }
+
+  .quiz-reference-page .quiz-question-head {
+    align-items: center;
+    padding-bottom: 0.72rem;
+  }
+
+  .quiz-reference-page .quiz-question-head p {
+    font-size: 1.18rem;
+  }
+
+  .quiz-reference-page .quiz-question-head small {
+    font-size: 0.82rem;
+  }
+
+  .quiz-question-source {
+    margin-top: 0.65rem;
+    text-align: left;
+    color: #6f5e42;
+    font-size: 0.82rem;
+  }
+
+  .quiz-reference-page .quiz-question-card h2 {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .quiz-reference-page .quiz-option-grid {
+    gap: 0.62rem;
+    margin-top: 1rem;
+  }
+
+  .quiz-reference-page .quiz-option-button {
+    min-height: 3.15rem;
+    padding: 0.68rem 0.75rem;
+    font-size: 0.92rem;
+  }
+
+  .quiz-reference-page .quiz-option-button span {
+    width: 1.75rem;
+    font-size: 1.05rem;
+  }
+
+  .quiz-reference-page .quiz-side-column {
+    gap: 0.9rem;
+  }
+
+  .quiz-reference-page .quiz-rule-card,
+  .quiz-reference-page .quiz-state-card {
+    display: none;
+  }
+
+  .quiz-reference-page .quiz-map-card {
+    order: -1;
+    padding: 1rem 0.85rem;
+  }
+
+  .quiz-reference-page .quiz-map-card h2 {
+    font-size: 1.15rem;
+  }
+
+  .quiz-map-legend {
+    grid-template-columns: repeat(4, max-content);
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .quiz-reference-page .quiz-question-map {
+    display: grid;
+    grid-auto-columns: 2.35rem;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overflow-x: auto;
+    padding: 0.1rem 0 0.3rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .quiz-reference-page .quiz-map-button {
+    min-height: 2.25rem;
+    scroll-snap-align: start;
+  }
+
+  .quiz-reference-page .quiz-analysis-card {
+    min-height: 6.6rem;
+    padding: 1rem;
+  }
+
+  .quiz-reference-page .quiz-analysis-card img {
+    display: none;
+  }
+
+  .quiz-reference-page .quiz-mark-button,
+  .quiz-reference-page .quiz-mistake-button {
+    display: none;
+  }
+
+  .quiz-reference-page .quiz-action-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: 0.7rem;
+    margin: 0;
+    border: 1px solid rgba(201, 164, 92, 0.34);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 253, 247, 0.98), rgba(249, 243, 230, 0.96)),
+      url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png") center / 18rem auto;
+    padding: 0.7rem 0.9rem calc(0.7rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 28px rgba(23, 51, 50, 0.13);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .quiz-reference-page .quiz-action-bar .interaction-ghost-button,
+  .quiz-reference-page .quiz-action-bar .interaction-primary-button,
+  .quiz-reference-page .quiz-action-bar .interaction-seal-button {
+    width: 100%;
+    min-height: 3.25rem;
+    padding-inline: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .quiz-reference-page .quiz-action-bar .quiz-next-button,
+  .quiz-reference-page .quiz-action-bar .quiz-submit-button {
+    grid-column: auto;
   }
 }
 
