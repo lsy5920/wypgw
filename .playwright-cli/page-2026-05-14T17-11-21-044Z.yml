@@ -1,0 +1,86 @@
+- generic [ref=e175]:
+  - generic [ref=e176]:
+    - complementary [ref=e177]:
+      - link "返回问云派首页" [ref=e178] [cursor=pointer]:
+        - /url: "#/"
+        - generic [ref=e179]: 云
+        - strong [ref=e181]: 问云派
+      - generic [ref=e182]:
+        - strong [ref=e183]: 问云小院
+        - paragraph [ref=e184]: 这里记录你的名帖、云灯、雅集与山门提醒。每一项都可回看，也可慢慢维护。
+      - button "退出小院" [ref=e185] [cursor=pointer]
+    - main [ref=e186]:
+      - generic [ref=e187]:
+        - generic [ref=e188]:
+          - generic [ref=e189]:
+            - heading "我的任务册" [level=1] [ref=e190]
+            - paragraph [ref=e191]: 今日小院已开，云山 可在这里查看自己的同行记录。
+          - link "回山门" [ref=e192] [cursor=pointer]:
+            - /url: "#/"
+        - generic [ref=e193]:
+          - generic [ref=e194]:
+            - generic [ref=e195]: 任务进度
+            - strong [ref=e196]: 100%
+            - generic [ref=e197]: 金典、考核、名帖、云灯、雅集合并计算
+          - generic [ref=e198]:
+            - generic [ref=e199]: 名帖记录
+            - strong [ref=e200]: "3"
+            - generic [ref=e201]: 递帖与审核状态
+          - generic [ref=e202]:
+            - generic [ref=e203]: 我的云灯
+            - strong [ref=e204]: "2"
+            - generic [ref=e205]: 已递出的云灯
+          - generic [ref=e206]:
+            - generic [ref=e207]: 未读提醒
+            - strong [ref=e208]: "1"
+            - generic [ref=e209]: 小院内待查看消息
+        - strong [ref=e212]: 本册进度
+        - generic [ref=e215]:
+          - article [ref=e216]:
+            - generic [ref=e218]:
+              - paragraph [ref=e219]: 今日任务
+              - heading "下一步可做" [level=2] [ref=e220]
+            - list [ref=e222]:
+              - listitem [ref=e223]:
+                - generic [ref=e224]: "01"
+                - generic [ref=e225]:
+                  - heading "问云考核" [level=3] [ref=e226]
+                  - paragraph [ref=e227]: 考核合格后才可递交名帖。
+              - listitem [ref=e228]:
+                - generic [ref=e229]: "02"
+                - generic [ref=e230]:
+                  - heading "递交名帖" [level=3] [ref=e231]
+                  - paragraph [ref=e232]: 名帖递出后，等待执事查看。
+              - listitem [ref=e233]:
+                - generic [ref=e234]: "03"
+                - generic [ref=e235]:
+                  - heading "点一盏云灯" [level=3] [ref=e236]
+                  - paragraph [ref=e237]: 给自己或同行者留一句灯上文字。
+          - article [ref=e238]:
+            - generic [ref=e240]:
+              - paragraph [ref=e241]: 小院回音
+              - heading "最近提醒" [level=2] [ref=e242]
+            - generic [ref=e243]:
+              - generic [ref=e244]:
+                - generic [ref=e245]:
+                  - strong [ref=e246]: 名帖已收到
+                  - text: 你的问云名帖已经送至山门，云纪执事会择时查看。
+                - generic [ref=e247]: 待处理
+              - generic [ref=e248]:
+                - generic [ref=e249]:
+                  - strong [ref=e250]: 雅集报名成功
+                  - text: 你已经报名“问云清谈：何以安放此心”。
+                - generic [ref=e251]: 已通过
+  - navigation "手机官网小院导航" [ref=e252]:
+    - link "任务册" [ref=e253] [cursor=pointer]:
+      - /url: "#/yard"
+    - link "我的资料" [ref=e254] [cursor=pointer]:
+      - /url: "#/yard/profile"
+    - link "我的名帖" [ref=e255] [cursor=pointer]:
+      - /url: "#/yard/applications"
+    - link "我的云灯" [ref=e256] [cursor=pointer]:
+      - /url: "#/yard/lanterns"
+    - link "问云雅集" [ref=e257] [cursor=pointer]:
+      - /url: "#/yard/events"
+    - link "小院提醒" [ref=e258] [cursor=pointer]:
+      - /url: "#/yard/notifications"

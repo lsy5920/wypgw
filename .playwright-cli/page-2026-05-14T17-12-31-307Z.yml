@@ -1,0 +1,198 @@
+- generic [ref=e259]:
+  - generic [ref=e260]:
+    - complementary [ref=e261]:
+      - link "返回问云派首页" [ref=e262] [cursor=pointer]:
+        - /url: "#/"
+        - generic [ref=e263]: 云
+        - strong [ref=e265]: 问云派
+      - generic [ref=e266]:
+        - strong [ref=e267]: 执事后台
+        - paragraph [ref=e268]: 聚合待办、审核、发布与权限维护，让山门运转清楚、留痕、有边界。
+      - button "退出后台" [ref=e269] [cursor=pointer]
+    - main [ref=e270]:
+      - generic [ref=e271]:
+        - generic [ref=e272]:
+          - generic [ref=e273]:
+            - heading "名册控制台" [level=1] [ref=e274]
+            - paragraph [ref=e275]: 执事可直接编辑名册资料、编号、身份、状态、联系方式与审核记录。
+          - link "去小院" [ref=e276] [cursor=pointer]:
+            - /url: "#/yard"
+        - generic [ref=e277]:
+          - complementary "名帖列表" [ref=e278]:
+            - generic [ref=e279]:
+              - generic [ref=e280]:
+                - paragraph [ref=e281]: 名册索引
+                - heading "5 条记录" [level=2] [ref=e282]
+              - generic [ref=e283]: 已发布
+            - generic [ref=e284]:
+              - textbox "搜索道名、姓名、编号、联系方式" [ref=e285]
+              - combobox [ref=e286]:
+                - option "全部状态" [selected]
+                - option "待审核"
+                - option "已通过"
+                - option "已联系"
+                - option "未通过"
+                - option "暂存"
+                - option "已退派"
+            - generic [ref=e287]:
+              - button "云山 问云-云-001 · 同门 已通过" [ref=e288] [cursor=pointer]:
+                - generic [ref=e289]:
+                  - strong [ref=e290]: 云山
+                  - generic [ref=e291]: 问云-云-001 · 同门
+                - generic [ref=e292]: 已通过
+              - button "云灯 问云-云-002 · 云纪执事 已通过" [ref=e293] [cursor=pointer]:
+                - generic [ref=e294]:
+                  - strong [ref=e295]: 云灯
+                  - generic [ref=e296]: 问云-云-002 · 云纪执事
+                - generic [ref=e297]: 已通过
+              - button "云初 问云-云-003 · 同门 待处理" [ref=e298] [cursor=pointer]:
+                - generic [ref=e299]:
+                  - strong [ref=e300]: 云初
+                  - generic [ref=e301]: 问云-云-003 · 同门
+                - generic [ref=e302]: 待处理
+              - button "云归 问云-云-004 · 同门 暂存" [ref=e303] [cursor=pointer]:
+                - generic [ref=e304]:
+                  - strong [ref=e305]: 云归
+                  - generic [ref=e306]: 问云-云-004 · 同门
+                - generic [ref=e307]: 暂存
+              - button "云离 问云-云-005 · 同门 已退派" [ref=e308] [cursor=pointer]:
+                - generic [ref=e309]:
+                  - strong [ref=e310]: 云离
+                  - generic [ref=e311]: 问云-云-005 · 同门
+                - generic [ref=e312]: 已退派
+          - region "名帖编辑器" [ref=e313]:
+            - generic [ref=e314]:
+              - generic [ref=e315]:
+                - generic [ref=e316]:
+                  - paragraph [ref=e317]: 正在编辑
+                  - heading "云山" [level=2] [ref=e318]
+                  - generic [ref=e319]: 林一 · 2026/04/28 09:00
+                - generic [ref=e320]:
+                  - button "保存名册" [ref=e321] [cursor=pointer]
+                  - button "删除" [ref=e322] [cursor=pointer]
+              - generic [ref=e323]:
+                - heading "名册身份" [level=3] [ref=e324]
+                - generic [ref=e325]:
+                  - generic [ref=e326]:
+                    - generic [ref=e327]: 道名
+                    - textbox "道名" [ref=e328]: 云山
+                  - generic [ref=e329]:
+                    - generic [ref=e330]: 江湖名
+                    - textbox "江湖名" [ref=e331]: 山月客
+                  - generic [ref=e332]:
+                    - generic [ref=e333]: 名册编号
+                    - textbox "名册编号" [ref=e334]: 问云-云-001
+                  - generic [ref=e335]:
+                    - generic [ref=e336]: 入册序号
+                    - textbox "入册序号" [ref=e337]: "1"
+                  - generic [ref=e338]:
+                    - generic [ref=e339]: 辈分字
+                    - textbox "辈分字" [ref=e340]: 云
+                  - generic [ref=e341]:
+                    - generic [ref=e342]: 门派身份
+                    - combobox "门派身份" [ref=e343]:
+                      - option "同门" [selected]
+                      - option "雅集执事"
+                      - option "文案执事"
+                      - option "云纪执事"
+                      - option "执灯长老"
+                      - option "掌门"
+                  - generic [ref=e344]:
+                    - generic [ref=e345]: 名帖状态
+                    - combobox "名帖状态" [ref=e346]:
+                      - option "待审核"
+                      - option "已通过" [selected]
+                      - option "已联系"
+                      - option "未通过"
+                      - option "暂存"
+                      - option "已退派"
+                  - generic [ref=e347]:
+                    - generic [ref=e348]: 入册时间
+                    - textbox "入册时间" [ref=e349]: 2026-04-28T09:00
+              - generic [ref=e350]:
+                - heading "真实资料与联系" [level=3] [ref=e351]
+                - generic [ref=e352]:
+                  - generic [ref=e353]:
+                    - generic [ref=e354]: 真实姓名
+                    - textbox "真实姓名" [ref=e355]: 林一
+                  - generic [ref=e356]:
+                    - generic [ref=e357]: 微信号
+                    - textbox "微信号" [ref=e358]: wenyun_demo_001
+                  - generic [ref=e359]:
+                    - generic [ref=e360]: 备用联系
+                    - textbox "备用联系" [ref=e361]: wenyun_demo_001
+                  - generic [ref=e362]:
+                    - generic [ref=e363]: 出生年份
+                    - textbox "出生年份" [ref=e364]: "1998"
+                  - generic [ref=e365]:
+                    - generic [ref=e366]: 公开性别
+                    - combobox "公开性别" [ref=e367]:
+                      - option "男" [selected]
+                      - option "女"
+                  - generic [ref=e368]:
+                    - generic [ref=e369]: 所在城市
+                    - textbox "所在城市" [ref=e370]: 杭州
+                  - generic [ref=e371]:
+                    - generic [ref=e372]: 公开地区
+                    - textbox "公开地区" [ref=e373]: 杭州
+                  - generic [ref=e374]:
+                    - generic [ref=e375]: 后台地区原文
+                    - textbox "后台地区原文" [ref=e376]: 杭州
+              - generic [ref=e377]:
+                - heading "公开名册内容" [level=3] [ref=e378]
+                - generic [ref=e379]:
+                  - generic [ref=e380]:
+                    - generic [ref=e381]: 入派宣言
+                    - textbox "入派宣言" [ref=e382]: 想找一个不吵闹、能真诚说话的地方。
+                  - generic [ref=e383]:
+                    - generic [ref=e384]: 兴趣爱好
+                    - textbox "兴趣爱好" [ref=e385]: 写字、饮茶、演示数据
+                  - generic [ref=e386]:
+                    - generic [ref=e387]: 同行期待
+                    - textbox "同行期待" [ref=e388]: 温和真诚
+                  - generic [ref=e389]:
+                    - generic [ref=e390]: 申请理由
+                    - textbox "申请理由" [ref=e391]: 想找一个不吵闹、能真诚说话的地方，也愿意一起守护清醒温柔的门派氛围。
+              - generic [ref=e392]:
+                - heading "审核与归云堂" [level=3] [ref=e393]
+                - generic [ref=e394]:
+                  - generic [ref=e395]:
+                    - generic [ref=e396]: 管理员备注
+                    - textbox "管理员备注" [ref=e397]
+                  - generic [ref=e398]:
+                    - generic [ref=e399]: 申请改道名
+                    - textbox "申请改道名" [ref=e400]
+                  - generic [ref=e401]:
+                    - generic [ref=e402]: 申请改联系方式
+                    - textbox "申请改联系方式" [ref=e403]
+                  - generic [ref=e404]:
+                    - generic [ref=e405]: 入归云堂时间
+                    - textbox "入归云堂时间" [ref=e406]: 2026-04-28T09:00
+                  - generic [ref=e407]:
+                    - generic [ref=e408] [cursor=pointer]:
+                      - checkbox "已认同立派金典" [checked] [ref=e409]
+                      - text: 已认同立派金典
+                    - generic [ref=e410] [cursor=pointer]:
+                      - checkbox "已进入归云堂" [checked] [ref=e411]
+                      - text: 已进入归云堂
+              - generic [ref=e412]:
+                - generic [ref=e413]:
+                  - button "快速通过" [ref=e414] [cursor=pointer]
+                  - button "标为已联系" [ref=e415] [cursor=pointer]
+                  - button "标为未通过" [ref=e416] [cursor=pointer]
+                - button "保存全部修改" [ref=e417] [cursor=pointer]
+  - navigation "手机执事后台导航" [ref=e418]:
+    - link "任务台" [ref=e419] [cursor=pointer]:
+      - /url: "#/admin"
+    - link "名帖审核" [ref=e420] [cursor=pointer]:
+      - /url: "#/admin/applications"
+    - link "云灯审核" [ref=e421] [cursor=pointer]:
+      - /url: "#/admin/lanterns"
+    - link "山门告示" [ref=e422] [cursor=pointer]:
+      - /url: "#/admin/announcements"
+    - link "雅集管理" [ref=e423] [cursor=pointer]:
+      - /url: "#/admin/events"
+    - link "执事权限" [ref=e424] [cursor=pointer]:
+      - /url: "#/admin/stewards"
+    - link "山门设置" [ref=e425] [cursor=pointer]:
+      - /url: "#/admin/settings"

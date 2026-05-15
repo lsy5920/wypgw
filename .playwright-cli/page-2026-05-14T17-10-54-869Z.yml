@@ -1,0 +1,36 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - complementary [ref=e5]:
+      - link "返回问云派首页" [ref=e6] [cursor=pointer]:
+        - /url: "#/"
+        - generic [ref=e7]: 云
+        - strong [ref=e9]: 问云派
+      - generic [ref=e10]:
+        - strong [ref=e11]: 执事后台
+        - paragraph [ref=e12]: 聚合待办、审核、发布与权限维护，让山门运转清楚、留痕、有边界。
+      - button "退出后台" [ref=e13] [cursor=pointer]
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "名册控制台" [level=1] [ref=e18]
+            - paragraph [ref=e19]: 执事可直接编辑名册资料、编号、身份、状态、联系方式与审核记录。
+          - link "去小院" [ref=e20] [cursor=pointer]:
+            - /url: "#/yard"
+        - status [ref=e21]:
+          - paragraph [ref=e25]: 正在读取名帖...
+  - navigation "手机执事后台导航" [ref=e26]:
+    - link "任务台" [ref=e27] [cursor=pointer]:
+      - /url: "#/admin"
+    - link "名帖审核" [ref=e28] [cursor=pointer]:
+      - /url: "#/admin/applications"
+    - link "云灯审核" [ref=e29] [cursor=pointer]:
+      - /url: "#/admin/lanterns"
+    - link "山门告示" [ref=e30] [cursor=pointer]:
+      - /url: "#/admin/announcements"
+    - link "雅集管理" [ref=e31] [cursor=pointer]:
+      - /url: "#/admin/events"
+    - link "执事权限" [ref=e32] [cursor=pointer]:
+      - /url: "#/admin/stewards"
+    - link "山门设置" [ref=e33] [cursor=pointer]:
+      - /url: "#/admin/settings"

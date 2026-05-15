@@ -32,7 +32,7 @@ export const wenxinQuizQuestions: WenxinQuizQuestion[] = [
   {
     id: 1,
     type: 'single',
-    title: '新版金典中，“问云者”主要是在问什么？',
+    title: '立派金典中，“问云者”主要是在问什么？',
     options: [
       { key: 'A', text: '问吉凶祸福，替人断定命运' },
       { key: 'B', text: '问天地辽阔、问本心归处、问同道何在' },
@@ -172,7 +172,7 @@ export const wenxinQuizQuestions: WenxinQuizQuestion[] = [
   {
     id: 11,
     type: 'single',
-    title: '“不替专业”提醒同门遇到严重心理危机、疾病或违法侵害时应怎么做？',
+    title: '“不替专业”提醒同门遇到严重心理危机、疾病或违法侵害时应如何处理？',
     options: [
       { key: 'A', text: '只在群里解决，不告诉任何人' },
       { key: 'B', text: '及时寻求专业机构、亲友或公共求助渠道' },
@@ -312,7 +312,7 @@ export const wenxinQuizQuestions: WenxinQuizQuestion[] = [
   {
     id: 21,
     type: 'single',
-    title: '关于谣言与未经核实的“内幕”，金典要求怎么做？',
+    title: '关于谣言与未经核实的“内幕”，金典要求如何处理？',
     options: [
       { key: 'A', text: '不明来源，不转不传' },
       { key: 'B', text: '先转发，之后再核实' },

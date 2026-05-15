@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { parseCanonSections } from '../pages/CanonPage'
+import { parseCanonSections } from '../features/public/PublicDisplayPages'
 import { canonText } from '../data/siteContent'
 import { wenxinQuizQuestions } from '../data/quizContent'
-import { isEmailNotConfirmedError, translateSupabaseAuthError } from '../lib/authMessages'
-import { createNextMemberCode, createSlug, isValidBirthYear, isValidDaoName, validateCloudLantern, validateJoinApplication } from '../lib/validators'
+import { translateAuthError } from '../shared/services/authService'
+import { createNextMemberCode, createSlug, isValidBirthYear, isValidDaoName, validateCloudLantern, validateJoinApplication } from '../shared/services/validators'
 
 // 这里测试基础校验逻辑，确保关键表单不会接受明显无效的数据。
 describe('问云派表单校验', () => {
@@ -101,8 +101,8 @@ describe('问云派内容工具', () => {
     expect(canonText).toContain('清醒温柔，同行自渡')
   })
 
-  // 这个用例验证问云考核题库总分和新版金典内容一致。
-  it('可以保持新版问云考核题库总分为一百分', () => {
+  // 这个用例验证问云考核题库总分和立派金典内容一致。
+  it('可以保持问云考核题库总分为一百分', () => {
     const totalScore = wenxinQuizQuestions.reduce((sum, question) => sum + question.score, 0)
 
     expect(wenxinQuizQuestions).toHaveLength(30)
@@ -118,16 +118,9 @@ describe('问云派内容工具', () => {
 
 // 这里测试登录错误翻译，确保 Supabase 常见英文错误能给用户中文处理建议。
 describe('问云派登录提示', () => {
-  // 这个用例验证邮箱未确认错误会被识别。
-  it('可以识别邮箱未确认错误', () => {
-    const error = new Error('Email not confirmed')
-
-    expect(isEmailNotConfirmedError(error)).toBe(true)
-  })
-
   // 这个用例验证邮箱未确认错误会翻译成中文提示。
   it('可以把邮箱未确认错误翻译成中文', () => {
-    const message = translateSupabaseAuthError(new Error('Email not confirmed'))
+    const message = translateAuthError(new Error('Email not confirmed'))
 
     expect(message).toContain('关闭邮箱确认')
   })
