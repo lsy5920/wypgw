@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { canonText, joinSteps, sectRoles, spiritItems } from '../../data/siteContent'
+import { canonText, sectRoles, spiritItems } from '../../data/siteContent'
 import { getGuofengVisualPath } from '../../data/visualAssets'
 import type { Announcement, CloudLantern, RosterEntry, SiteSetting, WenyunEvent } from '../../lib/types'
 import { fetchApprovedLanterns, fetchPublishedAnnouncements, fetchPublishedEvents, fetchPublicRoster, fetchSettings } from '../../shared/services'
-import { EmptyState, LoadingBlock, MetricCard, MissionCard, MissionHero, StatusPill, TaskButton, TaskLink, TimelineItem, formatDateTime } from '../../shared/ui/TaskUi'
+import { EmptyState, LoadingBlock, MetricCard, MissionCard, MissionHero, StatusPill, TaskLink, TimelineItem, formatDateTime } from '../../shared/ui/TaskUi'
 
 // 这个接口描述金典章节，入参来自原始文本，返回值用于目录、阅读器和正文展示。
 export interface CanonSection {

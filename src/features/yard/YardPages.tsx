@@ -1,6 +1,17 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { genderOptions } from '../../data/siteContent'
-import type { AccountSecurityInfo, CloudLantern, JoinApplication, MemberGender, Profile, RosterProfileUpdateInput, UserNotification, YardEventItem, YardOverview } from '../../lib/types'
+import type {
+  AccountSecurityInfo,
+  CloudLantern,
+  GuiyuntangSetting,
+  JoinApplication,
+  MemberGender,
+  Profile,
+  RosterProfileUpdateInput,
+  UserNotification,
+  YardEventItem,
+  YardOverview
+} from '../../lib/types'
 import {
   bindMyEmail,
   cancelEventRegistration,
@@ -40,7 +51,8 @@ function createEmptyOverview(): YardOverview {
     lanterns: [],
     registrations: [],
     notifications: [],
-    quizResult: null
+    quizResult: null,
+    guiyuntangSetting: null
   }
 }
 
@@ -57,6 +69,56 @@ function createEmptySecurity(): AccountSecurityInfo {
 // 这个函数选择最适合维护的名帖，入参是名帖列表，返回值是已通过名帖或最新名帖。
 function pickEditableApplication(items: JoinApplication[]): JoinApplication | null {
   return items.find((item) => item.status === 'approved' || item.status === 'contacted') ?? items[0] ?? null
+}
+
+// 这个函数选择可查看归云堂二维码的名帖，入参是名帖列表，返回值是已通过或已联系的名帖。
+function pickGuiyuntangApplication(items: JoinApplication[]): JoinApplication | null {
+  return items.find((item) => item.status === 'approved' || item.status === 'contacted') ?? null
+}
+
+// 这个组件展示归云堂二维码弹窗，入参是二维码设置、名帖和操作方法，返回值是全屏入群提示。
+function GuiyuntangDialog({
+  application,
+  setting,
+  confirming,
+  onConfirm,
+  onClose
+}: {
+  // 当前可入群的名帖，用于判断是否已经确认入群。
+  application: JoinApplication
+  // 归云堂二维码设置，来自后台受保护配置。
+  setting: GuiyuntangSetting
+  // 当前是否正在确认入群。
+  confirming: boolean
+  // 点击“我已入群”时执行的方法。
+  onConfirm: () => void
+  // 点击“暂时关闭”时执行的方法。
+  onClose: () => void
+}) {
+  return (
+    <div className="guiyuntang-dialog" role="dialog" aria-modal="true" aria-labelledby="guiyuntang-dialog-title">
+      <div className="guiyuntang-dialog__panel">
+        <div className="guiyuntang-dialog__copy">
+          <p className="section-eyebrow">归云堂入群</p>
+          <h2 id="guiyuntang-dialog-title">名帖已通过，可扫码入归云堂</h2>
+          <p>{setting.instruction}</p>
+          <p className="guiyuntang-dialog__warning">{setting.warning}</p>
+        </div>
+        <div className="guiyuntang-dialog__qr">
+          <img alt="归云堂入群二维码" src={setting.qr_image_data_url ?? ''} />
+          <span>{application.guiyuntang_joined ? '你已确认入归云堂，可再次查看二维码。' : '扫码后请点击“我已入群”，小院会同步名册状态。'}</span>
+        </div>
+        <div className="guiyuntang-dialog__actions">
+          <TaskButton disabled={application.guiyuntang_joined || confirming} onClick={onConfirm} tone="primary" type="button" icon="check">
+            {application.guiyuntang_joined ? '已记录入群' : confirming ? '正在记录' : '我已入群'}
+          </TaskButton>
+          <TaskButton onClick={onClose} tone="secondary" type="button">
+            暂时关闭
+          </TaskButton>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // 这个组件展示小院顶部标题，入参是标题和说明，返回值是小院页面统一页首。
@@ -80,6 +142,14 @@ export function YardDashboardPage() {
   const [overview, setOverview] = useState<YardOverview>(createEmptyOverview)
   // 这个状态保存加载标记。
   const [loading, setLoading] = useState(true)
+  // 这个状态保存归云堂弹窗是否打开。
+  const [guiyuntangOpen, setGuiyuntangOpen] = useState(false)
+  // 这个状态保存本次访问是否手动关闭过弹窗，避免点击暂时关闭后立刻再次弹出。
+  const [guiyuntangDismissed, setGuiyuntangDismissed] = useState(false)
+  // 这个状态保存确认入群中的标记。
+  const [confirmingGuiyuntang, setConfirmingGuiyuntang] = useState(false)
+  // 这个状态保存小院总览页操作反馈。
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     // 这里读取小院任务册首页需要的整包数据。
@@ -104,6 +174,49 @@ export function YardDashboardPage() {
     return Math.round((steps.filter(Boolean).length / steps.length) * 100)
   }, [overview])
 
+  // 这个变量保存可入群名帖，返回值用于自动弹窗和手动查看入口。
+  const guiyuntangApplication = useMemo(() => pickGuiyuntangApplication(overview.applications), [overview.applications])
+  // 这个变量保存可用二维码设置，返回值用于判断是否展示归云堂模块。
+  const guiyuntangSetting = overview.guiyuntangSetting
+  // 这个变量判断当前用户是否能查看二维码，返回值用于展示入口和弹窗。
+  const canViewGuiyuntang = Boolean(guiyuntangApplication && guiyuntangSetting?.enabled && guiyuntangSetting.qr_image_data_url)
+
+  useEffect(() => {
+    // 这里在名帖已通过且尚未确认入群时主动弹出二维码，本次手动关闭后不重复打扰。
+    if (!loading && canViewGuiyuntang && guiyuntangApplication && !guiyuntangApplication.guiyuntang_joined && !guiyuntangDismissed) {
+      setGuiyuntangOpen(true)
+    }
+  }, [canViewGuiyuntang, guiyuntangApplication, guiyuntangDismissed, loading])
+
+  // 这个函数临时关闭归云堂弹窗，入参为空，返回值为空。
+  function closeGuiyuntangTemporarily() {
+    setGuiyuntangDismissed(true)
+    setGuiyuntangOpen(false)
+  }
+
+  // 这个函数确认本人已入归云堂，入参为空，返回值为空。
+  async function confirmGuiyuntangJoined() {
+    if (!guiyuntangApplication) {
+      setMessage('没有找到可确认入群的名帖。')
+      return
+    }
+
+    setConfirmingGuiyuntang(true)
+    const result = await confirmMyGuiyuntangJoined(guiyuntangApplication.id)
+    setConfirmingGuiyuntang(false)
+    setMessage(result.message)
+
+    if (result.ok && result.data) {
+      const nextApplication = result.data as JoinApplication
+      setOverview((current) => ({
+        ...current,
+        applications: current.applications.map((item) => (item.id === nextApplication.id ? nextApplication : item))
+      }))
+      setGuiyuntangDismissed(true)
+      setGuiyuntangOpen(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="work-content">
@@ -116,6 +229,7 @@ export function YardDashboardPage() {
   return (
     <div className="work-content">
       <YardTopbar title="我的任务册" description={`今日小院已开，${overview.profile.nickname} 可在这里查看自己的同行记录。`} />
+      {message ? <StatusNotice tone={message.includes('失败') || message.includes('没有') ? 'warning' : 'success'}>{message}</StatusNotice> : null}
       <section className="metric-row">
         <MetricCard label="任务进度" value={`${progress}%`} hint="金典、考核、名帖、云灯、雅集合并计算" />
         <MetricCard label="名帖记录" value={overview.applications.length} hint="递帖与审核状态" />
@@ -140,6 +254,20 @@ export function YardDashboardPage() {
             <TimelineItem done={overview.lanterns.length > 0} index={3} text="给自己或同行者留一句灯上文字。" title="点一盏云灯" />
           </ul>
         </MissionCard>
+        {canViewGuiyuntang && guiyuntangApplication ? (
+          <MissionCard
+            title="归云堂入群"
+            eyebrow={guiyuntangApplication.guiyuntang_joined ? '已入归云堂' : '待扫码入群'}
+            meta={<StatusPill value={guiyuntangApplication.guiyuntang_joined ? 'approved' : 'pending'} />}
+            action={
+              <TaskButton onClick={() => setGuiyuntangOpen(true)} tone="primary" type="button" icon="roster">
+                {guiyuntangApplication.guiyuntang_joined ? '再次查看二维码' : '查看入群二维码'}
+              </TaskButton>
+            }
+          >
+            <p>{guiyuntangApplication.guiyuntang_joined ? '你已确认入归云堂，二维码不再主动弹出；需要时仍可在这里再次查看。' : '名帖已通过，可扫码进入归云堂。若暂时不方便，可以先关闭弹窗，稍后从这里再次打开。'}</p>
+          </MissionCard>
+        ) : null}
         <MissionCard title="最近提醒" eyebrow="小院回音">
           {overview.notifications.length === 0 ? (
             <p>暂无提醒。山门安静，任务册也安静。</p>
@@ -156,6 +284,15 @@ export function YardDashboardPage() {
           )}
         </MissionCard>
       </section>
+      {guiyuntangOpen && canViewGuiyuntang && guiyuntangApplication && guiyuntangSetting?.qr_image_data_url ? (
+        <GuiyuntangDialog
+          application={guiyuntangApplication}
+          confirming={confirmingGuiyuntang}
+          onClose={closeGuiyuntangTemporarily}
+          onConfirm={confirmGuiyuntangJoined}
+          setting={guiyuntangSetting}
+        />
+      ) : null}
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { mockApplications, mockProfile } from '../../data/mockData'
 import type { Profile } from '../../lib/types'
 import { databaseClient } from './supabase'
-import { failResult, getErrorMessage, okResult } from './result'
+import { failResult, okResult } from './result'
 
 // 这个类型描述登录页支持的账号模式，入参来自登录表单，返回值用于决定账号转换方式。
 export type LoginAccountKind = 'email' | 'legacy'

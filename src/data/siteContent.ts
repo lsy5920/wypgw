@@ -26,16 +26,6 @@ export const spiritItems = [
   { title: '共建', text: '群不是一人之群，人人皆为此间风气之守护者。' }
 ]
 
-// 这个数组保存首页入派流程，返回值用于路线图展示。
-export const joinSteps = [
-  '登录小院',
-  '阅读金典',
-  '问云考核',
-  '递交名帖',
-  '云纪审核',
-  '列入名册'
-]
-
 // 这个数组保存名册性别选项，返回值用于前台登记、前台筛选和后台编辑。
 export const genderOptions = ['男', '女'] as const
 
@@ -51,20 +41,3 @@ export const sectRoles = [
   { title: '雅集执事', text: '负责线上活动、读书会、茶话会、主题夜谈与线下聚会筹备。' },
   { title: '同门', text: '凡入群并认可金典者皆为问云同门，无高低贵贱。' }
 ]
-
-// 这个数组保存后台状态按钮，返回值用于申请审核页面。
-export const applicationStatusLabels = {
-  pending: '待审核',
-  approved: '已审核',
-  rejected: '未通过',
-  contacted: '已联系',
-  draft: '暂存',
-  retired: '已退派'
-}
-
-// 这个数组保存云灯审核状态文案，返回值用于后台留言审核页面。
-export const lanternStatusLabels = {
-  pending: '待审核',
-  approved: '已公开',
-  rejected: '已拒绝'
-}

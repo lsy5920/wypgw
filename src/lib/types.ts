@@ -541,6 +541,8 @@ export interface YardOverview {
   notifications: UserNotification[]
   // 当前用户最新一次问云考核结果，没有考过时为空。
   quizResult: WenxinQuizResult | null
+  // 当前用户可读取的归云堂二维码设置，没有权限或未配置时为空。
+  guiyuntangSetting: GuiyuntangSetting | null
 }
 
 // 这个接口描述站点设置项，后台可以按键值维护。

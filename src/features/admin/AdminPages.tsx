@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react'
 import { genderOptions, memberRoleOptions } from '../../data/siteContent'
 import type {
   AdminRoleUser,
@@ -88,6 +88,30 @@ const applicationStatusOptions: Array<{ value: JoinApplicationStatus; label: str
   { value: 'draft', label: '暂存' },
   { value: 'retired', label: '已退派' }
 ]
+
+// 这个常量保存二维码图片最大体积，入参为空，返回值用于避免把过大的图片写入数据库文本字段。
+const maxQrImageSize = 2 * 1024 * 1024
+
+// 这个函数把上传的图片读取成数据地址，入参是图片文件，返回值是可保存到数据库的图片文本。
+function readImageFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // 这里使用浏览器原生读取器，避免引入额外依赖。
+    const reader = new FileReader()
+
+    // 这里处理读取失败，常见原因是文件被系统占用或浏览器拒绝读取。
+    reader.onerror = () => reject(new Error('二维码图片读取失败，请重新选择图片。'))
+    // 这里处理读取完成，只有字符串数据地址才可以保存。
+    reader.onload = () => {
+      if (typeof reader.result !== 'string') {
+        reject(new Error('二维码图片格式异常，请重新上传。'))
+        return
+      }
+
+      resolve(reader.result)
+    }
+    reader.readAsDataURL(file)
+  })
+}
 
 // 这个函数把名帖数据转换为可编辑表单，入参是名帖记录，返回值是后台保存所需字段。
 function createApplicationEditForm(item: JoinApplication): JoinApplicationUpdateInput {
@@ -881,8 +905,10 @@ export function AdminSettingsPage() {
   const [contact, setContact] = useState(createContactForm([]))
   const [smtp, setSmtp] = useState({ enabled: false, host: '', port: '465', secure: true, username: '', password: '', from_email: '' })
   const [guiyuntang, setGuiyuntang] = useState({ enabled: true, qr_image_data_url: '', instruction: '', warning: '' })
+  const [qrFileName, setQrFileName] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const [uploadingQr, setUploadingQr] = useState(false)
 
   useEffect(() => {
     // 这里并行读取站点设置、邮件设置和归云堂设置。
@@ -901,6 +927,7 @@ export function AdminSettingsPage() {
           instruction: guiyuntangData.instruction,
           warning: guiyuntangData.warning
         })
+        setQrFileName(guiyuntangData.qr_image_data_url ? '已保存二维码图片' : '')
       }
       setLoading(false)
     }
@@ -925,8 +952,67 @@ export function AdminSettingsPage() {
   // 这个函数保存归云堂设置，入参是表单事件，返回值为空。
   async function saveGuiyuntang(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (uploadingQr) {
+      setMessage('二维码图片仍在读取，请稍等。')
+      return
+    }
+    if (guiyuntang.enabled && !guiyuntang.qr_image_data_url.trim()) {
+      setMessage('请先上传归云堂入群二维码图片。')
+      return
+    }
     const result = await saveGuiyuntangSetting(guiyuntang)
     setMessage(result.message)
+    if (result.ok && result.data) {
+      const nextSetting = result.data as GuiyuntangSetting
+      setGuiyuntang({
+        enabled: nextSetting.enabled,
+        qr_image_data_url: nextSetting.qr_image_data_url ?? '',
+        instruction: nextSetting.instruction,
+        warning: nextSetting.warning
+      })
+      setQrFileName(nextSetting.qr_image_data_url ? qrFileName || '已保存二维码图片' : '')
+    }
+  }
+
+  // 这个函数处理二维码图片上传，入参是文件输入事件，返回值为空。
+  async function uploadGuiyuntangQr(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setMessage('请上传图片格式的二维码文件。')
+      event.target.value = ''
+      return
+    }
+
+    if (file.size > maxQrImageSize) {
+      setMessage('二维码图片不能超过 2MB，请压缩后再上传。')
+      event.target.value = ''
+      return
+    }
+
+    setUploadingQr(true)
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file)
+      setGuiyuntang((current) => ({ ...current, qr_image_data_url: dataUrl, enabled: true }))
+      setQrFileName(file.name)
+      setMessage('二维码图片已读取，点击保存后才会正式写入后台设置。')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : '二维码图片读取失败，请重新选择图片。')
+    } finally {
+      setUploadingQr(false)
+      event.target.value = ''
+    }
+  }
+
+  // 这个函数移除当前表单里的二维码，入参为空，返回值为空。
+  function clearGuiyuntangQr() {
+    setGuiyuntang((current) => ({ ...current, enabled: false, qr_image_data_url: '' }))
+    setQrFileName('')
+    setMessage('已移除表单里的二维码，点击保存后才会同步到后台设置。')
   }
 
   if (loading) {
@@ -995,9 +1081,25 @@ export function AdminSettingsPage() {
                 启用入群提示
               </label>
             </div>
-            <Field label="二维码数据地址">
-              <textarea onChange={(event) => setGuiyuntang((current) => ({ ...current, qr_image_data_url: event.target.value }))} value={guiyuntang.qr_image_data_url} />
+            <Field label="上传二维码图片" hint="支持常见图片格式，建议使用清晰方形二维码，文件不超过 2MB。">
+              <input accept="image/*" onChange={uploadGuiyuntangQr} type="file" />
             </Field>
+            <div className="qr-upload-panel">
+              {guiyuntang.qr_image_data_url ? (
+                <img alt="归云堂二维码预览" src={guiyuntang.qr_image_data_url} />
+              ) : (
+                <div className="qr-upload-panel__empty">尚未上传二维码</div>
+              )}
+              <div>
+                <strong>{qrFileName || '等待选择图片'}</strong>
+                <span>{guiyuntang.qr_image_data_url ? '当前表单已有二维码预览。' : '上传后会先在这里预览，保存后才正式生效。'}</span>
+                {guiyuntang.qr_image_data_url ? (
+                  <TaskButton onClick={clearGuiyuntangQr} tone="secondary" type="button">
+                    移除二维码
+                  </TaskButton>
+                ) : null}
+              </div>
+            </div>
             <Field label="操作说明">
               <textarea onChange={(event) => setGuiyuntang((current) => ({ ...current, instruction: event.target.value }))} value={guiyuntang.instruction} />
             </Field>

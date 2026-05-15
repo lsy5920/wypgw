@@ -16,6 +16,7 @@ import { databaseClient } from './supabase'
 import { failResult, getErrorMessage, okResult, requireCurrentUser } from './result'
 import { fetchMyLatestWenxinQuizResult, fetchPublishedEvents, createUserNotification } from './publicService'
 import { translateAuthError } from './authService'
+import { fetchGuiyuntangSetting } from './settingsService'
 
 // 这个函数判断邮箱是否为旧编号内部邮箱，入参是邮箱，返回值表示是否仍需绑定真实邮箱。
 function isLegacyInternalEmail(email: string): boolean {
@@ -236,16 +237,18 @@ export async function fetchMyNotifications() {
 
 // 这个函数读取小院总览，入参为空，返回值是任务册首页需要的整包数据。
 export async function fetchYardOverview() {
-  const [profileResult, applicationResult, lanternResult, registrationResult, notificationResult, quizResult] = await Promise.all([
+  const [profileResult, applicationResult, lanternResult, registrationResult, notificationResult, quizResult, guiyuntangResult] = await Promise.all([
     fetchMyProfile(),
     fetchMyApplications(),
     fetchMyLanterns(),
     fetchMyRegistrations(),
     fetchMyNotifications(),
-    fetchMyLatestWenxinQuizResult()
+    fetchMyLatestWenxinQuizResult(),
+    fetchGuiyuntangSetting()
   ])
 
   return {
+    // 这里不让二维码读取失败影响小院打开，因为未审核成员本来可能没有读取权限。
     ok: profileResult.ok && applicationResult.ok && lanternResult.ok && registrationResult.ok && notificationResult.ok && quizResult.ok,
     data: {
       profile: mergeProfileWithRoster(profileResult.data, applicationResult.data),
@@ -253,7 +256,8 @@ export async function fetchYardOverview() {
       lanterns: lanternResult.data,
       registrations: registrationResult.data,
       notifications: notificationResult.data,
-      quizResult: quizResult.data
+      quizResult: quizResult.data,
+      guiyuntangSetting: guiyuntangResult.data
     } as YardOverview,
     message: profileResult.message,
     demoMode: profileResult.demoMode

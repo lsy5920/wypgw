@@ -1004,6 +1004,56 @@ img {
   background: rgba(179, 63, 50, 0.12);
 }
 
+/* 二维码上传预览：让后台执事能先确认图片，再保存到受保护设置。 */
+.qr-upload-panel {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+  border: 1px solid rgba(20, 32, 28, 0.13);
+  border-radius: var(--radius-md);
+  background: rgba(255, 250, 240, 0.72);
+  padding: var(--space-3);
+}
+
+.qr-upload-panel img,
+.qr-upload-panel__empty {
+  width: 132px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(20, 32, 28, 0.14);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.qr-upload-panel img {
+  object-fit: contain;
+  padding: var(--space-2);
+}
+
+.qr-upload-panel__empty {
+  display: grid;
+  place-items: center;
+  color: var(--color-ink-soft);
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.qr-upload-panel > div:last-child {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.qr-upload-panel strong {
+  overflow-wrap: anywhere;
+}
+
+.qr-upload-panel span {
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+}
+
 .empty-state,
 .loading-block {
   display: grid;
@@ -1454,6 +1504,94 @@ img {
   background: linear-gradient(110deg, rgba(179, 63, 50, 0.1), transparent 28%);
 }
 
+/* 归云堂弹窗：审核通过成员进入小院时全屏显示二维码，确认后不再主动打扰。 */
+.guiyuntang-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(184, 141, 60, 0.22), transparent 24rem),
+    rgba(20, 32, 28, 0.78);
+  padding: var(--space-5);
+  backdrop-filter: blur(14px);
+}
+
+.guiyuntang-dialog__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  gap: var(--space-5);
+  width: min(880px, 100%);
+  border: 1px solid rgba(255, 250, 240, 0.38);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(145deg, rgba(255, 250, 240, 0.98), rgba(234, 219, 193, 0.92)),
+    url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
+  padding: var(--space-6);
+  box-shadow: 0 36px 96px rgba(0, 0, 0, 0.32);
+}
+
+.guiyuntang-dialog__copy {
+  display: grid;
+  align-content: center;
+  gap: var(--space-4);
+}
+
+.guiyuntang-dialog__copy h2 {
+  font-family: "STSong", "SimSun", serif;
+  font-size: 2.35rem;
+  line-height: 1.16;
+}
+
+.guiyuntang-dialog__copy p {
+  color: var(--color-ink-soft);
+  line-height: 1.85;
+}
+
+.guiyuntang-dialog__warning {
+  border-left: 4px solid var(--color-cinnabar);
+  background: rgba(179, 63, 50, 0.08);
+  padding: var(--space-3);
+  color: var(--color-ink) !important;
+}
+
+.guiyuntang-dialog__qr {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  border: 1px solid rgba(20, 32, 28, 0.12);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.guiyuntang-dialog__qr img {
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  justify-self: center;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  padding: var(--space-2);
+}
+
+.guiyuntang-dialog__qr span {
+  color: var(--color-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.guiyuntang-dialog__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 /* 后台名册控制台：左侧索引，右侧直接编辑全量字段。 */
 .admin-roster-workbench {
   display: grid;
@@ -1843,6 +1981,39 @@ img {
 
   .mission-card {
     padding: var(--space-4);
+  }
+
+  .qr-upload-panel,
+  .guiyuntang-dialog__panel {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-upload-panel img,
+  .qr-upload-panel__empty {
+    width: 100%;
+    max-width: 220px;
+    justify-self: center;
+  }
+
+  .guiyuntang-dialog {
+    align-items: start;
+    padding: var(--space-3);
+  }
+
+  .guiyuntang-dialog__panel {
+    padding: var(--space-4);
+  }
+
+  .guiyuntang-dialog__copy h2 {
+    font-size: 1.8rem;
+  }
+
+  .guiyuntang-dialog__actions {
+    justify-content: stretch;
+  }
+
+  .guiyuntang-dialog__actions .task-button {
+    flex: 1 1 150px;
   }
 
   .mission-card__head {

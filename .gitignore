@@ -10,3 +10,7 @@ yarn-error.log*
 .vite-dev.log
 .vite-dev.err.log
 .vite-v2-screenshot*.log
+# 本地浏览器验证生成的临时日志，不需要进入项目源码。
+.playwright-cli/
+# 本地截图与检查输出目录，不需要进入项目源码。
+output/

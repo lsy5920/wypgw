@@ -1,6 +1,6 @@
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
-import { TaskButton, TaskSeal } from '../../shared/ui/TaskUi'
-import { useAuthState } from '../../shared/services'
+import { TaskButton, TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
+import { isAdminProfile, useAuthState } from '../../shared/services'
 
 // 这个数组保存小院导航入口，入参为空，返回值用于侧栏和手机横向导航。
 const yardNavItems = [
@@ -16,6 +16,8 @@ const yardNavItems = [
 export function YardLayout() {
   // 这个状态来自认证服务，用于判断是否允许进入小院。
   const auth = useAuthState()
+  // 这个变量判断当前账号是否有后台权限，返回值用于展示执事入口。
+  const canEnterAdmin = isAdminProfile(auth.profile)
 
   if (auth.loading) {
     return <div className="page-shell page-stack">正在打开问云小院...</div>
@@ -33,6 +35,11 @@ export function YardLayout() {
           <div className="work-sidebar__panel">
             <strong>问云小院</strong>
             <p>这里记录你的名帖、云灯、雅集与山门提醒。每一项都可回看，也可慢慢维护。</p>
+            {canEnterAdmin ? (
+              <TaskLink to="/admin" tone="primary" icon="shieldCheck">
+                前往执事后台
+              </TaskLink>
+            ) : null}
           </div>
           <nav className="work-nav" aria-label="问云小院导航">
             {yardNavItems.map((item) => (
@@ -50,6 +57,11 @@ export function YardLayout() {
         </main>
       </div>
       <nav className="work-mobile-dock" aria-label="手机官网小院导航">
+        {canEnterAdmin ? (
+          <NavLink to="/admin">
+            执事后台
+          </NavLink>
+        ) : null}
         {yardNavItems.map((item) => (
           <NavLink end={item.path === '/yard'} key={item.path} to={item.path}>
             {item.label}
