@@ -125,6 +125,9 @@ async function fetchRealLyricLines(setting: PublicMusicSetting): Promise<string[
           return lines
         }
       }
+
+      // 这里已经拿到函数响应但没有歌词，直接回退后台歌词，避免继续发起会触发预检的重复请求。
+      return []
     }
   } catch {
     // 这里兜底处理旧函数未部署 GET 或网络异常，继续尝试 Supabase SDK 调用。
@@ -226,7 +229,14 @@ export function PublicMusicPlayer() {
 
           if (!cancelled && realLyricLines.length > 0) {
             setLineIndex(0)
-            setSetting((current) => (current?.playlistId === nextSetting.playlistId ? { ...current, lyricLines: realLyricLines } : current))
+            setSetting((current) => {
+              // 这里兼容 React 状态还没写入的情况，避免真实歌词已经读到却被空状态丢掉。
+              if (!current) {
+                return { ...nextSetting, lyricLines: realLyricLines }
+              }
+
+              return current.playlistId === nextSetting.playlistId ? { ...current, lyricLines: realLyricLines } : current
+            })
           }
         }
       } catch {
