@@ -69,7 +69,8 @@ export async function saveMusicPlayerSetting(input: MusicPlayerSettingInput) {
       title: input.title.trim() || '问云派山门歌单',
       lyric_lines: input.lyric_lines.trim(),
       autoplay: input.autoplay
-    }
+    },
+    updated_at: new Date().toISOString()
   }
 
   if (!databaseClient) {
@@ -77,7 +78,7 @@ export async function saveMusicPlayerSetting(input: MusicPlayerSettingInput) {
   }
 
   try {
-    const { data, error } = await databaseClient.from('site_settings').upsert(payload).select('*').single()
+    const { data, error } = await databaseClient.from('site_settings').upsert(payload, { onConflict: 'key' }).select('*').single()
 
     if (error) {
       throw error

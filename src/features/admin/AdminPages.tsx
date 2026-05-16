@@ -1141,7 +1141,7 @@ export function AdminSettingsPage() {
             <Field label="歌单编号" hint="如果链接无法识别，可手动填写纯数字编号。">
               <input inputMode="numeric" onChange={(event) => setMusic((current) => ({ ...current, playlist_id: event.target.value }))} value={music.playlist_id} />
             </Field>
-            <Field label="歌词轮播文本" hint="每行一句；前台会自动在每句前加随机同门道名。留空时使用默认歌词牌。">
+            <Field label="歌词兜底文本" hint="每行一句；真实歌词读取失败时使用这里的文本，前台只显示歌词文字。">
               <textarea onChange={(event) => setMusic((current) => ({ ...current, lyric_lines: event.target.value }))} value={music.lyric_lines} />
             </Field>
             <TaskButton tone="primary" type="submit">

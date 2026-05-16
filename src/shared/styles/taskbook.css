@@ -383,70 +383,129 @@ img {
   font-weight: 800;
 }
 
-/* 前台音乐播放器：平时只留一句歌词，点击后才打开完整控件。 */
-.public-music-fall-field {
+/* 前台音乐播放器：右侧贴边歌词签，长按拖动，点击从右往左展开控制台。 */
+.public-music-dock {
   position: fixed;
   inset: 0;
-  z-index: 35;
-  overflow: hidden;
+  z-index: 43;
   pointer-events: none;
 }
 
-.public-music-fall-line {
+.public-music-dock__lyric {
   position: absolute;
-  top: -84px;
-  left: var(--fall-left);
-  max-height: min(420px, 70svh);
-  max-width: 2.4em;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  color: rgba(255, 250, 240, 0.88);
-  cursor: pointer;
+  top: var(--dock-y);
+  left: var(--dock-x);
+  display: grid;
+  box-sizing: border-box;
+  width: 48px;
+  min-height: 128px;
+  max-height: min(520px, 72svh);
+  overflow: hidden;
+  place-items: center;
+  justify-items: center;
+  border: 1px solid rgba(255, 250, 240, 0.6);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.86), transparent 5rem),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.96), rgba(234, 219, 193, 0.84)),
+    url("/assets/guofeng-ui-20260509/ornaments/paper-fiber-texture.png");
+  padding: 18px 10px;
+  color: var(--color-mountain);
+  cursor: grab;
   font-family: "STSong", "SimSun", serif;
-  font-size: 1.06rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 900;
   letter-spacing: 0;
   line-height: 1.45;
-  text-align: center;
   pointer-events: auto;
-  text-shadow:
-    0 2px 10px rgba(13, 29, 25, 0.46),
-    0 0 2px rgba(18, 60, 52, 0.72);
-  transform: translateX(-50%) rotate(var(--fall-rotate));
+  text-align: center;
+  touch-action: none;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 180ms var(--ease-main),
+    transform 180ms var(--ease-main),
+    box-shadow 180ms var(--ease-main),
+    border-color 180ms var(--ease-main);
+  user-select: none;
   writing-mode: vertical-rl;
-  animation: music-lyric-fall var(--fall-duration) linear var(--fall-delay) both;
+  box-shadow:
+    0 22px 64px rgba(20, 32, 28, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
 }
 
-.public-music-fall-line:hover {
-  color: #fffaf0;
+.public-music-dock__text {
+  display: block;
+  max-height: 100%;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
-.public-music-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 74;
-  display: grid;
-  place-items: center;
-  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+.public-music-dock__lyric:hover,
+.public-music-dock__lyric.is-dragging {
+  border-color: rgba(184, 141, 60, 0.5);
+  box-shadow:
+    0 28px 80px rgba(20, 32, 28, 0.28),
+    0 0 0 7px rgba(184, 141, 60, 0.08);
+  transform: translate(-50%, -50%) scale(1.035);
+}
+
+.public-music-dock__lyric.is-dragging {
+  cursor: grabbing;
 }
 
 .public-music-ready {
   position: fixed;
-  top: 22%;
-  left: 50%;
+  inset: 0;
   z-index: 73;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background:
+    radial-gradient(circle at 28% 16%, rgba(184, 141, 60, 0.18), transparent 19rem),
+    radial-gradient(circle at 74% 78%, rgba(23, 106, 120, 0.2), transparent 20rem),
+    rgba(13, 29, 25, 0.58);
   color: rgba(255, 250, 240, 0.9);
+  cursor: pointer;
   font-family: "STSong", "SimSun", serif;
   font-size: 1.16rem;
   font-weight: 800;
-  pointer-events: none;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
   text-align: center;
   text-shadow: 0 2px 12px rgba(13, 29, 25, 0.58);
-  transform: translateX(-50%);
+  backdrop-filter: blur(10px);
 }
 
-.public-music-modal__shade {
+.public-music-ready span {
+  max-width: 18em;
+  line-height: 1.8;
+}
+
+.public-music-hidden-frame {
+  position: fixed;
+  left: -4px;
+  bottom: -4px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.public-music-hidden-frame iframe {
+  width: 1px;
+  height: 1px;
+  border: 0;
+}
+
+.public-music-console {
+  position: fixed;
+  inset: 0;
+  z-index: 74;
+  pointer-events: none;
+}
+
+.public-music-console__shade {
   position: absolute;
   inset: 0;
   border: 0;
@@ -455,15 +514,21 @@ img {
     radial-gradient(circle at 74% 78%, rgba(23, 106, 120, 0.2), transparent 20rem),
     rgba(13, 29, 25, 0.58);
   backdrop-filter: blur(10px);
+  cursor: pointer;
+  pointer-events: auto;
 }
 
-.public-music-modal__panel {
-  position: relative;
+.public-music-console__panel {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
   z-index: 1;
   display: grid;
-  width: min(520px, 100%);
+  width: min(520px, calc(100vw - 32px));
+  align-content: start;
   gap: var(--space-4);
-  overflow: hidden;
+  overflow: auto;
   border: 1px solid rgba(255, 250, 240, 0.62);
   border-radius: var(--radius-lg);
   background:
@@ -471,10 +536,11 @@ img {
     url("/assets/guofeng-ui-20260509/ornaments/card-paper-texture.png");
   padding: var(--space-5);
   box-shadow: 0 32px 90px rgba(5, 15, 13, 0.34);
-  animation: music-modal-in 260ms var(--ease-main) both;
+  animation: music-console-slide-in 300ms var(--ease-main) both;
+  pointer-events: auto;
 }
 
-.public-music-modal__panel::before {
+.public-music-console__panel::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
@@ -482,25 +548,25 @@ img {
   background: linear-gradient(180deg, var(--color-cinnabar), var(--color-gold), var(--color-lake));
 }
 
-.public-music-modal__head {
+.public-music-console__head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: start;
 }
 
-.public-music-modal__head > div {
+.public-music-console__head > div {
   min-width: 0;
 }
 
-.public-music-modal__head span {
+.public-music-console__head span {
   color: var(--color-cinnabar);
   font-size: 0.78rem;
   font-weight: 900;
   line-height: 1.5;
 }
 
-.public-music-modal__head h2 {
+.public-music-console__head h2 {
   margin: 4px 0 0;
   color: var(--color-mountain);
   font-family: "STSong", "SimSun", serif;
@@ -508,7 +574,7 @@ img {
   line-height: 1.22;
 }
 
-.public-music-modal__head button {
+.public-music-console__head button {
   min-height: 44px;
   border: 1px solid rgba(18, 60, 52, 0.16);
   border-radius: var(--radius-md);
@@ -518,23 +584,27 @@ img {
   font-weight: 900;
 }
 
-.public-music-modal__head button {
+.public-music-console__head button {
   padding: 9px 14px;
 }
 
-.public-music-modal__panel > p {
+.public-music-console__panel > p {
+  border: 1px solid rgba(20, 32, 28, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(255, 250, 240, 0.62);
+  padding: var(--space-3);
   color: var(--color-ink-soft);
   line-height: 1.8;
 }
 
-.public-music-modal__frame {
+.public-music-console__frame {
   overflow: hidden;
   border: 1px solid rgba(20, 32, 28, 0.1);
   border-radius: var(--radius-md);
   background: #fffaf0;
 }
 
-.public-music-modal__frame iframe {
+.public-music-console__frame iframe {
   display: block;
   width: 100%;
   height: 450px;
@@ -2417,35 +2487,15 @@ img {
   }
 }
 
-@keyframes music-lyric-fall {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 0) rotate(var(--fall-rotate));
-  }
-
-  12% {
-    opacity: 0.86;
-  }
-
-  78% {
-    opacity: 0.72;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate(calc(-50% + var(--fall-drift)), calc(100svh + 120px)) rotate(calc(var(--fall-rotate) * -1));
-  }
-}
-
-@keyframes music-modal-in {
+@keyframes music-console-slide-in {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.98);
+    transform: translateX(32px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0);
   }
 }
 
@@ -2706,37 +2756,41 @@ img {
     text-align: center;
   }
 
-  .public-music-fall-line {
-    max-height: 68svh;
-    max-width: 2.2em;
+  .public-music-dock__lyric {
+    width: 44px;
+    min-height: 118px;
+    max-height: 64svh;
+    padding: 15px 8px;
     font-size: 0.96rem;
   }
 
-  .public-music-modal,
   .public-music-ready {
-    align-items: end;
     padding: 12px;
   }
 
-  .public-music-modal__panel {
+  .public-music-console__panel {
+    top: max(10px, env(safe-area-inset-top));
+    right: 0;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: min(360px, calc(100vw - 24px));
     gap: var(--space-3);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     padding: var(--space-4);
   }
 
-  .public-music-modal__head {
+  .public-music-console__head {
     grid-template-columns: 1fr;
   }
 
-  .public-music-modal__head h2 {
+  .public-music-console__head h2 {
     font-size: 1.48rem;
   }
 
-  .public-music-modal__head button {
+  .public-music-console__head button {
     width: 100%;
   }
 
-  .public-music-modal__frame iframe {
+  .public-music-console__frame iframe {
     height: min(332px, 48svh);
   }
 
@@ -3569,7 +3623,7 @@ img {
     grid-template-columns: 1fr;
   }
 
-  .public-music-modal__frame iframe {
+  .public-music-console__frame iframe {
     height: min(308px, 46svh);
   }
 
