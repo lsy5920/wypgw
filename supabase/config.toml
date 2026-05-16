@@ -1,0 +1,4 @@
+# 这个配置文件用于声明 Supabase Edge Function 的单独运行规则。
+# 真实歌词函数只读取公开网易云歌词，不写入数据库，所以关闭平台级登录校验，保证浏览器 OPTIONS 预检能进入函数并拿到跨域响应头。
+[functions.fetch-netease-lyrics]
+verify_jwt = false

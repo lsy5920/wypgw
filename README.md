@@ -383,6 +383,8 @@ supabase functions deploy send-user-notice
 supabase functions deploy fetch-netease-lyrics
 ```
 
+注意：`supabase/config.toml` 已为 `fetch-netease-lyrics` 单独设置 `verify_jwt = false`。这个函数只读取公开网易云歌词，不写入数据库；关闭平台级登录校验后，浏览器的 `OPTIONS` 预检可以正常进入函数并拿到跨域响应头，避免真实歌词在前台被 CORS 拦截。
+
 7. 邮件提醒触发位置：
 
 ```text
@@ -656,6 +658,7 @@ wypgw/
 │  ├─ vite-env.d.ts                # Vite 类型声明
 │  └─ main.tsx                     # React 挂载入口
 ├─ supabase/
+│  ├─ config.toml                  # 配置真实歌词函数关闭平台级登录校验，保证浏览器跨域预检可通过
 │  ├─ admin_confirm_founder.sql     # 收不到确认邮件时手动确认邮箱并提权
 │  ├─ bind_admin_3199912548_to_001.sql # 将管理员邮箱绑定到 001 编号
 │  ├─ clear_roster_lantern_test_data.sql # 清空旧测试名册、云灯和相关提醒
@@ -911,18 +914,20 @@ where email = '你的邮箱@example.com'
 可能原因：
 
 1. 没有执行 `20260516131000_music_player_settings.sql`，数据库里没有 `music_player` 设置记录。
-2. 没有部署 `fetch-netease-lyrics` Edge Function。
-3. 后台填写的歌单编号不正确，或歌单里第一首歌没有歌词。
-4. 网易云公开接口临时限制访问。
-5. 本地没有配置 Supabase，只能使用演示歌词或后台填写的歌词。
+2. 没有带着 `supabase/config.toml` 重新部署 `fetch-netease-lyrics` Edge Function，浏览器预检请求仍可能被 CORS 拦截。
+3. 没有部署 `fetch-netease-lyrics` Edge Function。
+4. 后台填写的歌单编号不正确，或歌单里第一首歌没有歌词。
+5. 网易云公开接口临时限制访问。
+6. 本地没有配置 Supabase，只能使用演示歌词或后台填写的歌词。
 
 解决方法：
 
 1. 执行 `supabase/migrations/20260516131000_music_player_settings.sql`。
-2. 执行 `supabase functions deploy fetch-netease-lyrics`。
-3. 打开 `/admin/settings`，确认“前台音乐”里已经填写正确的网易云歌单链接或编号，并保存到数据库。
-4. 在“歌词兜底文本”里填写兜底歌词，避免网易云接口失败时前台空白。
-5. 重新打开公开官网，等待右侧歌词签出现；点击歌词签可打开播放器控制台。
+2. 确认 `supabase/config.toml` 里存在 `[functions.fetch-netease-lyrics]` 和 `verify_jwt = false`。
+3. 执行 `supabase functions deploy fetch-netease-lyrics`。
+4. 打开 `/admin/settings`，确认“前台音乐”里已经填写正确的网易云歌单链接或编号，并保存到数据库。
+5. 在“歌词兜底文本”里填写兜底歌词，避免网易云接口失败时前台空白。
+6. 重新打开公开官网，等待右侧歌词签出现；点击歌词签可打开播放器控制台。
 
 ### 名册登记提交失败
 
@@ -1227,3 +1232,4 @@ npm run preview
 2026-05-16 13:10 【优化】自动播放被浏览器拦截时改为全屏提示层，不再要求点击歌词启动；用户点击提示层任意位置后直接加载网易云播放器并请求播放，悬浮歌词仍保留为播放器控制台入口。
 2026-05-16 13:17 【修复】修复前台音乐设置容易被误认为本地保存的问题，新增音乐设置数据库迁移并在保存时显式写入 `site_settings.music_player` 与更新时间；同时新增始终可见的竖排悬浮歌词入口，避免飘落歌词刚好在屏幕外导致歌词看不见。
 2026-05-16 13:24 【优化】前台音乐歌词不再随机飘落，改为默认右侧贴边的纸面歌词签；歌词签背景中只展示当前歌词，不显示标题、拖动提示或其他说明，点击可从右往左展开播放器控制台，长按拖动后靠边会自动贴边，并同步更新 README 使用说明。
+2026-05-16 13:30 【修复】新增 Supabase 函数配置文件，为 `fetch-netease-lyrics` 关闭平台级登录校验，避免浏览器 `OPTIONS` 预检被 CORS 拦截导致真实歌词无法读取，并同步更新部署与排查说明。
