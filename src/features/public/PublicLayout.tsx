@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties, type PointerEvent } from 'reac
 import { NavLink, Outlet } from 'react-router-dom'
 import { siteNavItems } from '../../data/siteContent'
 import { TaskButton, TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
+import { PublicMusicPlayer } from './PublicMusicPlayer'
 
 // 这个函数把滚动距离转换成百分比，入参为空，返回值是页面滚动进度。
 function getScrollPercent(): number {
@@ -102,16 +103,23 @@ export function PublicLayout() {
             </div>
           </div>
           {menuOpen ? (
-            <nav className="mobile-menu" id="public-mobile-menu" aria-label="手机官网导航">
-              {siteNavItems.map((item) => (
-                <NavLink key={item.path} to={item.path} end={item.path === '/'} onClick={closeMenu}>
-                  {item.label}
+            <>
+              <button aria-label="关闭手机官网导航遮罩" className="mobile-menu__shade" onClick={closeMenu} type="button" />
+              <nav className="mobile-menu mobile-menu--public" id="public-mobile-menu" aria-label="手机官网导航">
+                <div className="mobile-menu__head">
+                  <strong>问云派导航</strong>
+                  <span>从这里去读金典、赴考核、递名帖。</span>
+                </div>
+                {siteNavItems.map((item) => (
+                  <NavLink key={item.path} to={item.path} end={item.path === '/'} onClick={closeMenu}>
+                    {item.label}
+                  </NavLink>
+                ))}
+                <NavLink to="/login" onClick={closeMenu}>
+                  入小院
                 </NavLink>
-              ))}
-              <NavLink to="/login" onClick={closeMenu}>
-                入小院
-              </NavLink>
-            </nav>
+              </nav>
+            </>
           ) : null}
         </div>
       </header>
@@ -133,6 +141,7 @@ export function PublicLayout() {
           </nav>
         </div>
       </footer>
+      <PublicMusicPlayer />
     </div>
   )
 }

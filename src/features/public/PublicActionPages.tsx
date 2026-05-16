@@ -1,10 +1,11 @@
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { genderOptions, memberRoleOptions } from '../../data/siteContent'
 import { wenxinQuizQuestions, wenxinScoreLevels } from '../../data/quizContent'
 import { getGuofengVisualPath } from '../../data/visualAssets'
-import type { CloudLanternInput, JoinApplicationInput, MemberGender, WenxinQuizAnswerMap } from '../../lib/types'
+import type { CloudLanternInput, JoinApplicationInput, MemberGender, RosterEntry, WenxinQuizAnswerMap } from '../../lib/types'
 import {
+  fetchPublicRoster,
   isAdminProfile,
   isLegacyRosterAccount,
   sendPasswordRecovery,
@@ -17,7 +18,7 @@ import {
   validateCloudLantern,
   validateJoinApplication
 } from '../../shared/services'
-import { Field, MissionCard, MissionHero, StatusNotice, TaskButton, TaskLink } from '../../shared/ui/TaskUi'
+import { EmptyState, Field, LoadingBlock, MissionCard, MissionHero, StatusNotice, TaskButton, TaskLink, formatDateTime } from '../../shared/ui/TaskUi'
 
 // 这个类型描述登录页当前模式，入参来自用户点击，返回值用于切换不同表单。
 type LoginMode = 'login' | 'register' | 'recover' | 'reset'
@@ -64,6 +65,164 @@ function ActionVisual({ visual, caption }: { visual: Parameters<typeof getGuofen
       <img alt={caption} src={getGuofengVisualPath(visual)} />
       <figcaption className="visual-plate__caption">{caption}</figcaption>
     </figure>
+  )
+}
+
+// 这个函数把公开标签文本拆成数组，入参是标签文本，返回值是可逐个展示的标签。
+function splitPublicTags(value: string | null): string[] {
+  if (!value) {
+    return []
+  }
+
+  // 这里用集合去重，避免同一个公开标签重复渲染导致页面警告。
+  return Array.from(new Set(value
+    .split(/[、,，\s]+/)
+    .map((item) => item.trim())
+    .filter(Boolean)))
+    .slice(0, 4)
+}
+
+// 这个函数取公开地区，入参是名册条目，返回值是适合前台展示的位置文本。
+function getPublicRegion(item: RosterEntry): string {
+  return item.public_region || item.city || '云中'
+}
+
+// 这个函数随机挑选公开名册条目，入参是完整列表和数量，返回值是用于前台展示的少量条目。
+function pickRandomRosterItems(items: RosterEntry[], count: number): RosterEntry[] {
+  // 这里复制一份再打乱，避免修改原始名册数据。
+  const shuffled = [...items]
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    // 这里使用浏览器随机数抽取位置，只用于前台展示顺序，不参与任何业务安全逻辑。
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    const current = shuffled[index]
+    shuffled[index] = shuffled[randomIndex]
+    shuffled[randomIndex] = current
+  }
+
+  return shuffled.slice(0, count)
+}
+
+// 这个组件展示单个公开名册详情弹窗，入参是名册条目和关闭方法，返回值是只含公开字段的弹窗。
+function PublicRosterDialog({ item, onClose }: { item: RosterEntry; onClose: () => void }) {
+  // 这个数组保存公开兴趣标签，返回值用于弹窗展示。
+  const tags = splitPublicTags(item.tags)
+
+  return (
+    <div className="public-roster-dialog" role="dialog" aria-modal="true" aria-labelledby="public-roster-dialog-title">
+      <button aria-label="关闭公开名册详情遮罩" className="public-roster-dialog__shade" onClick={onClose} type="button" />
+      <article className="public-roster-dialog__panel">
+        <div className="public-roster-card__seal" aria-hidden="true">
+          {item.generation_name || item.dao_name.slice(0, 1)}
+        </div>
+        <div className="public-roster-dialog__content">
+          <p className="section-eyebrow">公开名册详情</p>
+          <h2 id="public-roster-dialog-title">{item.dao_name}</h2>
+          <span>{item.jianghu_name || '未留江湖名'} · {item.member_code}</span>
+          <dl className="public-roster-dialog__list">
+            <div>
+              <dt>门派身份</dt>
+              <dd>{item.member_role}</dd>
+            </div>
+            <div>
+              <dt>公开地区</dt>
+              <dd>{getPublicRegion(item)}</dd>
+            </div>
+            <div>
+              <dt>入册时间</dt>
+              <dd>{item.joined_at ? formatDateTime(item.joined_at) : '待记录'}</dd>
+            </div>
+            <div>
+              <dt>入派宣言</dt>
+              <dd>{item.motto || '愿清醒温柔，同行自渡。'}</dd>
+            </div>
+            <div>
+              <dt>同行期待</dt>
+              <dd>{item.companion_expectation || '暂未填写。'}</dd>
+            </div>
+          </dl>
+          {tags.length > 0 ? (
+            <div className="public-roster-card__tags">
+              {tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          ) : null}
+          <TaskButton onClick={onClose} tone="primary" type="button">
+            收起详情
+          </TaskButton>
+        </div>
+      </article>
+    </div>
+  )
+}
+
+// 这个组件展示已经正式入册的公开名单，入参是名册列表和加载状态，返回值是公开名册展示区。
+function PublicRosterShowcase({ items, loading }: { items: RosterEntry[]; loading: boolean }) {
+  // 这个数组只保留已入册通过或已联系的公开条目，避免展示未审核数据。
+  const approvedItems = useMemo(() => items.filter((item) => item.status === 'approved' || item.status === 'contacted'), [items])
+  // 这个状态保存当前随机展示的少量同门。
+  const [visibleItems, setVisibleItems] = useState<RosterEntry[]>([])
+  // 这个状态保存当前打开详情的名册条目。
+  const [selectedItem, setSelectedItem] = useState<RosterEntry | null>(null)
+
+  useEffect(() => {
+    // 这里在名册变化后随机挑选少量条目，避免一次性展示全部成员。
+    setVisibleItems(pickRandomRosterItems(approvedItems, 6))
+  }, [approvedItems])
+
+  // 这个函数重新随机展示一组同门，入参为空，返回值为空。
+  function refreshVisibleItems() {
+    setVisibleItems(pickRandomRosterItems(approvedItems, 6))
+  }
+
+  return (
+    <section className="public-roster-showcase" aria-label="已入册同门名单">
+      <div className="public-roster-showcase__head">
+        <div>
+          <p className="section-eyebrow">已入册名单</p>
+          <h2>先看见同行的人，再决定是否同行。</h2>
+          <p>这里随机展示几位已入册同门，只露出公开摘要；点击卡片可查看更完整的公开信息。真实姓名和联系方式不会出现在公开名册里。</p>
+        </div>
+        <div className="public-roster-showcase__actions">
+          <strong>{approvedItems.length} 位</strong>
+          {approvedItems.length > 6 ? (
+            <TaskButton onClick={refreshVisibleItems} tone="secondary" type="button">
+              换一组
+            </TaskButton>
+          ) : null}
+        </div>
+      </div>
+
+      {loading ? <LoadingBlock label="正在展开公开名册" /> : null}
+      {!loading && approvedItems.length === 0 ? <EmptyState title="暂无公开同门" description="名册尚未挂出通过名单。等执事审核后，会在这里展示公开信息。" /> : null}
+      {!loading && approvedItems.length > 0 ? (
+        <div className="public-roster-rail">
+          {visibleItems.map((item) => (
+            <button aria-label={`查看${item.dao_name}的公开名册详情`} className="public-roster-card" key={item.id} onClick={() => setSelectedItem(item)} type="button">
+              <div className="public-roster-card__seal" aria-hidden="true">
+                {item.generation_name || item.dao_name.slice(0, 1)}
+              </div>
+              <div className="public-roster-card__main">
+                <div className="public-roster-card__title">
+                  <div>
+                    <strong>{item.dao_name}</strong>
+                    <span>{item.jianghu_name || '未留江湖名'}</span>
+                  </div>
+                </div>
+                <div className="public-roster-card__meta">
+                  <span>{item.member_role}</span>
+                  <span>{getPublicRegion(item)}</span>
+                </div>
+                <p>{item.motto || '愿清醒温柔，同行自渡。'}</p>
+                <small className="public-roster-card__more">点击查看公开详情</small>
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {selectedItem ? <PublicRosterDialog item={selectedItem} onClose={() => setSelectedItem(null)} /> : null}
+    </section>
   )
 }
 
@@ -165,6 +324,21 @@ export function JoinPage() {
   const [message, setMessage] = useState('')
   // 这个状态保存提交中标记。
   const [submitting, setSubmitting] = useState(false)
+  // 这个状态保存公开名册条目。
+  const [rosterItems, setRosterItems] = useState<RosterEntry[]>([])
+  // 这个状态保存公开名册加载标记。
+  const [rosterLoading, setRosterLoading] = useState(true)
+
+  useEffect(() => {
+    // 这里读取已公开的正式名册，用于在递帖前展示同行名单。
+    async function loadPublicRoster() {
+      const result = await fetchPublicRoster()
+      setRosterItems(result.data)
+      setRosterLoading(false)
+    }
+
+    void loadPublicRoster()
+  }, [])
 
   // 这个函数更新名帖字段，入参是字段名和值，返回值为空。
   function updateField<K extends keyof JoinApplicationInput>(key: K, value: JoinApplicationInput[K]) {
@@ -200,6 +374,8 @@ export function JoinPage() {
         lead="名帖是一份自愿的同行说明。它需要登录账号、问云考核合格，并由执事审核；每个账号只递一帖。"
         aside={<ActionVisual visual="roster" caption="名帖待递" />}
       />
+
+      <PublicRosterShowcase items={rosterItems} loading={rosterLoading} />
 
       <section className="mission-grid mission-grid--two">
         <MissionCard title="递交名帖" eyebrow="一人一帖">

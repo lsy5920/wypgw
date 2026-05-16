@@ -417,6 +417,19 @@ export const mockSettings: SiteSetting[] = [
     },
     updated_by: null,
     updated_at: demoNow
+  },
+  {
+    key: 'music_player',
+    value: {
+      enabled: true,
+      playlist_id: '473007041',
+      playlist_url: 'https://music.163.com/#/playlist?id=473007041',
+      title: '问云派山门歌单',
+      lyric_lines: '云水之间，愿心慢慢安定\n灯火初上，照见归来的路\n山门不急，风也不催人\n清醒温柔，同行自渡',
+      autoplay: false
+    },
+    updated_by: null,
+    updated_at: demoNow
   }
 ]
 

@@ -1,5 +1,5 @@
 import { mockGuiyuntangSetting, mockSettings, mockSmtpSetting } from '../../data/mockData'
-import type { GuiyuntangSetting, GuiyuntangSettingInput, SiteSetting, SmtpSetting, SmtpSettingInput } from '../../lib/types'
+import type { GuiyuntangSetting, GuiyuntangSettingInput, MusicPlayerSettingInput, SiteSetting, SmtpSetting, SmtpSettingInput } from '../../lib/types'
 import { databaseClient } from './supabase'
 import { failResult, getErrorMessage, okResult } from './result'
 
@@ -47,6 +47,45 @@ export async function saveContactSetting(input: { wechatName: string; contactTip
     return okResult(data as SiteSetting, '联系设置已保存。')
   } catch (error) {
     return failResult(null, getErrorMessage(error, '保存联系设置失败'))
+  }
+}
+
+// 这个函数保存前台音乐播放器设置，入参是后台歌单表单，返回值是保存后的站点设置。
+export async function saveMusicPlayerSetting(input: MusicPlayerSettingInput) {
+  const playlistId = input.playlist_id.trim()
+  const playlistUrl = input.playlist_url.trim()
+
+  // 这里在启用播放器时要求至少有歌单编号，避免前台生成空播放器。
+  if (input.enabled && !playlistId) {
+    return failResult(null, '请填写网易云歌单编号或能识别编号的歌单链接。')
+  }
+
+  const payload = {
+    key: 'music_player',
+    value: {
+      enabled: input.enabled,
+      playlist_id: playlistId,
+      playlist_url: playlistUrl,
+      title: input.title.trim() || '问云派山门歌单',
+      lyric_lines: input.lyric_lines.trim(),
+      autoplay: input.autoplay
+    }
+  }
+
+  if (!databaseClient) {
+    return okResult({ ...payload, updated_by: null, updated_at: new Date().toISOString() } as SiteSetting, '演示模式下已模拟保存音乐播放器设置。')
+  }
+
+  try {
+    const { data, error } = await databaseClient.from('site_settings').upsert(payload).select('*').single()
+
+    if (error) {
+      throw error
+    }
+
+    return okResult(data as SiteSetting, '音乐播放器设置已保存。')
+  } catch (error) {
+    return failResult(null, getErrorMessage(error, '保存音乐播放器设置失败'))
   }
 }
 

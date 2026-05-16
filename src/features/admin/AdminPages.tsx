@@ -9,6 +9,7 @@ import type {
   JoinApplicationStatus,
   JoinApplicationUpdateInput,
   MemberGender,
+  MusicPlayerSettingInput,
   ProfileRole,
   PublishStatus,
   SiteSetting,
@@ -32,6 +33,7 @@ import {
   fetchSmtpSetting,
   saveContactSetting,
   saveGuiyuntangSetting,
+  saveMusicPlayerSetting,
   saveSmtpSetting,
   updateAdminUserAccount,
   updateAdminUserRole,
@@ -76,6 +78,32 @@ function createContactForm(settings: SiteSetting[]) {
     wechatName: String(contact.wechatName ?? '问云派执事'),
     contactTip: String(contact.contactTip ?? '请先递交名帖，执事查看后会择时联系。'),
     qrDescription: String(contact.qrDescription ?? '山门不公开永久群码，避免无关打扰。')
+  }
+}
+
+// 这个函数从网易云歌单链接里提取编号，入参是链接或编号，返回值是歌单编号。
+function extractNeteasePlaylistId(value: string): string {
+  const text = value.trim()
+  const idMatch = text.match(/[?&#]id=(\d+)/)
+  const pathMatch = text.match(/playlist(?:\/|\?id=)(\d+)/)
+  const pureMatch = text.match(/^\d+$/)
+
+  return idMatch?.[1] ?? pathMatch?.[1] ?? pureMatch?.[0] ?? ''
+}
+
+// 这个函数把音乐播放器设置整理成后台表单，入参是设置列表，返回值是音乐表单。
+function createMusicForm(settings: SiteSetting[]): MusicPlayerSettingInput {
+  const music = settings.find((item) => item.key === 'music_player')?.value ?? {}
+  const playlistUrl = String(music.playlist_url ?? '')
+  const playlistId = String(music.playlist_id ?? '') || extractNeteasePlaylistId(playlistUrl)
+
+  return {
+    enabled: Boolean(music.enabled ?? false),
+    playlist_id: playlistId,
+    playlist_url: playlistUrl,
+    title: String(music.title ?? '问云派山门歌单'),
+    lyric_lines: String(music.lyric_lines ?? ''),
+    autoplay: Boolean(music.autoplay ?? false)
   }
 }
 
@@ -903,6 +931,7 @@ export function AdminStewardsPage() {
 export function AdminSettingsPage() {
   // 这些状态保存三组设置和反馈。
   const [contact, setContact] = useState(createContactForm([]))
+  const [music, setMusic] = useState<MusicPlayerSettingInput>(createMusicForm([]))
   const [smtp, setSmtp] = useState({ enabled: false, host: '', port: '465', secure: true, username: '', password: '', from_email: '' })
   const [guiyuntang, setGuiyuntang] = useState({ enabled: true, qr_image_data_url: '', instruction: '', warning: '' })
   const [qrFileName, setQrFileName] = useState('')
@@ -917,6 +946,7 @@ export function AdminSettingsPage() {
       const smtpData = smtpResult.data as SmtpSetting | null
       const guiyuntangData = guiyuntangResult.data as GuiyuntangSetting | null
       setContact(createContactForm(settingsResult.data))
+      setMusic(createMusicForm(settingsResult.data))
       if (smtpData) {
         setSmtp({ enabled: smtpData.enabled, host: smtpData.host, port: String(smtpData.port), secure: smtpData.secure, username: smtpData.username, password: '', from_email: smtpData.from_email })
       }
@@ -947,6 +977,17 @@ export function AdminSettingsPage() {
     event.preventDefault()
     const result = await saveSmtpSetting(smtp)
     setMessage(result.message)
+  }
+
+  // 这个函数保存音乐播放器设置，入参是表单事件，返回值为空。
+  async function saveMusic(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const playlistId = music.playlist_id.trim() || extractNeteasePlaylistId(music.playlist_url)
+    const result = await saveMusicPlayerSetting({ ...music, playlist_id: playlistId })
+    setMessage(result.message)
+    if (result.ok) {
+      setMusic((current) => ({ ...current, playlist_id: playlistId }))
+    }
   }
 
   // 这个函数保存归云堂设置，入参是表单事件，返回值为空。
@@ -1026,7 +1067,7 @@ export function AdminSettingsPage() {
 
   return (
     <div className="work-content">
-      <AdminTopbar title="山门设置" description="维护公开联系、邮件发送和归云堂入群提示。" />
+      <AdminTopbar title="山门设置" description="维护公开联系、前台音乐、邮件发送和归云堂入群提示。" />
       {message ? <StatusNotice tone={message.includes('失败') || message.includes('请填写') ? 'warning' : 'success'}>{message}</StatusNotice> : null}
       <section className="mission-grid">
         <MissionCard title="联系信笺" eyebrow="公开端可见">
@@ -1070,6 +1111,41 @@ export function AdminSettingsPage() {
             </Field>
             <TaskButton tone="primary" type="submit">
               保存邮件设置
+            </TaskButton>
+          </form>
+        </MissionCard>
+        <MissionCard title="前台音乐" eyebrow="网易云歌单">
+          <form className="form-grid form-grid--single" onSubmit={saveMusic}>
+            <div className="checkbox-row">
+              <label>
+                <input checked={music.enabled} onChange={(event) => setMusic((current) => ({ ...current, enabled: event.target.checked }))} type="checkbox" />
+                启用前台播放器
+              </label>
+              <label>
+                <input checked={music.autoplay} onChange={(event) => setMusic((current) => ({ ...current, autoplay: event.target.checked }))} type="checkbox" />
+                请求自动播放
+              </label>
+            </div>
+            <Field label="播放器标题">
+              <input onChange={(event) => setMusic((current) => ({ ...current, title: event.target.value }))} value={music.title} />
+            </Field>
+            <Field label="网易云歌单链接" hint="可直接粘贴 https://music.163.com/#/playlist?id=歌单编号。">
+              <input
+                onChange={(event) => {
+                  const nextUrl = event.target.value
+                  setMusic((current) => ({ ...current, playlist_url: nextUrl, playlist_id: extractNeteasePlaylistId(nextUrl) || current.playlist_id }))
+                }}
+                value={music.playlist_url}
+              />
+            </Field>
+            <Field label="歌单编号" hint="如果链接无法识别，可手动填写纯数字编号。">
+              <input inputMode="numeric" onChange={(event) => setMusic((current) => ({ ...current, playlist_id: event.target.value }))} value={music.playlist_id} />
+            </Field>
+            <Field label="歌词轮播文本" hint="每行一句；前台会自动在每句前加随机同门道名。留空时使用默认歌词牌。">
+              <textarea onChange={(event) => setMusic((current) => ({ ...current, lyric_lines: event.target.value }))} value={music.lyric_lines} />
+            </Field>
+            <TaskButton tone="primary" type="submit">
+              保存音乐设置
             </TaskButton>
           </form>
         </MissionCard>

@@ -557,6 +557,22 @@ export interface SiteSetting {
   updated_at: string
 }
 
+// 这个接口描述后台保存前台音乐播放器时提交的字段。
+export interface MusicPlayerSettingInput {
+  // 是否启用前台音乐播放器。
+  enabled: boolean
+  // 网易云歌单编号，可从歌单链接里提取。
+  playlist_id: string
+  // 网易云歌单链接，方便管理员直接复制保存。
+  playlist_url: string
+  // 播放器标题，展示在前台浮动播放器上。
+  title: string
+  // 歌词轮播文本，每行一句；为空时使用默认歌词牌。
+  lyric_lines: string
+  // 是否请求网易云外链播放器自动播放，浏览器可能仍会拦截。
+  autoplay: boolean
+}
+
 // 这个接口描述后台可查看的 SMTP 设置，不返回授权码明文。
 export interface SmtpSetting {
   // 设置编号，固定使用 default。
