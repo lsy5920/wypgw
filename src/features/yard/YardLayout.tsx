@@ -1,5 +1,5 @@
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
-import { TaskButton, TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
+import { TaskButton, TaskLink, TaskSeal, brandLogoPath } from '../../shared/ui/TaskUi'
 import { isAdminProfile, useAuthState } from '../../shared/services'
 import { MobileSlideNav, type MobileSlideNavItem } from '../../shared/ui/MobileSlideNav'
 
@@ -71,9 +71,12 @@ export function YardLayout() {
         </aside>
         <main className="work-main">
           <section className="work-mobile-identity" aria-label="手机小院身份">
-            <div>
-              <span>问云小院</span>
-              <strong>{auth.profile.nickname}</strong>
+            <div className="work-mobile-identity__brand">
+              <img alt="" src={brandLogoPath} />
+              <div>
+                <span>问云小院</span>
+                <strong>{auth.profile.nickname}</strong>
+              </div>
             </div>
             {canEnterAdmin ? (
               <TaskLink to="/admin" tone="primary" icon="shieldCheck">

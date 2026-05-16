@@ -3,6 +3,9 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { getGuofengIconPath, type GuofengIconKey } from '../../data/visualAssets'
 
+// 这个常量保存问云派正式 Logo 地址，入参为空，返回值用于页眉、页脚、小院和后台等品牌位置。
+export const brandLogoPath = '/assets/wenyun-logo.png'
+
 // 这个类型描述提示组件的样式等级，入参来自页面状态，返回值用于决定颜色和语气。
 export type NoticeTone = 'info' | 'success' | 'warning' | 'danger'
 
@@ -76,7 +79,9 @@ interface TaskSealProps {
 export function TaskSeal({ caption = '门派任务书' }: TaskSealProps) {
   return (
     <Link className="task-seal" to="/" aria-label="返回问云派首页">
-      <span className="task-seal__mark">云</span>
+      <span className="task-seal__mark">
+        <img alt="" className="task-seal__logo" src={brandLogoPath} />
+      </span>
       <span className="task-seal__text">
         <strong>问云派</strong>
         <small>{caption}</small>

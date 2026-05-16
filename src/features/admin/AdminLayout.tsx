@@ -1,6 +1,6 @@
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { isAdminProfile, useAuthState } from '../../shared/services'
-import { TaskButton, TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
+import { TaskButton, TaskLink, TaskSeal, brandLogoPath } from '../../shared/ui/TaskUi'
 import { MobileSlideNav, type MobileSlideNavItem } from '../../shared/ui/MobileSlideNav'
 
 // 这个数组保存后台导航入口，入参为空，返回值用于执事任务台侧栏和手机滑出导航。
@@ -69,9 +69,12 @@ export function AdminLayout() {
         </aside>
         <main className="work-main">
           <section className="work-mobile-identity work-mobile-identity--admin" aria-label="手机后台身份">
-            <div>
-              <span>执事后台</span>
-              <strong>{auth.profile.nickname}</strong>
+            <div className="work-mobile-identity__brand">
+              <img alt="" src={brandLogoPath} />
+              <div>
+                <span>执事后台</span>
+                <strong>{auth.profile.nickname}</strong>
+              </div>
             </div>
             <TaskLink to="/yard" tone="quiet" icon="home">
               小院

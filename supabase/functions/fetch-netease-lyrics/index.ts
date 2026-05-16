@@ -17,11 +17,19 @@ interface NeteaseTrack {
   name?: string
 }
 
+// 这个接口描述可尝试读取歌词的歌曲，入参来自歌单接口，返回值用于逐首兜底。
+interface LyricCandidateTrack {
+  // 歌曲编号。
+  songId: string
+  // 歌曲名称。
+  songName: string
+}
+
 // 这个常量保存跨域响应头，允许前台网页安全调用这个函数。
 const corsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type',
-  'access-control-allow-methods': 'POST, OPTIONS'
+  'access-control-allow-methods': 'GET, POST, OPTIONS'
 }
 
 // 这个函数把对象转成 JSON 响应，入参是内容和状态码，返回值是 HTTP 响应。
@@ -58,21 +66,24 @@ async function fetchNeteaseJson(url: string): Promise<Record<string, unknown>> {
   return (await response.json()) as Record<string, unknown>
 }
 
-// 这个函数从歌单接口结果中取第一首歌，入参是歌单编号，返回值是歌曲编号和歌曲名。
-async function loadFirstTrack(playlistId: string): Promise<{ songId: string; songName: string }> {
+// 这个函数从歌单接口结果中取前几首歌，入参是歌单编号，返回值是候选歌曲数组。
+async function loadCandidateTracks(playlistId: string): Promise<LyricCandidateTrack[]> {
   const playlistJson = await fetchNeteaseJson(`https://music.163.com/api/playlist/detail?id=${encodeURIComponent(playlistId)}`)
   const result = playlistJson.result as { tracks?: NeteaseTrack[]; trackIds?: NeteaseTrack[] } | undefined
-  const firstTrack = result?.tracks?.[0] ?? result?.trackIds?.[0]
-  const songId = normalizeNumericId(firstTrack?.id)
+  const sourceTracks = result?.tracks?.length ? result.tracks : result?.trackIds ?? []
+  const tracks = sourceTracks
+    .map((item) => ({
+      songId: normalizeNumericId(item.id),
+      songName: String(item.name ?? '网易云歌单')
+    }))
+    .filter((item) => item.songId)
+    .slice(0, 10)
 
-  if (!songId) {
+  if (tracks.length === 0) {
     throw new Error('没有从网易云歌单中找到可读取歌词的歌曲。')
   }
 
-  return {
-    songId,
-    songName: String(firstTrack?.name ?? '网易云歌单')
-  }
+  return tracks
 }
 
 // 这个函数判断歌词行是否为制作信息，入参是去掉时间戳后的文本，返回值表示是否应该隐藏。
@@ -89,17 +100,53 @@ function parseLyricLines(lyric: string): string[] {
     .slice(0, 80)
 }
 
-// 这个函数读取指定歌曲歌词，入参是歌曲编号，返回值是干净歌词数组。
-async function loadSongLyrics(songId: string): Promise<string[]> {
-  const lyricJson = await fetchNeteaseJson(`https://music.163.com/api/song/lyric?id=${encodeURIComponent(songId)}&lv=1&kv=1&tv=-1`)
+// 这个函数按接口地址读取指定歌曲歌词，入参是接口地址，返回值是干净歌词数组。
+async function loadLyricsFromUrl(url: string): Promise<string[]> {
+  const lyricJson = await fetchNeteaseJson(url)
   const lrc = lyricJson.lrc as { lyric?: string } | undefined
-  const lines = parseLyricLines(String(lrc?.lyric ?? ''))
-
-  if (lines.length === 0) {
-    throw new Error('这首歌暂时没有可展示的歌词。')
-  }
+  const mainLyric = typeof lrc?.lyric === 'string' ? lrc.lyric : ''
+  const mediaLyric = typeof lyricJson.lyric === 'string' ? lyricJson.lyric : ''
+  const lines = parseLyricLines(mainLyric || mediaLyric)
 
   return lines
+}
+
+// 这个函数读取指定歌曲歌词，入参是歌曲编号，返回值是干净歌词数组。
+async function loadSongLyrics(songId: string): Promise<string[]> {
+  const lyricUrls = [
+    `https://music.163.com/api/song/lyric?os=pc&id=${encodeURIComponent(songId)}&lv=-1&kv=-1&tv=-1`,
+    `https://music.163.com/api/song/lyric?id=${encodeURIComponent(songId)}&lv=-1&kv=1&tv=-1`,
+    `https://music.163.com/api/song/media?id=${encodeURIComponent(songId)}`
+  ]
+
+  for (const url of lyricUrls) {
+    try {
+      // 这里同一首歌尝试多个网易云歌词接口，避免某个接口临时返回空歌词。
+      const lines = await loadLyricsFromUrl(url)
+
+      if (lines.length > 0) {
+        return lines
+      }
+    } catch {
+      // 单个接口失败时继续尝试下一个接口。
+    }
+  }
+
+  throw new Error('这首歌暂时没有可展示的歌词。')
+}
+
+// 这个函数解析前端请求参数，入参是 HTTP 请求，返回值是歌单编号或歌曲编号。
+async function parseRequestPayload(request: Request): Promise<NeteaseLyricsRequest> {
+  if (request.method === 'GET') {
+    const url = new URL(request.url)
+
+    return {
+      playlistId: url.searchParams.get('playlistId') ?? '',
+      songId: url.searchParams.get('songId') ?? ''
+    }
+  }
+
+  return (await request.json()) as NeteaseLyricsRequest
 }
 
 // 这个函数处理真实歌词读取请求，入参是 HTTP 请求，返回值是歌词 JSON 响应。
@@ -110,12 +157,12 @@ Deno.serve(async (request) => {
       return new Response(null, { status: 204, headers: corsHeaders })
     }
 
-    // 这里只接受 POST，避免误打开函数地址触发外部请求。
-    if (request.method !== 'POST') {
-      return jsonResponse({ ok: false, message: '只允许 POST 请求。' }, 405)
+    // 这里只接受 GET 和 POST，GET 用于减少浏览器跨域预检，POST 兼容 Supabase SDK。
+    if (!['GET', 'POST'].includes(request.method)) {
+      return jsonResponse({ ok: false, message: '只允许 GET 或 POST 请求。' }, 405)
     }
 
-    const body = (await request.json()) as NeteaseLyricsRequest
+    const body = await parseRequestPayload(request)
     const playlistId = normalizeNumericId(body.playlistId)
     let songId = normalizeNumericId(body.songId)
     let songName = ''
@@ -125,9 +172,26 @@ Deno.serve(async (request) => {
         return jsonResponse({ ok: false, message: '缺少网易云歌单编号或歌曲编号。' }, 400)
       }
 
-      const track = await loadFirstTrack(playlistId)
-      songId = track.songId
-      songName = track.songName
+      const tracks = await loadCandidateTracks(playlistId)
+
+      for (const track of tracks) {
+        try {
+          // 这里逐首尝试歌单前几首，避免第一首没有歌词就导致前台一直空白。
+          const lines = await loadSongLyrics(track.songId)
+
+          return jsonResponse({
+            ok: true,
+            message: '真实歌词已读取。',
+            songId: track.songId,
+            songName: track.songName,
+            lines
+          })
+        } catch {
+          // 当前歌曲没有歌词时继续尝试下一首。
+        }
+      }
+
+      throw new Error('歌单前几首都没有读到可展示歌词。')
     }
 
     const lines = await loadSongLyrics(songId)

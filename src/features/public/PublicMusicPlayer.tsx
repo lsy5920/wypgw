@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } fr
 import type { SiteSetting } from '../../lib/types'
 import { fetchSettings } from '../../shared/services'
 import { databaseClient } from '../../shared/services/supabase'
+import { supabaseUrl } from '../../shared/services/env'
 
 // 这个接口描述前台音乐播放器设置，入参来自公开站点设置，返回值用于渲染播放器。
 interface PublicMusicSetting {
@@ -27,6 +28,14 @@ interface NeteaseLyricsFunctionResponse {
   lines?: string[]
   // 当前取到歌词的歌曲名。
   songName?: string
+}
+
+// 这个函数整理真实歌词函数返回值，入参是未知响应，返回值是真实歌词行数组。
+function parseLyricFunctionLines(value: unknown): string[] {
+  const result = value as NeteaseLyricsFunctionResponse | null
+  const lines = result?.lines?.map((item) => item.trim()).filter(Boolean) ?? []
+
+  return result?.ok && lines.length > 0 ? lines : []
 }
 
 // 这个接口描述歌词签的位置，入参来自拖动事件，返回值用于固定歌词签。
@@ -103,6 +112,25 @@ async function fetchRealLyricLines(setting: PublicMusicSetting): Promise<string[
   }
 
   try {
+    // 这里优先用简单 GET 调用 Edge Function，避免浏览器因为自定义请求头触发预检后被旧部署拦住。
+    if (supabaseUrl) {
+      const endpoint = new URL(`${supabaseUrl.replace(/\/$/, '')}/functions/v1/fetch-netease-lyrics`)
+      endpoint.searchParams.set('playlistId', setting.playlistId)
+      const response = await fetch(endpoint)
+
+      if (response.ok) {
+        const lines = parseLyricFunctionLines(await response.json())
+
+        if (lines.length > 0) {
+          return lines
+        }
+      }
+    }
+  } catch {
+    // 这里兜底处理旧函数未部署 GET 或网络异常，继续尝试 Supabase SDK 调用。
+  }
+
+  try {
     // 这里交给 Edge Function 服务端访问网易云接口，绕开浏览器跨域限制。
     const { data, error } = await databaseClient.functions.invoke('fetch-netease-lyrics', {
       body: { playlistId: setting.playlistId }
@@ -112,10 +140,9 @@ async function fetchRealLyricLines(setting: PublicMusicSetting): Promise<string[
       throw error
     }
 
-    const result = data as NeteaseLyricsFunctionResponse | null
-    const lines = result?.lines?.map((item) => item.trim()).filter(Boolean) ?? []
+    const lines = parseLyricFunctionLines(data)
 
-    return result?.ok && lines.length > 0 ? lines : []
+    return lines
   } catch {
     // 这里兜底处理函数未部署、网易云限制或网络异常，前台继续使用后台配置歌词。
     return []
@@ -408,13 +435,8 @@ export function PublicMusicPlayer() {
           <span>音乐已经备好，点击任意位置开始。</span>
         </button>
       ) : null}
-      {hasOpened && !modalOpen ? (
-        <div className="public-music-hidden-frame" aria-hidden="true">
-          <iframe title="网易云音乐歌单播放器" src={playerUrl} loading="lazy" allow="autoplay; encrypted-media" />
-        </div>
-      ) : null}
-      {modalOpen ? (
-        <div className="public-music-console" role="dialog" aria-modal="true" aria-labelledby="music-modal-title">
+      {hasOpened ? (
+        <div className={`public-music-console ${modalOpen ? 'is-open' : ''}`} role="dialog" aria-hidden={!modalOpen} aria-modal="true" aria-labelledby="music-modal-title">
           <button aria-label="关闭音乐播放器" className="public-music-console__shade" onClick={closePlayerModal} type="button" />
           <section className="public-music-console__panel">
             <div className="public-music-console__head">
@@ -428,7 +450,7 @@ export function PublicMusicPlayer() {
             </div>
             <p>{currentLine}</p>
             <div className="public-music-console__frame">
-              {hasOpened ? <iframe title="网易云音乐歌单播放器" src={playerUrl} loading="lazy" allow="autoplay; encrypted-media" /> : null}
+              <iframe title="网易云音乐歌单播放器" src={playerUrl} loading="lazy" allow="autoplay; encrypted-media" />
             </div>
           </section>
         </div>

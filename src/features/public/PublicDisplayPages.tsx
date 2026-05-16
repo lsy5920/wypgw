@@ -3,7 +3,7 @@ import { canonText, sectRoles, spiritItems } from '../../data/siteContent'
 import { getGuofengVisualPath } from '../../data/visualAssets'
 import type { Announcement, CloudLantern, RosterEntry, SiteSetting, WenyunEvent } from '../../lib/types'
 import { fetchApprovedLanterns, fetchPublishedAnnouncements, fetchPublishedEvents, fetchPublicRoster, fetchSettings } from '../../shared/services'
-import { EmptyState, LoadingBlock, MetricCard, MissionCard, MissionHero, StatusPill, TaskLink, TimelineItem, formatDateTime } from '../../shared/ui/TaskUi'
+import { EmptyState, LoadingBlock, MetricCard, MissionCard, MissionHero, StatusPill, TaskLink, TimelineItem, brandLogoPath, formatDateTime } from '../../shared/ui/TaskUi'
 
 // 这个接口描述金典章节，入参来自原始文本，返回值用于目录、阅读器和正文展示。
 export interface CanonSection {
@@ -145,6 +145,7 @@ export function HomePage() {
         <img alt="问云派山门远景" src={getGuofengVisualPath('homeHero')} />
         <div className="home-hero__veil" />
         <div className="page-shell home-hero__inner">
+          <img alt="问云派标识" className="home-hero__logo" src={brandLogoPath} />
           <p className="section-eyebrow">线上山门 · 古风现代陪伴社群</p>
           <h1>问云派</h1>
           <p>以云为幕，以灯为证。这里不立神坛，不售焦虑，只愿让疲惫的人有一处可停、可问、可重新整理自己的地方。</p>

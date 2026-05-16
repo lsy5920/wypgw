@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { getGuofengIconPath } from '../../data/visualAssets'
+import { brandLogoPath } from './TaskUi'
 
 // 这个接口描述手机滑出导航的单个入口，入参来自业务布局，返回值用于生成路由链接。
 export interface MobileSlideNavItem {
@@ -73,8 +74,11 @@ export function MobileSlideNav({ title, description, ariaLabel, items, variant =
         {isOpen ? (
           <nav className="mobile-slide-nav__panel" id={`mobile-slide-nav-${variant}`} aria-label={ariaLabel}>
             <div className="mobile-slide-nav__head">
-              <strong>{title}</strong>
-              <span>{description}</span>
+              <img alt="" className="mobile-slide-nav__logo" src={brandLogoPath} />
+              <div>
+                <strong>{title}</strong>
+                <span>{description}</span>
+              </div>
             </div>
             <div className="mobile-slide-nav__links">
               {items.map((item) => (
