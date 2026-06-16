@@ -106,9 +106,11 @@ interface MissionHeroProps {
 
 // 这个组件展示任务书大标题，入参是标题文案和附加区域，返回值是带空间层次的页首。
 export function MissionHero({ eyebrow, title, lead, aside, className = '' }: MissionHeroProps) {
+  const overlayClassName = aside ? 'mission-hero--image-overlay' : ''
+
   return (
     <motion.section
-      className={`mission-hero ${className}`}
+      className={`mission-hero ${overlayClassName} ${className}`}
       initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.62, ease: [0.2, 0.8, 0.2, 1] }}
