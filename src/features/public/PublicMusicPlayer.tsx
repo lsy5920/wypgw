@@ -442,7 +442,7 @@ export function PublicMusicPlayer() {
       </aside>
       {autoplayPromptOpen ? (
         <button className="public-music-ready" onClick={startMusicFromPrompt} type="button">
-          <span>音乐已经备好，点击任意位置开始。</span>
+          <span>音乐已经备好，点击这里开始。</span>
         </button>
       ) : null}
       {hasOpened ? (

@@ -18,6 +18,7 @@ import {
   validateCloudLantern,
   validateJoinApplication
 } from '../../shared/services'
+import { CloudBackground } from '../../shared/ui/CloudTheme'
 import { EmptyState, Field, LoadingBlock, MissionCard, MissionHero, StatusNotice, TaskButton, TaskLink, formatDateTime } from '../../shared/ui/TaskUi'
 
 // 这个类型描述登录页当前模式，入参来自用户点击，返回值用于切换不同表单。
@@ -718,7 +719,9 @@ export function LoginPage() {
   }
 
   return (
-    <div className="page-shell page-stack">
+    <div className="login-standalone">
+      <CloudBackground variant="deep" />
+      <div className="page-shell page-stack">
       <MissionHero
         eyebrow="入院凭证"
         title="问云小院"
@@ -767,6 +770,7 @@ export function LoginPage() {
           </form>
         </MissionCard>
       </section>
+      </div>
     </div>
   )
 }

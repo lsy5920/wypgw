@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './app/App'
 import './shared/styles/taskbook.css'
+import './shared/styles/cloud-theme.css'
 
 // 这个变量用于找到页面挂载点，入参来自 index.html，返回值是根节点或空值。
 const rootElement = document.getElementById('root')

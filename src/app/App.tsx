@@ -53,9 +53,10 @@ export default function App() {
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/404" element={<NotFoundPage />} />
         </Route>
+
+        <Route path="/login" element={<LoginPage />} />
 
         <Route path="/yard" element={<YardLayout />}>
           <Route index element={<YardDashboardPage />} />

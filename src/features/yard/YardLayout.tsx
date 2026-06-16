@@ -1,4 +1,5 @@
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { CloudBackground } from '../../shared/ui/CloudTheme'
 import { TaskButton, TaskLink, TaskSeal, brandLogoPath } from '../../shared/ui/TaskUi'
 import { isAdminProfile, useAuthState } from '../../shared/services'
 import { MobileSlideNav, type MobileSlideNavItem } from '../../shared/ui/MobileSlideNav'
@@ -35,6 +36,7 @@ export function YardLayout() {
 
   return (
     <div className="work-layout work-layout--yard">
+      <CloudBackground variant="jade" />
       <div className="work-ambient" aria-hidden="true" />
       <div className="work-shell">
         <aside className="work-sidebar">

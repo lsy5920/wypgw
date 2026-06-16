@@ -3,6 +3,7 @@ import { canonText, sectRoles, spiritItems } from '../../data/siteContent'
 import { getGuofengVisualPath } from '../../data/visualAssets'
 import type { Announcement, CloudLantern, RosterEntry, SiteSetting, WenyunEvent } from '../../lib/types'
 import { fetchApprovedLanterns, fetchPublishedAnnouncements, fetchPublishedEvents, fetchPublicRoster, fetchSettings } from '../../shared/services'
+import { CloudGlassCard, CloudGoldDivider } from '../../shared/ui/CloudTheme'
 import { EmptyState, LoadingBlock, MetricCard, MissionCard, MissionHero, StatusPill, TaskLink, TimelineItem, brandLogoPath, formatDateTime } from '../../shared/ui/TaskUi'
 
 // 这个接口描述金典章节，入参来自原始文本，返回值用于目录、阅读器和正文展示。
@@ -29,6 +30,15 @@ const homeRouteCards = [
   { title: '赴考核', eyebrow: '再自照', text: '用一份问云考核确认自己是否读懂金典，不靠热闹入山。', to: '/wenxin-quiz', icon: 'shieldCheck' as const },
   { title: '递名帖', eyebrow: '后同行', text: '完成登录与考核后递交名帖，由云纪执事人工审核。', to: '/join', icon: 'roster' as const },
   { title: '点云灯', eyebrow: '可停留', text: '不急着加入也可以留一句话，给自己或后来的人一点灯火。', to: '/cloud-lantern', icon: 'lantern' as const }
+]
+
+// 这个数组保存首页精神短语，返回值用于云主题首页精神区。
+const homeSpiritCards = [
+  { title: '清雅书院', text: '以学为修，以雅为居。' },
+  { title: '线上山门', text: '山门在心，处处可入。' },
+  { title: '清醒温柔', text: '带着清醒的眼，做出温柔的选择。' },
+  { title: '同行自渡', text: '各自渡河，却不孤单。' },
+  { title: '真诚有界', text: '真实在场，也知道底线。' }
 ]
 
 // 这个函数把标题转换为页面锚点，入参是章节标题和序号，返回值是稳定锚点。
@@ -176,30 +186,71 @@ export function HomePage() {
           </section>
         )}
 
+        <CloudGoldDivider />
+
         <section className="section-title">
-          <p className="section-eyebrow">入山动线</p>
-          <h2>不是把人拉进热闹里，而是让人先看清愿与界。</h2>
-          <p>问云派把加入前的路径做得明确：读金典、赴考核、递名帖、经审核。每一步都为长期稳定的社群关系服务。</p>
+          <p className="section-eyebrow">山门五道</p>
+          <h2>进入问云派的几条路径，各自通向不同的风景。</h2>
+          <p>问云派把加入前的路径做得明确：读金典、赴考核、递名帖、经审核。若暂时只想停一停，也可以先点一盏云灯。</p>
         </section>
 
-        <section className="mission-grid mission-grid--four">
+        <section className="cloud-feature-grid">
           {homeRouteCards.map((item) => (
-            <MissionCard
-              action={
-                <TaskLink icon={item.icon} to={item.to} tone="primary">
-                  前往
-                </TaskLink>
-              }
-              eyebrow={item.eyebrow}
-              key={item.title}
-              title={item.title}
-            >
+            <CloudGlassCard className="cloud-feature-card" key={item.title}>
+              <p className="section-eyebrow">{item.eyebrow}</p>
+              <h3>{item.title}</h3>
               <p>{item.text}</p>
-            </MissionCard>
+              <TaskLink icon={item.icon} to={item.to} tone="primary">
+                进入
+              </TaskLink>
+            </CloudGlassCard>
+          ))}
+          <CloudGlassCard className="cloud-feature-card" gold>
+            <p className="section-eyebrow">常回院</p>
+            <h3>问云小院</h3>
+            <p>登录后可查看名帖、云灯、雅集、提醒与归云堂入群提示。</p>
+            <TaskLink to="/yard" tone="primary" icon="home">
+              入小院
+            </TaskLink>
+          </CloudGlassCard>
+        </section>
+
+        <CloudGoldDivider />
+
+        <section className="section-title section-title--center">
+          <p className="section-eyebrow">门派精神</p>
+          <h2>清醒温柔，同行自渡。</h2>
+          <p>它们不是口号，而是每次发言、审核、活动和陪伴时都要守住的尺度。</p>
+        </section>
+
+        <section className="cloud-spirit-grid">
+          {homeSpiritCards.map((item) => (
+            <CloudGlassCard className="cloud-spirit-card" gold key={item.title}>
+              <strong>{item.title}</strong>
+              <p>{item.text}</p>
+            </CloudGlassCard>
           ))}
         </section>
 
         <SignalCompass />
+
+        <CloudGoldDivider />
+
+        <section className="section-title section-title--center">
+          <p className="section-eyebrow">云灯长廊</p>
+          <h2>每盏灯，都是某个真实瞬间的留存。</h2>
+          <p>这里只展示已经通过审核的公开云灯；未公开的内容仍会被妥善保护。</p>
+        </section>
+
+        <section className="cloud-lantern-grid">
+          {(lanterns.length > 0 ? lanterns.slice(0, 3) : [null, null, null]).map((item, index) => (
+            <CloudGlassCard className="cloud-lantern-card" key={item?.id ?? `empty-lantern-${index}`}>
+              <span>{item?.mood || ['宁静', '感恩', '希望'][index]}</span>
+              <h3>{item?.author_name || (index === 1 ? '匿名同门' : '问云云灯')}</h3>
+              <p>{item?.content || ['人在风里，彼此递一盏灯。', '愿疲惫的人能在这里停一下。', '今日有光，留给后来者。'][index]}</p>
+            </CloudGlassCard>
+          ))}
+        </section>
 
         <section className="mission-grid mission-grid--two">
           <MissionCard
@@ -225,6 +276,21 @@ export function HomePage() {
           >
             <p>{lanterns[0]?.content ?? '人在风里，彼此递一盏灯。'}</p>
           </MissionCard>
+        </section>
+
+        <section className="cloud-home-cta">
+          <CloudGlassCard gold>
+            <h2>山门已开，等你入云</h2>
+            <p>读金典，赴考核，递名帖。无需表演强大，只需真实有界。</p>
+            <div>
+              <TaskLink to="/canon" tone="primary" icon="scroll">
+                阅读金典
+              </TaskLink>
+              <TaskLink to="/login" tone="secondary" icon="logIn">
+                进入小院
+              </TaskLink>
+            </div>
+          </CloudGlassCard>
         </section>
       </div>
     </div>

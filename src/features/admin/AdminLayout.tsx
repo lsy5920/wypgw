@@ -1,5 +1,6 @@
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { isAdminProfile, useAuthState } from '../../shared/services'
+import { CloudBackground } from '../../shared/ui/CloudTheme'
 import { TaskButton, TaskLink, TaskSeal, brandLogoPath } from '../../shared/ui/TaskUi'
 import { MobileSlideNav, type MobileSlideNavItem } from '../../shared/ui/MobileSlideNav'
 
@@ -35,6 +36,7 @@ export function AdminLayout() {
 
   return (
     <div className="work-layout work-layout--admin">
+      <CloudBackground variant="deep" />
       <div className="work-ambient" aria-hidden="true" />
       <div className="work-shell">
         <aside className="work-sidebar">

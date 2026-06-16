@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties, type PointerEvent } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { siteNavItems } from '../../data/siteContent'
+import { CloudBackground } from '../../shared/ui/CloudTheme'
 import { TaskButton, TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
 import { PublicMusicPlayer } from './PublicMusicPlayer'
 
@@ -72,6 +73,7 @@ export function PublicLayout() {
 
   return (
     <div className="public-layout" onPointerMove={handlePointerMove} style={atmosphereStyle}>
+      <CloudBackground />
       <div className="site-atmosphere" aria-hidden="true" />
       <header className="public-header">
         <span className="scroll-progress" style={{ width: `${scrollPercent}%` }} />
