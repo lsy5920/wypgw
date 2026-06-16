@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { canonText, sectRoles, spiritItems } from '../../data/siteContent'
 import { getGuofengVisualPath } from '../../data/visualAssets'
-import type { Announcement, CloudLantern, RosterEntry, SiteSetting, WenyunEvent } from '../../lib/types'
-import { fetchApprovedLanterns, fetchPublishedAnnouncements, fetchPublishedEvents, fetchPublicRoster, fetchSettings } from '../../shared/services'
-import { CloudGlassCard, CloudGoldDivider } from '../../shared/ui/CloudTheme'
-import { EmptyState, LoadingBlock, MetricCard, MissionCard, MissionHero, StatusPill, TaskLink, TimelineItem, brandLogoPath, formatDateTime } from '../../shared/ui/TaskUi'
+import type { Announcement, RosterEntry, SiteSetting, WenyunEvent } from '../../lib/types'
+import { fetchPublishedAnnouncements, fetchPublishedEvents, fetchPublicRoster, fetchSettings } from '../../shared/services'
+import { EmptyState, LoadingBlock, MissionCard, MissionHero, StatusPill, TaskLink, TimelineItem, formatDateTime } from '../../shared/ui/TaskUi'
 
 // 这个接口描述金典章节，入参来自原始文本，返回值用于目录、阅读器和正文展示。
 export interface CanonSection {
@@ -16,29 +15,38 @@ export interface CanonSection {
   body: string
 }
 
-// 这个数组保存首页四象互动内容，返回值用于首屏和精神说明。
-const homeSignals = [
-  { key: '云', title: '辽阔与流动', text: '不急着给人生下定论，允许人重新开始，也允许关系慢慢生长。' },
-  { key: '灯', title: '陪伴与希望', text: '人疲惫时不需要被训诫，先被看见，再一起整理下一步。' },
-  { key: '舟', title: '渡己也渡人', text: '我们可以同行，可以扶一把，但不替任何人掌舵。' },
-  { key: '竹', title: '有节有界', text: '温柔不是没有边界，清醒才能让陪伴走得更久。' }
+// 这个数组保存首页宗旨卡内容，顺序和 Figma 设计稿保持一致。
+const homePurposeCards = [
+  { title: '陪伴', text: '以其诚之心，彼此照见，在陪伴中温暖前行。' },
+  { title: '清醒', text: '明心见性，觉察当下，不随境转，清明自在。' },
+  { title: '成长', text: '持续精进，知行合一，在修身中遇见更好的自己。' },
+  { title: '守正', text: '坚守本心，敬畏规律，不偏不倚，行稳致远。' }
 ]
 
-// 这个数组保存首页重点入口，返回值用于把核心业务变成清晰路径。
-const homeRouteCards = [
-  { title: '读金典', eyebrow: '先明愿', text: '了解问云派的宗旨、边界、七愿、十禁与同门盟约。', to: '/canon', icon: 'scroll' as const },
-  { title: '赴考核', eyebrow: '再自照', text: '用一份问云考核确认自己是否读懂金典，不靠热闹入山。', to: '/wenxin-quiz', icon: 'shieldCheck' as const },
-  { title: '递名帖', eyebrow: '后同行', text: '完成登录与考核后递交名帖，由云纪执事人工审核。', to: '/join', icon: 'roster' as const },
-  { title: '点云灯', eyebrow: '可停留', text: '不急着加入也可以留一句话，给自己或后来的人一点灯火。', to: '/cloud-lantern', icon: 'lantern' as const }
+// 这个数组保存问云七愿，返回值用于首页左侧愿文卡片。
+const homeWishes = [
+  '一愿 心有明灯，照见本心。',
+  '二愿 清醒觉察，不负当下。',
+  '三愿 温柔而行，不伤彼此。',
+  '四愿 持续精进，日日向上。',
+  '五愿 彼此成就，共同成长。',
+  '六愿 守正笃行，不逾底线。',
+  '七愿 同行自渡，予人渡己。'
 ]
 
-// 这个数组保存首页精神短语，返回值用于云主题首页精神区。
-const homeSpiritCards = [
-  { title: '清雅书院', text: '以学为修，以雅为居。' },
-  { title: '线上山门', text: '山门在心，处处可入。' },
-  { title: '清醒温柔', text: '带着清醒的眼，做出温柔的选择。' },
-  { title: '同行自渡', text: '各自渡河，却不孤单。' },
-  { title: '真诚有界', text: '真实在场，也知道底线。' }
+// 这个数组保存没有线上活动时的首页兜底展示，避免真实数据为空导致设计区块塌陷。
+const fallbackEvents = [
+  { date: '06/01', title: '云下夜话 · 清醒与温柔', status: '报名中' },
+  { date: '06/08', title: '《立派金典》共读会', status: '报名中' },
+  { date: '06/15', title: '问心冥想 · 月下静修', status: '即将开始' }
+]
+
+// 这个数组保存没有公开名册时的首页兜底展示，保持名册预览和设计稿一致。
+const fallbackRosterItems = [
+  { name: '云舟', meta: '问云派成员 · 入派时间 2024.03.12' },
+  { name: '竹心', meta: '问云派成员 · 入派时间 2024.04.12' },
+  { name: '听澜', meta: '问云派成员 · 入派时间 2024.05.12' },
+  { name: '若水', meta: '问云派成员 · 入派时间 2024.06.12' }
 ]
 
 // 这个函数把标题转换为页面锚点，入参是章节标题和序号，返回值是稳定锚点。
@@ -90,58 +98,22 @@ function VisualPlate({ visual, caption }: { visual: Parameters<typeof getGuofeng
   )
 }
 
-// 这个组件展示首页四象互动盘，入参为空，返回值是可点击切换的精神象征。
-function SignalCompass() {
-  // 这个状态保存当前选中的精神象征。
-  const [activeIndex, setActiveIndex] = useState(0)
-  // 这个变量保存当前象征内容，返回值用于说明卡片。
-  const activeSignal = homeSignals[activeIndex]
-
-  return (
-    <section className="signal-compass" aria-label="问云四象">
-      <div className="signal-compass__dial">
-        {homeSignals.map((item, index) => (
-          <button
-            className={index === activeIndex ? 'active' : ''}
-            key={item.key}
-            onClick={() => setActiveIndex(index)}
-            style={{ '--signal-angle': `${index * 90}deg`, '--signal-angle-reverse': `${index * -90}deg` } as CSSProperties}
-            type="button"
-          >
-            {item.key}
-          </button>
-        ))}
-      </div>
-      <MissionCard title={activeSignal.title} eyebrow={`四象 · ${activeSignal.key}`}>
-        <p>{activeSignal.text}</p>
-        <p>点击云、灯、舟、竹，可切换问云派不同精神侧面。</p>
-      </MissionCard>
-    </section>
-  )
-}
-
 // 这个组件展示首页，入参为空，返回值是公开官网的完整首屏与业务入口。
 export function HomePage() {
   // 这些状态保存首页公开数据，失败时服务层会返回演示数据。
-  const [lanterns, setLanterns] = useState<CloudLantern[]>([])
   const [roster, setRoster] = useState<RosterEntry[]>([])
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [events, setEvents] = useState<WenyunEvent[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // 这里并行读取首页需要的公开数据，减少首屏等待。
     async function loadHomeData() {
-      const [lanternResult, rosterResult, announcementResult, eventResult] = await Promise.all([
-        fetchApprovedLanterns(),
+      const [rosterResult, eventResult] = await Promise.all([
         fetchPublicRoster(),
-        fetchPublishedAnnouncements(),
         fetchPublishedEvents()
       ])
 
-      setLanterns(lanternResult.data)
       setRoster(rosterResult.data)
-      setAnnouncements(announcementResult.data)
       setEvents(eventResult.data)
       setLoading(false)
     }
@@ -149,148 +121,114 @@ export function HomePage() {
     void loadHomeData()
   }, [])
 
+  // 这个变量整理首页活动行，优先使用真实活动数据，没有数据时使用设计稿兜底内容。
+  const homeEvents = events.length > 0
+    ? events.slice(0, 3).map((event) => ({
+      date: event.event_time
+        ? new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit' }).format(new Date(event.event_time)).replace('-', '/')
+        : '待定',
+      title: event.title,
+      status: event.status === 'published' ? '报名中' : '即将开始'
+    }))
+    : fallbackEvents
+
+  // 这个变量整理首页名册行，优先展示公开同门，没有数据时使用设计稿兜底内容。
+  const rosterPreview = roster.length > 0
+    ? roster.slice(0, 4).map((item) => ({
+      name: item.dao_name,
+      meta: `${item.member_role} · 入派时间 ${item.joined_at ? formatDateTime(item.joined_at).slice(0, 10) : '待记录'}`
+    }))
+    : fallbackRosterItems
+
   return (
-    <div className="page-stack official-home">
-      <section className="home-hero">
-        <img alt="问云派山门远景" src={getGuofengVisualPath('homeHero')} />
+    <div className="official-home">
+      <section className="home-hero" aria-label="问云派首页首屏">
+        <img alt="问云派山水首屏" src={getGuofengVisualPath('homeHero')} />
         <div className="home-hero__veil" />
+        <span className="home-hero__mist home-hero__mist--left" aria-hidden="true" />
+        <span className="home-hero__mist home-hero__mist--right" aria-hidden="true" />
+        <span className="home-hero__mist home-hero__mist--low" aria-hidden="true" />
         <div className="page-shell home-hero__inner">
-          <img alt="问云派标识" className="home-hero__logo" src={brandLogoPath} />
-          <p className="section-eyebrow">线上山门 · 古风现代陪伴社群</p>
           <h1>问云派</h1>
-          <p>以云为幕，以灯为证。这里不立神坛，不售焦虑，只愿让疲惫的人有一处可停、可问、可重新整理自己的地方。</p>
+          <p>以云为幕，以灯为证；清醒温柔，同行自渡。</p>
           <div className="home-hero__actions">
-            <TaskLink to="/canon" tone="primary" icon="scroll">
-              读立派金典
+            <TaskLink to="/canon" tone="primary">
+              阅读立派金典
             </TaskLink>
-            <TaskLink to="/cloud-lantern" tone="secondary" icon="lantern">
-              点一盏云灯
+            <TaskLink to="/wenxin-quiz" tone="secondary">
+              参加问心考核
             </TaskLink>
           </div>
         </div>
-        <div className="home-hero__motto" aria-label="问云派派训">
-          清醒温柔
-          <span>同行自渡</span>
-        </div>
       </section>
 
-      <div className="page-shell page-stack">
-        {loading ? (
-          <LoadingBlock label="正在展开山门近况" />
-        ) : (
-          <section className="metric-row" aria-label="山门近况">
-            <MetricCard label="公开云灯" value={lanterns.length} hint="来客与同门留下的温柔片刻" />
-            <MetricCard label="名册同门" value={roster.length} hint="已列入公开名册的同行者" />
-            <MetricCard label="山门告示" value={announcements.length} hint="近期公开公告与规则说明" />
-            <MetricCard label="开放雅集" value={events.length} hint="正在展示或报名的活动" />
-          </section>
-        )}
-
-        <CloudGoldDivider />
-
-        <section className="section-title">
-          <p className="section-eyebrow">山门五道</p>
-          <h2>进入问云派的几条路径，各自通向不同的风景。</h2>
-          <p>问云派把加入前的路径做得明确：读金典、赴考核、递名帖、经审核。若暂时只想停一停，也可以先点一盏云灯。</p>
-        </section>
-
-        <section className="cloud-feature-grid">
-          {homeRouteCards.map((item) => (
-            <CloudGlassCard className="cloud-feature-card" key={item.title}>
-              <p className="section-eyebrow">{item.eyebrow}</p>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-              <TaskLink icon={item.icon} to={item.to} tone="primary">
-                进入
-              </TaskLink>
-            </CloudGlassCard>
-          ))}
-          <CloudGlassCard className="cloud-feature-card" gold>
-            <p className="section-eyebrow">常回院</p>
-            <h3>问云小院</h3>
-            <p>登录后可查看名帖、云灯、雅集、提醒与归云堂入群提示。</p>
-            <TaskLink to="/yard" tone="primary" icon="home">
-              入小院
-            </TaskLink>
-          </CloudGlassCard>
-        </section>
-
-        <CloudGoldDivider />
-
-        <section className="section-title section-title--center">
-          <p className="section-eyebrow">门派精神</p>
-          <h2>清醒温柔，同行自渡。</h2>
-          <p>它们不是口号，而是每次发言、审核、活动和陪伴时都要守住的尺度。</p>
-        </section>
-
-        <section className="cloud-spirit-grid">
-          {homeSpiritCards.map((item) => (
-            <CloudGlassCard className="cloud-spirit-card" gold key={item.title}>
-              <strong>{item.title}</strong>
-              <p>{item.text}</p>
-            </CloudGlassCard>
+      <div className="page-shell official-home__body">
+        <section className="home-purpose-grid" aria-label="问云派宗旨">
+          {homePurposeCards.map((item) => (
+            <article className="home-purpose-card" key={item.title}>
+              <span aria-hidden="true" />
+              <div>
+                <h2>{item.title}</h2>
+                <p>{item.text}</p>
+              </div>
+            </article>
           ))}
         </section>
 
-        <SignalCompass />
+        <section className="home-showcase-grid" aria-label="问云派公开信息">
+          <article className="home-panel home-wishes-panel">
+            <h2>问云七愿</h2>
+            <div className="home-wishes-panel__body">
+              <figure aria-hidden="true">
+                <img alt="" src={getGuofengVisualPath('canonBanner')} />
+              </figure>
+              <ul>
+                {homeWishes.map((wish) => (
+                  <li key={wish}>{wish}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
 
-        <CloudGoldDivider />
-
-        <section className="section-title section-title--center">
-          <p className="section-eyebrow">云灯长廊</p>
-          <h2>每盏灯，都是某个真实瞬间的留存。</h2>
-          <p>这里只展示已经通过审核的公开云灯；未公开的内容仍会被妥善保护。</p>
-        </section>
-
-        <section className="cloud-lantern-grid">
-          {(lanterns.length > 0 ? lanterns.slice(0, 3) : [null, null, null]).map((item, index) => (
-            <CloudGlassCard className="cloud-lantern-card" key={item?.id ?? `empty-lantern-${index}`}>
-              <span>{item?.mood || ['宁静', '感恩', '希望'][index]}</span>
-              <h3>{item?.author_name || (index === 1 ? '匿名同门' : '问云云灯')}</h3>
-              <p>{item?.content || ['人在风里，彼此递一盏灯。', '愿疲惫的人能在这里停一下。', '今日有光，留给后来者。'][index]}</p>
-            </CloudGlassCard>
-          ))}
-        </section>
-
-        <section className="mission-grid mission-grid--two">
-          <MissionCard
-            action={
-              <TaskLink to="/announcements" tone="secondary" icon="megaphone">
-                查看告示
-              </TaskLink>
-            }
-            eyebrow="山门回声"
-            title={announcements[0]?.title ?? '山门安静'}
-          >
-            <p>{announcements[0]?.summary ?? '暂时没有新的告示。你可以先读金典，或给后来的人留一句云灯。'}</p>
-          </MissionCard>
-          <MissionCard
-            action={
-              <TaskLink to="/cloud-lantern" tone="secondary" icon="lantern">
-                继续点灯
-              </TaskLink>
-            }
-            className="lantern-card"
-            eyebrow={lanterns[0]?.mood ?? '云灯'}
-            title={lanterns[0]?.author_name ?? '匿名同门'}
-          >
-            <p>{lanterns[0]?.content ?? '人在风里，彼此递一盏灯。'}</p>
-          </MissionCard>
-        </section>
-
-        <section className="cloud-home-cta">
-          <CloudGlassCard gold>
-            <h2>山门已开，等你入云</h2>
-            <p>读金典，赴考核，递名帖。无需表演强大，只需真实有界。</p>
-            <div>
-              <TaskLink to="/canon" tone="primary" icon="scroll">
-                阅读金典
-              </TaskLink>
-              <TaskLink to="/login" tone="secondary" icon="logIn">
-                进入小院
+          <article className="home-panel home-events-panel">
+            <div className="home-panel__head">
+              <h2>雅集活动预告</h2>
+              <TaskLink to="/events" tone="quiet">
+                更多
               </TaskLink>
             </div>
-          </CloudGlassCard>
+            {loading ? <p className="home-panel__loading">正在读取雅集近况</p> : null}
+            <div className="home-events-list">
+              {homeEvents.map((event) => (
+                <div className="home-event-row" key={`${event.date}-${event.title}`}>
+                  <time>{event.date}</time>
+                  <strong>{event.title}</strong>
+                  <span>{event.status}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="home-panel home-roster-panel">
+            <div className="home-panel__head">
+              <h2>公开名册预览</h2>
+              <TaskLink to="/join" tone="quiet">
+                入册
+              </TaskLink>
+            </div>
+            {loading ? <p className="home-panel__loading">正在展开名册</p> : null}
+            <div className="home-roster-list">
+              {rosterPreview.map((item) => (
+                <div className="home-roster-row" key={`${item.name}-${item.meta}`}>
+                  <span aria-hidden="true">{item.name.slice(0, 1)}</span>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p>{item.meta}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
         </section>
       </div>
     </div>

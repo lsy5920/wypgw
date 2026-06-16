@@ -1,9 +1,76 @@
 import { useEffect, useState, type CSSProperties, type PointerEvent } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { siteNavItems } from '../../data/siteContent'
 import { CloudBackground } from '../../shared/ui/CloudTheme'
-import { TaskButton, TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
+import { TaskLink, TaskSeal } from '../../shared/ui/TaskUi'
 import { PublicMusicPlayer } from './PublicMusicPlayer'
+
+// 这个数组保存桌面端页眉导航，顺序和 Figma 设计稿保持一致。
+const desktopNavItems = [
+  { label: '首页', path: '/' },
+  { label: '立派金典', path: '/canon' },
+  { label: '问云公告', path: '/announcements' },
+  { label: '问云雅集', path: '/events' },
+  { label: '问心考核', path: '/wenxin-quiz' },
+  { label: '问云名册', path: '/join' },
+  { label: '问云小院', path: '/yard' }
+]
+
+// 这个数组保存移动端弹层导航，覆盖手机设计稿里的全部公开入口。
+const mobileNavItems = [
+  { label: '首页', path: '/' },
+  { label: '立派金典', path: '/canon' },
+  { label: '问云公告', path: '/announcements' },
+  { label: '问云雅集', path: '/events' },
+  { label: '问心考核', path: '/wenxin-quiz' },
+  { label: '问云名册', path: '/join' },
+  { label: '云灯留言', path: '/cloud-lantern' },
+  { label: '联系山门', path: '/contact' }
+]
+
+// 这个数组保存页脚四列入口，匹配桌面端设计稿的落款信息结构。
+const footerLinkGroups = [
+  {
+    title: '关于问云派',
+    links: [
+      { label: '立派金典', path: '/canon' },
+      { label: '入派指引', path: '/join' },
+      { label: '问云公告', path: '/announcements' }
+    ]
+  },
+  {
+    title: '学习成长',
+    links: [
+      { label: '立派金典', path: '/canon' },
+      { label: '入派指引', path: '/wenxin-quiz' },
+      { label: '问云公告', path: '/announcements' }
+    ]
+  },
+  {
+    title: '同行与支持',
+    links: [
+      { label: '立派金典', path: '/canon' },
+      { label: '入派指引', path: '/join' },
+      { label: '问云公告', path: '/announcements' }
+    ]
+  },
+  {
+    title: '关注我们',
+    links: [
+      { label: '立派金典', path: '/canon' },
+      { label: '入派指引', path: '/join' },
+      { label: '问云公告', path: '/announcements' }
+    ]
+  }
+]
+
+// 这个数组保存移动端页脚入口，和 Figma 移动端底部五个短入口一致。
+const footerMobileLinks = [
+  { label: '关于', path: '/about' },
+  { label: '金典', path: '/canon' },
+  { label: '雅集', path: '/events' },
+  { label: '名册', path: '/join' },
+  { label: '联系', path: '/contact' }
+]
 
 // 这个函数把滚动距离转换成百分比，入参为空，返回值是页面滚动进度。
 function getScrollPercent(): number {
@@ -81,27 +148,31 @@ export function PublicLayout() {
           <div className="public-header__inner">
             <TaskSeal caption="清醒温柔，同行自渡" />
             <nav className="public-nav" aria-label="公开官网导航">
-              {siteNavItems.map((item) => (
+              {desktopNavItems.map((item) => (
                 <NavLink key={item.path} to={item.path} end={item.path === '/'}>
                   {item.label}
                 </NavLink>
               ))}
             </nav>
             <div className="public-header__actions">
-              <TaskLink to="/login" tone="quiet" icon="logIn">
-                入小院
+              <TaskLink to="/login" tone="primary">
+                登录
               </TaskLink>
-              <TaskButton
+              <TaskLink to="/join" tone="primary">
+                入册
+              </TaskLink>
+              <button
                 aria-expanded={menuOpen}
                 aria-controls="public-mobile-menu"
-                className="mobile-menu-button"
-                icon="sliders"
+                aria-label="打开手机官网导航"
+                className="mobile-menu-button public-header__menu-button"
                 onClick={toggleMenu}
-                tone="secondary"
                 type="button"
               >
-                导航
-              </TaskButton>
+                <span />
+                <span />
+                <span />
+              </button>
             </div>
           </div>
           {menuOpen ? (
@@ -112,14 +183,11 @@ export function PublicLayout() {
                   <strong>问云派导航</strong>
                   <span>从这里去读金典、赴考核、递名帖。</span>
                 </div>
-                {siteNavItems.map((item) => (
+                {mobileNavItems.map((item) => (
                   <NavLink key={item.path} to={item.path} end={item.path === '/'} onClick={closeMenu}>
                     {item.label}
                   </NavLink>
                 ))}
-                <NavLink to="/login" onClick={closeMenu}>
-                  入小院
-                </NavLink>
               </nav>
             </>
           ) : null}
@@ -132,14 +200,26 @@ export function PublicLayout() {
         <div className="page-shell public-footer__inner">
           <div className="public-footer__brand">
             <TaskSeal caption="清醒温柔，同行自渡" />
-            <p>问云派以陪伴、清醒、成长、守正、温柔、共建为愿。来者可读金典、点云灯、递名帖，也可只在山门前安静停一停。</p>
+            <p>以云为幕，以灯为证；清醒温柔，同行自渡。</p>
           </div>
           <nav className="public-footer__links" aria-label="页脚入口">
-            <NavLink to="/canon">读金典</NavLink>
-            <NavLink to="/wenxin-quiz">赴考核</NavLink>
-            <NavLink to="/join">递名帖</NavLink>
-            <NavLink to="/cloud-lantern">点云灯</NavLink>
-            <NavLink to="/contact">传信笺</NavLink>
+            {footerLinkGroups.map((group) => (
+              <div className="public-footer__group" key={group.title}>
+                <strong>{group.title}</strong>
+                {group.links.map((link) => (
+                  <NavLink key={`${group.title}-${link.label}`} to={link.path}>
+                    {link.label}
+                  </NavLink>
+                ))}
+              </div>
+            ))}
+            <div className="public-footer__mobile-row">
+              {footerMobileLinks.map((link) => (
+                <NavLink key={link.label} to={link.path}>
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
           </nav>
         </div>
       </footer>
